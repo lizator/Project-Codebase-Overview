@@ -32,6 +32,9 @@ namespace Project_Codebase_Overview
         /// </summary>
         public App()
         {
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzEyNzEwQDMyMzAyZTMyMmUzMFB0eGROMGZJdkpxbndEeVdPSTl4ZDJycmpCQk5ROVJBZ21XNldhRjN2WWc9");
+
             this.InitializeComponent();
         }
 
