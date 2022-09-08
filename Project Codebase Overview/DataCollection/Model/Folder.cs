@@ -8,11 +8,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     internal class Folder : IExplorerItem
     {
-        public string name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string name { get; set; }
 
         public object graphModel => throw new NotImplementedException();
 
-        public IExplorerItem parent => throw new NotImplementedException();
+        public Folder parent { get; set; }
+
+        public Folder(string name, Folder parent)
+        {
+            this.name = name;
+            this.parent = parent;
+        }
 
         public void CalculateData()
         {

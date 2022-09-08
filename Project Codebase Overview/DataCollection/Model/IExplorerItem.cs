@@ -11,7 +11,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string name { get; set; }
         public void CalculateData();
         public object graphModel { get;  }
-        public IExplorerItem parent { get; }
+        public Folder parent { get; set; }
 
     }
 }

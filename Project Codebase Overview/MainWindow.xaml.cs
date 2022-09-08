@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.DataCollection;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,6 +44,9 @@ namespace Project_Codebase_Overview
             var folder = await fp.PickSingleFolderAsync();
 
             myText.Text = "Chosen path: " + folder.Path;
+
+            GitDataCollector gitDataCollector = new GitDataCollector();
+            gitDataCollector.CollectAllData(folder.Path);
         }
     }
 }
