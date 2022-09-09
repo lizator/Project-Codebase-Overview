@@ -30,5 +30,9 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             children.Add(child);
         }
+        public void addChildren(IExplorerItem[] child)
+        {
+            children.AddRange(child);
+        }
     }
 }
