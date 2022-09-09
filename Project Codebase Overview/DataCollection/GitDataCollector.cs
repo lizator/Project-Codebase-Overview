@@ -27,14 +27,12 @@ namespace Project_Codebase_Overview.DataCollection
             gitRepo = new Repository(rootPath);
 
 
-            var gitRootPathSplit = rootPath.Split("\\");
-            var gitRootParentPath = rootPath.Substring(0, rootPath.Length - gitRootPathSplit[gitRootPathSplit.Length - 1].Length - 1);
-
-            Folder rootParent = new Folder(gitRootParentPath, null); // is only used for folder name integrity
+            string rootParentPath = Directory.GetParent(rootPath).FullName;
+            Folder rootParent = new Folder(rootParentPath, null); // is only used for folder name integrity
 
             rootFolder = recurseTree(rootPath, rootParent);
 
-            rootFolder.parent = null;
+            rootFolder.parent = null; //detach rootFolder from parent
            
             return rootFolder;
         }
