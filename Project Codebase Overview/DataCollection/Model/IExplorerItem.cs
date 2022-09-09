@@ -9,7 +9,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     internal interface IExplorerItem
     {
         public string name { get; set; }
-        public void CalculateData();
+        public void calculateData();
         public object graphModel { get;  }
         public Folder parent { get; set; }
 

@@ -8,17 +8,23 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     internal class File : IExplorerItem
     {
-        public string name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string name { get; set; }
 
         public object graphModel => throw new NotImplementedException();
 
-        public IExplorerItem parent => throw new NotImplementedException();
+        public Folder parent { get; set; }
+        public List<Commit> commits;
 
-        public void CalculateData()
+        public void calculateData()
         {
             throw new NotImplementedException();
         }
 
-        public List<Commit> commits;
+        public File(string name, Folder parent, List<Commit> commits = null)
+        {
+            this.name = name;
+            this.parent = parent;
+            this.commits = commits ?? new List<Commit>();
+        }
     }
 }
