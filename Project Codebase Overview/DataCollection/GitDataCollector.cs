@@ -13,74 +13,30 @@ namespace Project_Codebase_Overview.DataCollection
 {
     internal class GitDataCollector : IVCSDataCollector
     {
-        string gitRoot;
+        string rootPath;
         int cutRootPath;
         Repository gitRepo;
-        Folder gitRootFolder;
+        Folder rootFolder;
 
-        public object CollectAllData(string path)
+        public Folder CollectAllData(string path)
         {
             //after stuff is below
             // gitRoot = path;
-            gitRoot = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            cutRootPath = gitRoot.Length + 1;
-            gitRepo = new Repository(gitRoot);
+            rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            cutRootPath = rootPath.Length + 1;
+            gitRepo = new Repository(rootPath);
 
-            gitRootFolder = recurseTree(gitRoot, null);
 
-            int winner = 1;
-           /*
-            //before stuff is below 
-            var rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            var gitRootPathSplit = rootPath.Split("\\");
+            var gitRootParentPath = rootPath.Substring(0, rootPath.Length - gitRootPathSplit[gitRootPathSplit.Length - 1].Length - 1);
+
+            Folder rootParent = new Folder(gitRootParentPath, null); // is only used for folder name integrity
+
+            rootFolder = recurseTree(rootPath, rootParent);
+
+            rootFolder.parent = null;
            
-            Folder rootFolder = new Folder("root", null);
-           
-            
-            var repo = new Repository(rootPath);
-
-            int cutRoot = rootPath.Length + 1; //index to remove rootpath + \\ from paths
-            var blameOptions = new BlameOptions();
-
-
-            string[] topFolders = Directory.GetDirectories(rootPath, "*", SearchOption.TopDirectoryOnly)
-                .Select(file => file.Substring(cutRoot))
-                .Where(file => !file.StartsWith(".")).ToArray();
-
-            foreach (string topFolder in topFolders)
-            {
-                rootFolder.addChild(new Folder(topFolder, rootFolder));
-
-                // TODO MAKE RECURSIVE ALGORITHM USING SEARCHOPTIONS.TOPDIRECTORIES STARTING FROM ROOT INSTEAD!
-
-                foreach (string file in Directory.EnumerateFiles(rootPath, topFolder + "/*.*", SearchOption.AllDirectories))
-                {
-                    // for all filepaths within topfolders
-                    var filePathClean = file.Substring(cutRoot).Replace("\\", "/");
-                    var fileBlameHunkCollection = repo.Blame(filePathClean);
-
-                    var groups = fileBlameHunkCollection.GroupBy(hunk => hunk.FinalCommit.Id);
-
-                    foreach (var group in groups)
-                    {
-
-                    }
-
-                    Dictionary<string, BlameHunk[]> blameHunkGroups = new Dictionary<string, BlameHunk[]>();
-                    
-                    foreach (BlameHunk blameHunk in fileBlameHunkCollection)
-                    {
-                      
-                    }
-
-                }
-            }
-            
-
-           
-            var blame = repo.Blame("Project Codebase Overview/TestDocs/TextFile1.txt", blameOptions);
-            System.Diagnostics.Debug.WriteLine(blame.ToString());
-           */
-            return null;
+            return rootFolder;
         }
 
         private Folder recurseTree(string currentPath, Folder parent)
@@ -113,7 +69,7 @@ namespace Project_Codebase_Overview.DataCollection
                 var fileBlameHunkCollection = gitRepo.Blame(filePathClean);
                 var groups = fileBlameHunkCollection.GroupBy(hunk => hunk.FinalCommit.Id);
 
-                PCOFile file = new PCOFile(filePathClean, currentFolder);
+                PCOFile file = new PCOFile(filePath.Substring(currentPathCut), currentFolder);
                 currentFolder.addChild(file);
 
                 foreach (var group in groups)
@@ -123,6 +79,10 @@ namespace Project_Codebase_Overview.DataCollection
                     file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
                 }
             }
+
+            //set names of folder before return
+            // parent name is parent path so current name is currentpath - parentpath
+            currentFolder.name = currentFolder.name.Substring(parent.name.Length + 1);
 
             return currentFolder;
         }

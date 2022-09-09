@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Project_Codebase_Overview.DataCollection.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Project_Codebase_Overview.DataCollection
 {
     internal interface IVCSDataCollector
     {
-        public object CollectAllData(string path);
+        public Folder CollectAllData(string path);
 
     }
 }
