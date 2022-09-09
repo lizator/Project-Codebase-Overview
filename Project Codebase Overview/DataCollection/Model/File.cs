@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal class File : IExplorerItem
+    internal class PCOFile : IExplorerItem
     {
         public string name { get; set; }
 
         public object graphModel => throw new NotImplementedException();
 
         public Folder parent { get; set; }
-        public List<Commit> commits;
+        public List<PCOCommit> commits;
 
         public void calculateData()
         {
             throw new NotImplementedException();
         }
 
-        public File(string name, Folder parent, List<Commit> commits = null)
+        public PCOFile(string name, Folder parent, List<PCOCommit> commits = null)
         {
             this.name = name;
             this.parent = parent;
-            this.commits = commits ?? new List<Commit>();
+            this.commits = commits ?? new List<PCOCommit>();
         }
     }
 }

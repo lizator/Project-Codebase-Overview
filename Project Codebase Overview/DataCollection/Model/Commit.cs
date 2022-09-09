@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal class Commit
+    internal class PCOCommit
     {
         private int codeLines;
         private int commentLines;
@@ -16,7 +16,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private Author author;
         private DateTime commitDate;
 
-        public Commit(int codeLines, int commentLines, int whiteSpaceLines, string email, string name, DateTime commitDate)
+        public PCOCommit(int codeLines, int commentLines, int whiteSpaceLines, string email, string name, DateTime commitDate)
         {
             this.codeLines = codeLines;
             this.commentLines = commentLines;
