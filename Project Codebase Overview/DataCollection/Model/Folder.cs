@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal class Folder : IExplorerItem
+    public class Folder : IExplorerItem, INotifyCollectionChanged
     {
         public string name { get; set; }
-        public object graphModel => throw new NotImplementedException();
+        public object graphModel { get; set; }
         public Folder parent { get; set; }
-        private List<IExplorerItem> children;
+        public List<IExplorerItem> children { get; }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public Folder(string name, Folder parent)
         {
@@ -34,5 +37,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             children.AddRange(child);
         }
+
     }
 }

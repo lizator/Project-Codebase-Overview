@@ -50,5 +50,7 @@ namespace Project_Codebase_Overview
         }
 
         private Window m_window;
+
+        public Window window => m_window;
     }
 }

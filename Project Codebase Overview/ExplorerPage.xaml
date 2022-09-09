@@ -1,0 +1,28 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.ExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview.FileExplorerView"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.DataContext>
+        <local:ExplorerViewModel/>
+    </Page.DataContext>
+    
+    <Grid>
+        <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
+                             ChildPropertyName="children"
+                             ItemsSource="{Binding ExplorerItems}"
+                             ShowRowHeader="True">
+            <treeGrid:SfTreeGrid.Columns>
+                <treeGrid:TreeGridColumns>
+                    <treeGrid:TreeGridTextColumn MappingName="name" x:Name="Name"/>
+                    <treeGrid:TreeGridTextColumn MappingName="parent.name" x:Name="Parent"/>
+                </treeGrid:TreeGridColumns>
+            </treeGrid:SfTreeGrid.Columns>
+        </treeGrid:SfTreeGrid>
+
+    </Grid>
+</Page>

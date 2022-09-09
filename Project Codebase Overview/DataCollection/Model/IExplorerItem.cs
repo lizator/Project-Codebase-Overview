@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal interface IExplorerItem
+    public interface IExplorerItem
     {
         public string name { get; set; }
         public void calculateData();

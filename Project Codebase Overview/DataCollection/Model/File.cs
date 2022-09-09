@@ -10,7 +10,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     {
         public string name { get; set; }
 
-        public object graphModel => throw new NotImplementedException();
+        public object graphModel { get; set;}
 
         public Folder parent { get; set; }
         public List<PCOCommit> commits;

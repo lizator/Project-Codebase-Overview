@@ -48,5 +48,13 @@ namespace Project_Codebase_Overview
             GitDataCollector gitDataCollector = new GitDataCollector();
             gitDataCollector.CollectAllData(folder.Path);
         }
+
+        private async void open_Explorer(object sender, RoutedEventArgs e)
+        {
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }
     }
 }
