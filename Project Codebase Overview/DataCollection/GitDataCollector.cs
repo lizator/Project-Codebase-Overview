@@ -16,6 +16,7 @@ namespace Project_Codebase_Overview.DataCollection
         string gitRoot;
         int cutRootPath;
         Repository gitRepo;
+        Folder gitRootFolder;
 
         public object CollectAllData(string path)
         {
@@ -25,9 +26,9 @@ namespace Project_Codebase_Overview.DataCollection
             cutRootPath = gitRoot.Length + 1;
             gitRepo = new Repository(gitRoot);
 
-            var gitRootFolder = recurseTree("", null);
-            
+            gitRootFolder = recurseTree(gitRoot, null);
 
+            int winner = 1;
            /*
             //before stuff is below 
             var rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
@@ -87,17 +88,24 @@ namespace Project_Codebase_Overview.DataCollection
             //create current folder
             var currentFolder = new Folder(currentPath, parent);
 
+            int currentPathCut = currentPath.Length + 1;
+
             //get all subfolderpaths
-            var subFolderPaths = Directory.EnumerateDirectories(currentPath, "*", SearchOption.TopDirectoryOnly);
+            var subFolderPaths = Directory.EnumerateDirectories(currentPath, "*", SearchOption.TopDirectoryOnly)
+                .Where(file => !file.Substring(currentPathCut).StartsWith(".")
+                            && !file.Substring(currentPathCut).StartsWith("bin")
+                            && !file.Substring(currentPathCut).StartsWith("obj"))
+                .ToArray(); 
+
             foreach (var subfolder in subFolderPaths)
-            {
+            { 
                 //recurese children
                 var childFolder = recurseTree(subfolder, currentFolder);
                 currentFolder.addChild(childFolder);
             }
             
             // get file data in current folder
-            var filePaths = Directory.EnumerateFiles(gitRoot, currentPath + "/*.*", SearchOption.TopDirectoryOnly);
+            var filePaths = Directory.EnumerateFiles(currentPath, "*.*", SearchOption.TopDirectoryOnly);
 
             foreach (var filePath in filePaths)
             {
