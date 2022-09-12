@@ -29,7 +29,7 @@ namespace Project_Codebase_Overview
     public sealed partial class ExplorerPage : Page
     {
 
-        private Folder _rootFolder;
+        private PCOFolder _rootFolder;
         private List<IExplorerItem> testItems;
         public ExplorerPage()
         {
@@ -40,7 +40,7 @@ namespace Project_Codebase_Overview
 
             this.testItems = new List<IExplorerItem>();
 
-            testItems.Add(new Folder("A folder", null));
+            testItems.Add(new PCOFolder("A folder", null));
             testItems.Add(new PCOFile("A file", null));
         }
 

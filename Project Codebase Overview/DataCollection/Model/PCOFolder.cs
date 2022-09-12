@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public class Folder : IExplorerItem, INotifyCollectionChanged
+    public class PCOFolder : IExplorerItem, INotifyCollectionChanged
     {
         public string name { get; set; }
         public object graphModel { get; set; }
-        public Folder parent { get; set; }
+        public PCOFolder parent { get; set; }
         public List<IExplorerItem> children { get; }
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
-        public Folder(string name, Folder parent)
+        public PCOFolder(string name, PCOFolder parent)
         {
             this.name = name;
             this.parent = parent;

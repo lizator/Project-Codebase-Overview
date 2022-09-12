@@ -16,9 +16,9 @@ namespace Project_Codebase_Overview.DataCollection
         string rootPath;
         int cutRootPath;
         Repository gitRepo;
-        Folder rootFolder;
+        PCOFolder rootFolder;
 
-        public Folder CollectAllData(string path)
+        public PCOFolder CollectAllData(string path)
         {
             //after stuff is below
             // gitRoot = path;
@@ -28,7 +28,7 @@ namespace Project_Codebase_Overview.DataCollection
 
 
             string rootParentPath = Directory.GetParent(rootPath).FullName;
-            Folder rootParent = new Folder(rootParentPath, null); // is only used for folder name integrity
+            PCOFolder rootParent = new PCOFolder(rootParentPath, null); // is only used for folder name integrity
 
             rootFolder = recurseTree(rootPath, rootParent);
 
@@ -37,10 +37,19 @@ namespace Project_Codebase_Overview.DataCollection
             return rootFolder;
         }
 
-        private Folder recurseTree(string currentPath, Folder parent)
+        private PCOFolder getData()
+        {
+            gitRepo.RetrieveStatus
+
+
+            return rootFolder;
+        }
+
+
+        private PCOFolder recurseTree(string currentPath, PCOFolder parent)
         {
             //create current folder
-            var currentFolder = new Folder(currentPath, parent);
+            var currentFolder = new PCOFolder(currentPath, parent);
 
             int currentPathCut = currentPath.Length + 1;
 

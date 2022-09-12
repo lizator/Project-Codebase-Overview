@@ -9,7 +9,7 @@ namespace Project_Codebase_Overview.DataCollection
 {
     internal interface IVCSDataCollector
     {
-        public Folder CollectAllData(string path);
+        public PCOFolder CollectAllData(string path);
 
     }
 }

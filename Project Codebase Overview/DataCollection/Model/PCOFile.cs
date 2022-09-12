@@ -12,7 +12,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public object graphModel { get; set;}
 
-        public Folder parent { get; set; }
+        public PCOFolder parent { get; set; }
         public List<PCOCommit> commits;
 
         public void calculateData()
@@ -20,7 +20,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             throw new NotImplementedException();
         }
 
-        public PCOFile(string name, Folder parent, List<PCOCommit> commits = null)
+        public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
             this.name = name;
             this.parent = parent;
