@@ -23,9 +23,9 @@ namespace Project_Codebase_Overview.TestDocs
             var file11 = new PCOFile("File11", f1);
 
 
-            f11.addChildren(new IExplorerItem[] { file111, file112 });
-            f12.addChildren(new IExplorerItem[] { file121, file122 });
-            f1.addChildren(new IExplorerItem[] { f11, f12, file11 });
+            f11.AddChildren(new IExplorerItem[] { file111, file112 });
+            f12.AddChildren(new IExplorerItem[] { file121, file122 });
+            f1.AddChildren(new IExplorerItem[] { f11, f12, file11 });
 
             var f2 = new PCOFolder("F2", rootFolder);
             var f21 = new PCOFolder("F21", f2);
@@ -35,15 +35,15 @@ namespace Project_Codebase_Overview.TestDocs
             var file21 = new PCOFile("File21", f2);
             var file22 = new PCOFile("File22", f2);
 
-            f21.addChild(file211);
-            f22.addChild(file221);
-            f2.addChildren(new IExplorerItem[] { f21, f22, file21, file22});
+            f21.AddChild(file211);
+            f22.AddChild(file221);
+            f2.AddChildren(new IExplorerItem[] { f21, f22, file21, file22});
 
 
             var file1 = new PCOFile("File1", rootFolder);
             var file2 = new PCOFile("File2", rootFolder);
 
-            rootFolder.addChildren(new IExplorerItem[] { f1, f2, file1, file2 });
+            rootFolder.AddChildren(new IExplorerItem[] { f1, f2, file1, file2 });
 
             return rootFolder;
         }
