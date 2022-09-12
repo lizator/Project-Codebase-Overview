@@ -30,23 +30,23 @@ namespace Project_Codebase_Overview.DataCollection
             string rootParentPath = Directory.GetParent(rootPath).FullName;
             PCOFolder rootParent = new PCOFolder(rootParentPath, null); // is only used for folder name integrity
 
-            rootFolder = recurseTree(rootPath, rootParent);
+            rootFolder = RecurseTree(rootPath, rootParent);
 
             rootFolder.parent = null; //detach rootFolder from parent
            
             return rootFolder;
         }
 
-        private PCOFolder getData()
+        private PCOFolder GetData()
         {
-            gitRepo.RetrieveStatus
+            //gitRepo.RetrieveStatus
 
 
             return rootFolder;
         }
 
 
-        private PCOFolder recurseTree(string currentPath, PCOFolder parent)
+        private PCOFolder RecurseTree(string currentPath, PCOFolder parent)
         {
             //create current folder
             var currentFolder = new PCOFolder(currentPath, parent);
@@ -63,7 +63,7 @@ namespace Project_Codebase_Overview.DataCollection
             foreach (var subfolder in subFolderPaths)
             { 
                 //recurese children
-                var childFolder = recurseTree(subfolder, currentFolder);
+                var childFolder = RecurseTree(subfolder, currentFolder);
                 currentFolder.addChild(childFolder);
             }
             

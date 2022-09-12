@@ -21,7 +21,7 @@ namespace Project_Codebase_Overview.ContributorManagement
             idCounter = 1;
         }
 
-        public static ContributorManager getInstance()
+        public static ContributorManager GetInstance()
         {
             if(instance == null)
             {
@@ -30,25 +30,25 @@ namespace Project_Codebase_Overview.ContributorManagement
             return instance;
         }
 
-        public void addAuthor(string email, string name)
+        public void AddAuthor(string email, string name)
         {
             Author author = new Author(idCounter, email, name);
             this.authors.Add(email, author);
             idCounter++;
         }
 
-        public Author getAuthor (string email)
+        public Author GetAuthor (string email)
         {
             return this.authors[email];
         }
 
-        public Author getOrCreateAuthor (string email, string name)
+        public Author GetOrCreateAuthor (string email, string name)
         {
             if (!authors.ContainsKey(email))
             {
-                addAuthor(email, name);
+                AddAuthor(email, name);
             }
-            return getAuthor(email);
+            return GetAuthor(email);
         }
     }
 }

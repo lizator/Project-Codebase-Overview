@@ -15,7 +15,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public PCOFolder parent { get; set; }
         public List<PCOCommit> commits;
 
-        public void calculateData()
+        public void CalculateData()
         {
             throw new NotImplementedException();
         }

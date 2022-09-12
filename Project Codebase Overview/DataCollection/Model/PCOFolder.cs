@@ -23,7 +23,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.children = new List<IExplorerItem>();
         }
 
-        public void calculateData()
+        public void CalculateData()
         {
             throw new NotImplementedException();
         }

@@ -21,7 +21,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.codeLines = codeLines;
             this.commentLines = commentLines;
             this.whiteSpaceLines = whiteSpaceLines;
-            this.author = ContributorManager.getInstance().getOrCreateAuthor(email, name);
+            this.author = ContributorManager.GetInstance().GetOrCreateAuthor(email, name);
             this.commitDate = commitDate;
         }
     }

@@ -13,14 +13,14 @@ namespace Project_Codebase_Overview.Settings.Model
         public DecayTimeUnit timeUnit = DecayTimeUnit.UNDÈFINED;
         public int dropOffPercentage = 0;
 
-        public double calculateLinesAfterDecay(int lineCount, DateTime commitDate)
+        public double CalculateLinesAfterDecay(int lineCount, DateTime commitDate)
         {
-            var ticks = calculateTicks(commitDate);
+            var ticks = CalculateTicks(commitDate);
 
             return lineCount * Math.Pow((float)dropOffPercentage / 100, ticks);
         }
 
-        private int calculateTicks(DateTime commitDate)
+        private int CalculateTicks(DateTime commitDate)
         {
             throw new NotImplementedException();
         }
