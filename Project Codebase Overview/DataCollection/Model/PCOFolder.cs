@@ -29,11 +29,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
 
-        public void addChild(IExplorerItem child)
+        public void AddChild(IExplorerItem child)
         {
             children.Add(child.name, child);
         }
-        public void addChildren(IExplorerItem[] child)
+        public void AddChildren(IExplorerItem[] child)
         {
             throw new NotImplementedException();
             //children.AddRange(child);
