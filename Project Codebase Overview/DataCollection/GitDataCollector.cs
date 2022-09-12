@@ -30,7 +30,7 @@ namespace Project_Codebase_Overview.DataCollection
                 //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
-            List<string> filePaths = gitStatus.Select(statusEntry => statusEntry.FilePath).Where(x => !x.EndsWith("/")).ToList();
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
             
             //create root folder
             var rootFolderName = Path.GetFileName(rootPath);
