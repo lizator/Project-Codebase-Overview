@@ -10,19 +10,35 @@
     <Page.DataContext>
         <local:ExplorerViewModel/>
     </Page.DataContext>
-    
     <Grid>
-        <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
-                             ChildPropertyName="children"
-                             ItemsSource="{Binding ExplorerItems}"
-                             ShowRowHeader="True">
-            <treeGrid:SfTreeGrid.Columns>
-                <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn MappingName="name" x:Name="Name"/>
-                    <treeGrid:TreeGridTextColumn MappingName="parent.name" x:Name="Parent"/>
-                </treeGrid:TreeGridColumns>
-            </treeGrid:SfTreeGrid.Columns>
-        </treeGrid:SfTreeGrid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="80*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Background="Aqua"> <!-- Settings sidemenu TODO -->
+            
+        </Grid>
 
+        <Grid HorizontalAlignment="Right" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="10*"/>
+            </Grid.RowDefinitions>
+            <Grid Background="Red" ></Grid> <!-- FileExplorer tools -->
+            <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
+                                 ChildPropertyName="children"
+                                 ItemsSource="{Binding ExplorerItems}"
+                                 ShowRowHeader="True"
+                                 Grid.Row="1"
+                                 ColumnWidthMode="AutoLastColumnFill">
+                <treeGrid:SfTreeGrid.Columns>
+                    <treeGrid:TreeGridColumns>
+                        <treeGrid:TreeGridTextColumn MappingName="name" HeaderText="Name"/>
+                        <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Parent"/>
+                    </treeGrid:TreeGridColumns>
+                </treeGrid:SfTreeGrid.Columns>
+            </treeGrid:SfTreeGrid>
+
+        </Grid>
     </Grid>
 </Page>
