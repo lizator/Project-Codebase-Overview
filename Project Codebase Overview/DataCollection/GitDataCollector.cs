@@ -19,7 +19,7 @@ namespace Project_Codebase_Overview.DataCollection
         {
             // gitRoot = path;
             //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
+            var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
             gitRepo = new Repository(rootPath);
 
             RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
