@@ -13,28 +13,14 @@ namespace Project_Codebase_Overview.DataCollection
 {
     internal class GitDataCollector : IVCSDataCollector
     {
-        string rootPath;
-        int cutRootPath;
-        Repository gitRepo;
-        PCOFolder rootFolder;
 
+        Repository gitRepo;
         public PCOFolder CollectAllData(string path)
         {
-            //after stuff is below
             // gitRoot = path;
-            rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            cutRootPath = rootPath.Length + 1;
+            string rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
             gitRepo = new Repository(rootPath);
 
-            var foldergang = GetData();
-            
-            
-            return rootFolder;
-        }
-
-
-        private PCOFolder GetData()
-        {
             RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
             //check if there are altered files (IS NOT ALLOWED)
@@ -47,7 +33,7 @@ namespace Project_Codebase_Overview.DataCollection
             
             //create root folder
             var rootFolderName = Path.GetFileName(rootPath);
-            rootFolder = new PCOFolder(rootFolderName, null);
+            var rootFolder = new PCOFolder(rootFolderName, null);
            
             foreach (string filePath in filePaths)
             {
