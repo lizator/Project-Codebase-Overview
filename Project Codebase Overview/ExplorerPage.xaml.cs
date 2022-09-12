@@ -36,7 +36,7 @@ namespace Project_Codebase_Overview
 
             this.InitializeComponent();
 
-            this._rootFolder = DummyDataSummoner.SummonDummyData();
+            // this._rootFolder = DummyDataSummoner.SummonDummyData();
 
             this.testItems = new List<IExplorerItem>();
 

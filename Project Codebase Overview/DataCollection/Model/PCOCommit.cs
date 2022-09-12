@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal class PCOCommit
+    public class PCOCommit
     {
         private int codeLines;
         private int commentLines;

@@ -26,72 +26,48 @@ namespace Project_Codebase_Overview.DataCollection
             cutRootPath = rootPath.Length + 1;
             gitRepo = new Repository(rootPath);
 
-
-            string rootParentPath = Directory.GetParent(rootPath).FullName;
-            PCOFolder rootParent = new PCOFolder(rootParentPath, null); // is only used for folder name integrity
-
-            rootFolder = RecurseTree(rootPath, rootParent);
-
-            rootFolder.parent = null; //detach rootFolder from parent
-           
+            var foldergang = GetData();
+            
+            
             return rootFolder;
         }
+
 
         private PCOFolder GetData()
         {
-            //gitRepo.RetrieveStatus
+            RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+            List<string> filePaths = gitStatus.Select(statusEntry => statusEntry.FilePath).Where(x => !x.EndsWith("/")).ToList();
+            
+            //create root folder
+            var rootFolderName = Path.GetFileName(rootPath);
+            rootFolder = new PCOFolder(rootFolderName, null);
+           
+            foreach (string filePath in filePaths)
+            {
+                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
+                AddFileCommits(addedFile, filePath);
+            }
 
             return rootFolder;
         }
 
-
-        private PCOFolder RecurseTree(string currentPath, PCOFolder parent)
+        private void AddFileCommits(PCOFile file, string filePath)
         {
-            //create current folder
-            var currentFolder = new PCOFolder(currentPath, parent);
+            var blameHunkGroups = gitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
 
-            int currentPathCut = currentPath.Length + 1;
-
-            //get all subfolderpaths
-            var subFolderPaths = Directory.EnumerateDirectories(currentPath, "*", SearchOption.TopDirectoryOnly)
-                .Where(file => !file.Substring(currentPathCut).StartsWith(".")
-                            && !file.Substring(currentPathCut).StartsWith("bin")
-                            && !file.Substring(currentPathCut).StartsWith("obj"))
-                .ToArray(); 
-
-            foreach (var subfolder in subFolderPaths)
-            { 
-                //recurese children
-                var childFolder = RecurseTree(subfolder, currentFolder);
-                currentFolder.addChild(childFolder);
-            }
-            
-            // get file data in current folder
-            var filePaths = Directory.EnumerateFiles(currentPath, "*.*", SearchOption.TopDirectoryOnly);
-
-            foreach (var filePath in filePaths)
+            foreach (var group in blameHunkGroups)
             {
-                var filePathClean = filePath.Substring(cutRootPath).Replace("\\", "/");
-                var fileBlameHunkCollection = gitRepo.Blame(filePathClean);
-                var groups = fileBlameHunkCollection.GroupBy(hunk => hunk.FinalCommit.Id);
-
-                PCOFile file = new PCOFile(filePath.Substring(currentPathCut), currentFolder);
-                currentFolder.addChild(file);
-
-                foreach (var group in groups)
-                {
-                    int commitLineCount = group.Sum(hunk => hunk.LineCount);
-                    var finalSignature = group.First().FinalSignature;
-                    file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
-                }
+                int commitLineCount = group.Sum(hunk => hunk.LineCount);
+                var finalSignature = group.First().FinalSignature;
+                file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
             }
-
-            //set names of folder before return
-            // parent name is parent path so current name is currentpath - parentpath
-            currentFolder.name = currentFolder.name.Substring(parent.name.Length + 1);
-
-            return currentFolder;
         }
     }
 }

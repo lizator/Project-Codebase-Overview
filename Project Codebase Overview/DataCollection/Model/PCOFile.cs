@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    internal class PCOFile : IExplorerItem
+    public class PCOFile : IExplorerItem
     {
         public string name { get; set; }
 

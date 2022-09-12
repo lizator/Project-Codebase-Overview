@@ -12,7 +12,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string name { get; set; }
         public object graphModel { get; set; }
         public PCOFolder parent { get; set; }
-        public List<IExplorerItem> children { get; }
+        public Dictionary<string, IExplorerItem> children { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -20,7 +20,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             this.name = name;
             this.parent = parent;
-            this.children = new List<IExplorerItem>();
+            this.children = new Dictionary<string, IExplorerItem>();
         }
 
         public void CalculateData()
@@ -31,12 +31,32 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public void addChild(IExplorerItem child)
         {
-            children.Add(child);
+            children.Add(child.name, child);
         }
         public void addChildren(IExplorerItem[] child)
         {
-            children.AddRange(child);
+            throw new NotImplementedException();
+            //children.AddRange(child);
         }
 
+        public PCOFile AddChildRecursive(string[] list, int index)
+        {
+            if (list.Length == index + 1) //reached file
+            {
+                PCOFile newFile = new PCOFile(list[index], this);
+                children.Add(newFile.name, newFile);
+                return newFile;
+            }
+            else
+            {
+                if (!children.ContainsKey(list[index]))
+                {
+                    PCOFolder newFolder = new PCOFolder(list[index], this);
+                    children.Add(newFolder.name, newFolder);
+                }
+
+                return ((PCOFolder)children[list[index]]).AddChildRecursive(list, index + 1);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Project_Codebase_Overview.DataCollection.Model;
+﻿using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.TestDocs;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,10 @@ namespace Project_Codebase_Overview.FileExplorerView
         public ExplorerViewModel() // TODO add path?
         {
             var explorerItems = new ObservableCollection<IExplorerItem>();
-            var root = DummyDataSummoner.SummonDummyData();
-            foreach(var item in root.children)
+            //var root = DummyDataSummoner.SummonDummyData();
+            var collector = new GitDataCollector();
+            var root = collector.CollectAllData("");
+            foreach(var item in root.children.Values)
             {
                 explorerItems.Add(item);
             }
