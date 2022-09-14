@@ -18,10 +18,11 @@ namespace Project_Codebase_Overview.FileExplorerView
             //var root = DummyDataSummoner.SummonDummyData();
             var collector = new GitDataCollector();
             var root = collector.CollectAllData("");
-            foreach(var item in root.children.Values)
+            foreach(var item in root.SortedChildren)
             {
                 explorerItems.Add(item);
             }
+
             this.ExplorerItems = explorerItems;
         }
 

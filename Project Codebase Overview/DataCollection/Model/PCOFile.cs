@@ -20,6 +20,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
             throw new NotImplementedException();
         }
 
+        public int CompareTo(object obj)
+        {
+            if (obj.GetType() != typeof(PCOFile))
+            {
+                return 1;
+            }
+            return string.Compare(this.name, ((PCOFile)obj).name, StringComparison.InvariantCulture);
+        }
+
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
             this.name = name;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,14 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.parent = parent;
             this.children = new Dictionary<string, IExplorerItem>();
         }
+        public int CompareTo(object obj)
+        {
+            if (obj.GetType() != typeof(PCOFolder))
+            {
+                return -1;
+            }
+            return string.Compare(this.name, ((PCOFolder)obj).name, StringComparison.InvariantCulture);
+        }
 
         public void CalculateData()
         {
@@ -37,6 +46,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             throw new NotImplementedException();
             //children.AddRange(child);
+        }
+
+        public List<IExplorerItem> SortedChildren { get => GetSortedChildren(); }
+
+        private List<IExplorerItem> GetSortedChildren()
+        {
+            var x = this.children.Values.ToArray();
+            Array.Sort(x);
+            return x.ToList();
         }
 
         public PCOFile AddChildRecursive(string[] list, int index)

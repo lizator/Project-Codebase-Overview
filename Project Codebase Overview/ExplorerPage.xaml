@@ -15,22 +15,27 @@
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="80*"/>
         </Grid.ColumnDefinitions>
-        <Grid Background="Aqua"> <!-- Settings sidemenu TODO -->
+        <Grid Background="Aqua" Grid.Column="0"> <!-- Settings sidemenu TODO -->
             
         </Grid>
 
         <Grid HorizontalAlignment="Right" Grid.Column="1">
+            
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="10*"/>
             </Grid.RowDefinitions>
+            
+            
             <Grid Background="Red" ></Grid> <!-- FileExplorer tools -->
             <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
-                                 ChildPropertyName="children.Values"
+                                 ChildPropertyName="SortedChildren"
                                  ItemsSource="{Binding ExplorerItems}"
                                  ShowRowHeader="True"
                                  Grid.Row="1"
-                                 ColumnWidthMode="AutoLastColumnFill">
+                                 ColumnWidthMode="AutoLastColumnFill"
+                                 AutoGenerateColumnsMode="None"
+                                 AllowResizingColumns="True">
                 <treeGrid:SfTreeGrid.Columns>
                     <treeGrid:TreeGridColumns>
                         <treeGrid:TreeGridTextColumn MappingName="name" HeaderText="Name"/>

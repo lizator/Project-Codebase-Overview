@@ -29,19 +29,11 @@ namespace Project_Codebase_Overview
     public sealed partial class ExplorerPage : Page
     {
 
-        private PCOFolder _rootFolder;
-        private List<IExplorerItem> testItems;
         public ExplorerPage()
         {
 
             this.InitializeComponent();
 
-            // this._rootFolder = DummyDataSummoner.SummonDummyData();
-
-            this.testItems = new List<IExplorerItem>();
-
-            testItems.Add(new PCOFolder("A folder", null));
-            testItems.Add(new PCOFile("A file", null));
         }
 
 
