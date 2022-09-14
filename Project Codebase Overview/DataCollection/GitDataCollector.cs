@@ -17,17 +17,25 @@ namespace Project_Codebase_Overview.DataCollection
         Repository gitRepo;
         public PCOFolder CollectAllData(string path)
         {
-            // gitRoot = path;
-            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
-            gitRepo = new Repository(rootPath);
+            var rootPath = path;
+            //var rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
+            try
+            {
+                gitRepo = new Repository(rootPath);
+            }
+            catch (Exception e)
+            { 
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+         
 
             RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
             //check if there are altered files (IS NOT ALLOWED)
             if (gitStatus.IsDirty)
             {
-                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
