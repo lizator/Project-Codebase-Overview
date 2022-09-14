@@ -34,7 +34,7 @@ namespace Project_Codebase_Overview
         {
             myButton.Content = "Clicked";
         }
-        private async void select_Path(object sender, RoutedEventArgs e)
+        private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
             var fp = new FolderPicker();
 
@@ -43,13 +43,11 @@ namespace Project_Codebase_Overview
 
             var folder = await fp.PickSingleFolderAsync();
 
-            myText.Text = "Chosen path: " + folder.Path;
-
             GitDataCollector gitDataCollector = new GitDataCollector();
             gitDataCollector.CollectAllData(folder.Path);
         }
 
-        private async void open_Explorer(object sender, RoutedEventArgs e)
+        private async void OpenPCOMaster(object sender, RoutedEventArgs e)
         {
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;

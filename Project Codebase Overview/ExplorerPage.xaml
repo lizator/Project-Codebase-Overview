@@ -20,14 +20,14 @@
         </Grid>
 
         <Grid HorizontalAlignment="Right" Grid.Column="1">
-            
+
             <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="10*"/>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            
-            
-            <Grid Background="Red" ></Grid> <!-- FileExplorer tools -->
+
+
+            <Grid Background="Red" Width="8000"></Grid> <!-- FileExplorer tools -->
             <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
                                  ChildPropertyName="SortedChildren"
                                  ItemsSource="{Binding ExplorerItems}"
@@ -38,7 +38,7 @@
                                  AllowResizingColumns="True">
                 <treeGrid:SfTreeGrid.Columns>
                     <treeGrid:TreeGridColumns>
-                        <treeGrid:TreeGridTextColumn MappingName="name" HeaderText="Name"/>
+                        <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="name" HeaderText="Name"/>
                         <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Parent"/>
                     </treeGrid:TreeGridColumns>
                 </treeGrid:SfTreeGrid.Columns>

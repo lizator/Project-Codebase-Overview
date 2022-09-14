@@ -8,9 +8,17 @@
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="select_Path">Select path</Button>
-        <TextBlock x:Name="myText" VerticalAlignment="Center">Chosen path:</TextBlock>
-        <Button x:Name="open" Click="open_Explorer">Open Explorer</Button>
-    </StackPanel>
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel  Orientation="Vertical" Width="500">
+            <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
+        </StackPanel>
+        <StackPanel Width="800" Orientation="Vertical" Grid.Column="1">
+            <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
+            <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
+        </StackPanel>
+    </Grid>
 </Window>
