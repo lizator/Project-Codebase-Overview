@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using Project_Codebase_Overview.DataCollection.Model;
@@ -19,7 +21,7 @@ namespace Project_Codebase_Overview.DataCollection
         public PCOFolder CollectAllData(string path)
         {
             var rootPath = path;
-            //var rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
             //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
             try
             {
@@ -36,7 +38,7 @@ namespace Project_Codebase_Overview.DataCollection
             //check if there are altered files (IS NOT ALLOWED)
             if (gitStatus.IsDirty)
             {
-                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
@@ -57,7 +59,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         private void AddFileCommits(PCOFile file, string filePath)
         {
-            var blameHunkGroups = gitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
+            var blameHunkGroups = gitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Sha);
 
             foreach (var group in blameHunkGroups)
             {
@@ -110,6 +112,31 @@ namespace Project_Codebase_Overview.DataCollection
                 var finalSignature = group.First().FinalSignature;
                 file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
             }
+        }
+
+        public void testTime()
+        {
+            var path = "C:\\Users\\Jacob\\IdeaProjects\\dev_ops_assigment";
+            var repetitions = 50;
+            Stopwatch stopwatch = new Stopwatch();
+
+            stopwatch.Start();
+            for (int i = 0; i < repetitions; i++)
+            {
+                CollectAllData(path);
+            }
+            stopwatch.Stop();
+
+            Debug.WriteLine("Average elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds/repetitions);
+            
+            /*
+            ALL PROGRAMS CLOSED
+            Results:
+            -Version 1, average time 1746
+            -Using sha instead of id for groouping of commits, time 1723
+
+            */
+        
         }
     }
 }

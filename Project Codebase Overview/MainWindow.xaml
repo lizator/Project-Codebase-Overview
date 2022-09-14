@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
-
+    
     <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -20,6 +20,7 @@
             <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
             <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
             <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
+            <Button x:Name="startTest" Click="start_test">Start test</Button>
         </StackPanel>
     </Grid>
 </Window>

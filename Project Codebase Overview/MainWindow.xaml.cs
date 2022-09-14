@@ -36,6 +36,13 @@ namespace Project_Codebase_Overview
         {
             myButton.Content = "Clicked";
         }
+
+        private void start_test(object sender, RoutedEventArgs e)
+        {
+            GitDataCollector collector = new GitDataCollector();
+            collector.testTime();
+        }
+
         private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
             var fp = new FolderPicker();
