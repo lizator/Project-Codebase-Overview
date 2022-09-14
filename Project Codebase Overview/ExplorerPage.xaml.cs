@@ -17,6 +17,8 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Syncfusion.UI.Xaml.TreeGrid;
 using System.Collections.ObjectModel;
+using Project_Codebase_Overview.FileExplorerView;
+using Project_Codebase_Overview.State;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,11 +30,16 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class ExplorerPage : Page
     {
-
+        ExplorerViewModel viewModel;
         public ExplorerPage()
         {
 
             this.InitializeComponent();
+
+            viewModel = (ExplorerViewModel)this.DataContext;
+
+            viewModel.SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetRoot());
+
 
         }
 
