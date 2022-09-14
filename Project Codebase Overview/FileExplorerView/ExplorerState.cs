@@ -58,5 +58,10 @@ namespace Project_Codebase_Overview.FileExplorerView
                 throw new Exception("Root folder has not been loaded");
             }
         }
+
+        public void SetRoot(PCOFolder folder)
+        {
+            this.root = folder;
+        }
     }
 }

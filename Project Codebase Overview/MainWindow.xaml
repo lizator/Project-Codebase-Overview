@@ -19,6 +19,7 @@
         <StackPanel Width="800" Orientation="Vertical" Grid.Column="1">
             <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
             <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
+            <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
         </StackPanel>
     </Grid>
 </Window>

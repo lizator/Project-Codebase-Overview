@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LibGit2Sharp;
 using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.State;
 using Windows.System;
 using static System.Net.WebRequestMethods;
 
@@ -53,9 +54,55 @@ namespace Project_Codebase_Overview.DataCollection
             return rootFolder;
         }
 
+
         private void AddFileCommits(PCOFile file, string filePath)
         {
             var blameHunkGroups = gitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
+
+            foreach (var group in blameHunkGroups)
+            {
+                int commitLineCount = group.Sum(hunk => hunk.LineCount);
+                var finalSignature = group.First().FinalSignature;
+                file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
+            }
+        }
+
+
+        public PCOFolder AlternativeCollectAllData(string path)
+        {
+            var rootPath = path;
+            try
+            {
+                PCOState.GetInstance().TempGitRepo = new Repository(rootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = PCOState.GetInstance().TempGitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(rootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            rootFolder.AddChildrenAlternativly(filePaths);
+
+            return rootFolder;
+        }
+        public static void AddFileCommitsAlt(PCOFile file, string filePath)
+        {
+            var blameHunkGroups = PCOState.GetInstance().TempGitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
 
             foreach (var group in blameHunkGroups)
             {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Syncfusion.UI.Xaml.Data;
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
@@ -74,6 +75,27 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
 
                 return ((PCOFolder)children[list[index]]).AddChildRecursive(list, index + 1);
+            }
+        }
+
+        public void AddChildrenAlternativly(List<string> filePaths, int index = 0)
+        {
+            var explorerGroups = filePaths.GroupBy(path => path.Split("/")[index]);
+
+            foreach (var group in explorerGroups)
+            {
+                if (group.Count() == 1)
+                { // a file
+                    var file = new PCOFile(group.Key, this);
+                    GitDataCollector.AddFileCommitsAlt(file, group.First());
+                    this.AddChild(file);
+                } else
+                { // a folder
+                    var folder = new PCOFolder(group.Key, this);
+                    folder.AddChildrenAlternativly(group.ToList(), index + 1);
+                    this.AddChild(folder);
+                }
+
             }
         }
     }

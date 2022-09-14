@@ -1,4 +1,5 @@
-﻿using Project_Codebase_Overview.FileExplorerView;
+﻿using LibGit2Sharp;
+using Project_Codebase_Overview.FileExplorerView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace Project_Codebase_Overview.State
     {
         private ExplorerState ExplorerState;
         private static PCOState Instance;
+
+        public Repository TempGitRepo;
 
         public static PCOState GetInstance()
         {
