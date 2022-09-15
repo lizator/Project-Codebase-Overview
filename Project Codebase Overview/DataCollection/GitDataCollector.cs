@@ -116,7 +116,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         public void testTime()
         {
-            var path = "C:\\Users\\Jacob\\IdeaProjects\\dev_ops_assigment";
+            var path = "C:\\TestRepos\\Project-Codebase-Overview";
             var repetitions = 50;
             Stopwatch stopwatch = new Stopwatch();
 
