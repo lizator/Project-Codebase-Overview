@@ -96,7 +96,7 @@ namespace Project_Codebase_Overview.DataCollection
             var rootFolderName = Path.GetFileName(rootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
 
-            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+            List<string[]> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath.Split("/")).ToList();
 
             rootFolder.AddChildrenAlternativly(filePaths);
 
@@ -123,7 +123,12 @@ namespace Project_Codebase_Overview.DataCollection
             stopwatch.Start();
             for (int i = 0; i < repetitions; i++)
             {
-                CollectAllData(path);
+                //CollectAllData(path);
+                AlternativeCollectAllData(path);
+                if (i%10 == 0)
+                {
+                    Debug.WriteLine(i);
+                }
             }
             stopwatch.Stop();
 
@@ -134,6 +139,7 @@ namespace Project_Codebase_Overview.DataCollection
             Results:
             -Version 1, average time 1746
             -Using sha instead of id for groouping of commits, time 1723
+            -version 2(creating breadth first ish setup) time 1768
 
             */
         

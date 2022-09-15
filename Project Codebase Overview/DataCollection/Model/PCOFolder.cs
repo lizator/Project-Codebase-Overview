@@ -78,16 +78,16 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
         }
 
-        public void AddChildrenAlternativly(List<string> filePaths, int index = 0)
+        public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
         {
-            var explorerGroups = filePaths.GroupBy(path => path.Split("/")[index]);
+            var explorerGroups = filePaths.GroupBy(path => path[index]);
 
             foreach (var group in explorerGroups)
             {
                 if (group.Count() == 1)
                 { // a file
                     var file = new PCOFile(group.Key, this);
-                    GitDataCollector.AddFileCommitsAlt(file, group.First());
+                    GitDataCollector.AddFileCommitsAlt(file, String.Join("/", group.First()));
                     this.AddChild(file);
                 } else
                 { // a folder
