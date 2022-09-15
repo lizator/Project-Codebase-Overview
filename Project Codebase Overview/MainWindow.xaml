@@ -5,10 +5,22 @@
     xmlns:local="using:Project_Codebase_Overview"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
-
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="select_Path">Select path</Button>
-        <TextBlock x:Name="myText">Chosen path: </TextBlock>
-    </StackPanel>
+    
+    <Grid HorizontalAlignment="Left" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="2*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel  Orientation="Vertical" Width="500">
+            <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
+        </StackPanel>
+        <StackPanel Width="800" Orientation="Vertical" Grid.Column="1">
+            <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
+            <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
+            <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
+            <Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>
+        </StackPanel>
+    </Grid>
 </Window>

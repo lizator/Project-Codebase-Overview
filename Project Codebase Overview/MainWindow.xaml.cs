@@ -5,6 +5,9 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.Dialogs;
+using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -33,7 +36,14 @@ namespace Project_Codebase_Overview
         {
             myButton.Content = "Clicked";
         }
-        private async void select_Path(object sender, RoutedEventArgs e)
+
+        private void start_test(object sender, RoutedEventArgs e)
+        {
+            GitDataCollector collector = new GitDataCollector();
+            collector.testTime();
+        }
+
+        private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
             var fp = new FolderPicker();
 
@@ -41,8 +51,66 @@ namespace Project_Codebase_Overview
             WinRT.Interop.InitializeWithWindow.Initialize(fp, hwnd);
 
             var folder = await fp.PickSingleFolderAsync();
+            if (folder == null)
+            {
+                return;
+            }
 
-            myText.Text = "Chosen path: " + folder.Path;
+
+            try
+            {
+                var state = PCOState.GetInstance();
+                state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+            } catch (Exception ex)
+            {
+                DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
         }
+
+        private async void OpenPCOMaster(object sender, RoutedEventArgs e)
+        {
+            var rootFrame = new Frame();
+
+
+            var state = PCOState.GetInstance();
+            var path = "C:\\TestRepos\\Project-Codebase-Overview";
+            state.GetExplorerState().SetRootPath(path, forceReload: true);
+
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }
+
+        private async void OpenDummyData(object sender, RoutedEventArgs e)
+        {
+
+            var state = PCOState.GetInstance();
+            state.GetExplorerState().LoadRootFolder(loadDummyData: true);
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }
+
+        private async void RunAltGetData(object sender, RoutedEventArgs e)
+        {
+            var path = "C:\\TestRepos\\Project-Codebase-Overview";
+            var collector = new GitDataCollector();
+            var rootFolder = collector.AlternativeCollectAllData(path);
+            PCOState.GetInstance().GetExplorerState().SetRoot(rootFolder);
+            
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }   
     }
 }

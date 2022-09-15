@@ -1,0 +1,16 @@
+﻿This is a test text file with some lines
+The lines does not matter but here is some data of this file
+ - 10 files comitted by Frederik (8 lines 2 whitespace)
+ - x files comitted by Jacob
+
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+ In commodo dictum dui at gravida. Aliquam ante mi, porttitor pharetra pretium.
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+ In commodo dictum dui at gravida. Aliquam ante mi, porttitor pharetra pretium.
+
+ Lorem ipsum dolor sit amet, consectetur adipiscing HELLOOOOOOOOOOO. In commodo dictum dui at gravida. Aliquam ante mi, porttitor pharetra pretium.
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. In commodo dictum dui at gravida. Aliquam ante mi, porttitor pharetra pretium.
+ Lorem ipsum dolor sit amet, consectetur adipiscing elit. In commo SUPER DUPER avida. Aliquam ante mi, porttitor pharetra pretium.
+ boog
+ oog	
+ What up maaan
