@@ -18,9 +18,11 @@ namespace Project_Codebase_Overview.DataCollection
     {
 
         Repository gitRepo;
+        string rootPath;
         public PCOFolder CollectAllData(string path)
         {
-            var rootPath = path;
+            return this.ParallelGetAllData(path);
+            /*rootPath = path;
             //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
             //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
             try
@@ -50,10 +52,10 @@ namespace Project_Codebase_Overview.DataCollection
             foreach (string filePath in filePaths)
             {
                 PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                AddFileCommits(addedFile, filePath);
+                AddFileCommitsNonLibGit(addedFile, filePath);
             }
 
-            return rootFolder;
+            return rootFolder;*/
         }
 
 
@@ -70,9 +72,45 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
 
+        private async void AddFileCommitsNonLibGit(PCOFile file, string filePath)
+        {
+            ProcessStartInfo ProcessInfo;
+            Process Process;
+
+            ProcessInfo = new ProcessStartInfo("cmd.exe", "/c git blame \"" + filePath + "\"");
+
+            ProcessInfo.RedirectStandardInput = ProcessInfo.RedirectStandardOutput = true;
+            ProcessInfo.CreateNoWindow = true;
+            ProcessInfo.UseShellExecute = false;
+            ProcessInfo.WorkingDirectory = rootPath;
+
+            Process = Process.Start(ProcessInfo);
+
+            StringBuilder sb = new StringBuilder();
+            Process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                sb.AppendLine(e.Data);
+            };
+
+
+            Process.BeginOutputReadLine();
+            Process.WaitForExit();
+            var test = sb.ToString();
+
+
+
+            foreach (var group in file.commits)
+            {
+                //int commitLineCount = group.Sum(hunk => hunk.LineCount);
+                //var finalSignature = group.First().FinalSignature;
+                //file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
+            }
+        }
+
+
         public PCOFolder AlternativeCollectAllData(string path)
         {
-            var rootPath = path;
+            rootPath = path;
             try
             {
                 PCOState.GetInstance().TempGitRepo = new Repository(rootPath);
@@ -116,7 +154,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         public PCOFolder ParallelGetAllData(string path)
         {
-            var rootPath = path;
+            rootPath = path;
             //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
             //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
             try
@@ -150,7 +188,7 @@ namespace Project_Codebase_Overview.DataCollection
                 (filePath, loop, threadRootFolder) =>
                 {
                     PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                    AddFileCommits(addedFile, filePath);
+                    AddFileCommitsNonLibGit(addedFile, filePath);
                     return threadRootFolder;
                 },
                 (finalRootFolder) => PCOFolderMergeHelper.MergeFolders(rootFolder, finalRootFolder)
