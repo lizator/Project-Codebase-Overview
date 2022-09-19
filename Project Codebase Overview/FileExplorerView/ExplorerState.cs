@@ -29,11 +29,17 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
         }
 
-        public void LoadRootFolder(bool loadDummyData = false)
+        public void LoadRootFolder(bool loadDummyData = false, bool withMerge = false)
         {
             if (loadDummyData)
             {
-                this.root = DummyDataSummoner.SummonDummyData();
+                if (withMerge)
+                {
+                    this.root = DummyDataSummoner.SummonDummyDataAndMerge();
+                } else
+                {
+                    this.root = DummyDataSummoner.SummonDummyData();
+                }
             } else
             {
                 var collector = new GitDataCollector();

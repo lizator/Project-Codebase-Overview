@@ -99,6 +99,18 @@ namespace Project_Codebase_Overview
             rootFrame.Navigate(typeof(ExplorerPage));
         }
 
+        private async void OpenDummyDataMerge(object sender, RoutedEventArgs e)
+        {
+
+            var state = PCOState.GetInstance();
+            state.GetExplorerState().LoadRootFolder(loadDummyData: true, withMerge: true);
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }
+
         private async void RunAltGetData(object sender, RoutedEventArgs e)
         {
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
