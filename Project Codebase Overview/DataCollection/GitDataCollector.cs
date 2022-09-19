@@ -114,6 +114,51 @@ namespace Project_Codebase_Overview.DataCollection
             }
         }
 
+        public PCOFolder ParallelGetAllData(string path)
+        {
+            var rootPath = path;
+            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
+            try
+            {
+                gitRepo = new Repository(rootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(rootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            Debug.WriteLine(filePaths.Count());
+
+            Parallel.ForEach<string, PCOFolder>(filePaths,
+                () => new PCOFolder(rootFolderName, null),
+                (filePath, loop, threadRootFolder) =>
+                {
+                    PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
+                    AddFileCommits(addedFile, filePath);
+                    return threadRootFolder;
+                },
+                (finalRootFolder) => PCOFolderMergeHelper.MergeFolders(rootFolder, finalRootFolder)
+                );
+
+            return rootFolder;
+        }
+
         public void testTime()
         {
             var path = "C:\\TestRepos\\Project-Codebase-Overview";

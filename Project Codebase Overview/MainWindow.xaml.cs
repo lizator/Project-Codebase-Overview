@@ -124,5 +124,20 @@ namespace Project_Codebase_Overview
             window.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }   
+
+
+        private async void RunAltGetDataMerge(object sender, RoutedEventArgs e)
+        {
+            var path = "C:\\TestRepos\\Project-Codebase-Overview";
+            var collector = new GitDataCollector();
+            var rootFolder = collector.ParallelGetAllData(path);
+            PCOState.GetInstance().GetExplorerState().SetRoot(rootFolder);
+            
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }   
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Project_Codebase_Overview.DataCollection.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Project_Codebase_Overview.DataCollection
                 return null;
             }
 
+            Debug.WriteLine("Merge ran");
 
             return Merge(folderA, folderB);
         }
