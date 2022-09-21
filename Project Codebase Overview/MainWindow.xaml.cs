@@ -95,7 +95,7 @@ namespace Project_Codebase_Overview
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
 

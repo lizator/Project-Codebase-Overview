@@ -6,44 +6,157 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
+    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+  
+    <Page.Resources>
+        <Style x:Key="ToolButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+          
+        </Style>
+        <Style x:Key="ToolImage" TargetType="Image">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+        </Style>
+    </Page.Resources>
+   
+    
     <Page.DataContext>
         <local:ExplorerViewModel/>
     </Page.DataContext>
-    <Grid>
+
+
+
+    <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="80*"/>
+            <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid Background="Aqua" Grid.Column="0"> <!-- Settings sidemenu TODO -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Background="Red" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
             
+            <!-- FileExplorer tools -->
+            <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowLeft.svg"/>
+            </Button>
+            <Button Click="ForwardClick" Grid.Column="1" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowRight.svg" />
+            </Button>
+            <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowUp.svg"/>
+            </Button>
+           
+            <TextBlock HorizontalAlignment="Left" 
+                       VerticalAlignment="Center"
+                       Grid.Column="3"
+                       Text="NEED UPDATE PATH"
+                       x:Name="pathText"></TextBlock>
         </Grid>
 
-        <Grid HorizontalAlignment="Right" Grid.Column="1">
-
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-
-            <Grid Background="Red" Width="8000"></Grid> <!-- FileExplorer tools -->
-            <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
-                                 ChildPropertyName="SortedChildren"
-                                 ItemsSource="{Binding ExplorerItems}"
-                                 ShowRowHeader="True"
-                                 Grid.Row="1"
-                                 ColumnWidthMode="AutoLastColumnFill"
-                                 AutoGenerateColumnsMode="None"
-                                 AllowResizingColumns="True">
-                <treeGrid:SfTreeGrid.Columns>
-                    <treeGrid:TreeGridColumns>
-                        <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="name" HeaderText="Name"/>
-                        <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Parent"/>
-                    </treeGrid:TreeGridColumns>
-                </treeGrid:SfTreeGrid.Columns>
-            </treeGrid:SfTreeGrid>
-
-        </Grid>
+        <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
+                                ChildPropertyName="SortedChildren"
+                                ItemsSource="{Binding ExplorerItems}"
+                                ShowRowHeader="True"
+                                Grid.Row="1"
+                                ColumnWidthMode="Star"
+                                AutoGenerateColumnsMode="None"
+                                AllowResizingColumns="False">
+            <treeGrid:SfTreeGrid.Columns>
+                <treeGrid:TreeGridColumns>
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="name" HeaderText="Name"/>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="200">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                                    <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                            Fill="Blue"  Stroke="Black"
+                                            Grid.Column="0" ></Ellipse>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="Team A" Grid.Column="1"></TextBlock>
+                                </Grid>
+                                
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested team" Width="150">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >
+                                   <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                            Fill="Blue"  Stroke="Black"
+                                            Grid.Column="0"></Ellipse>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="Team A" Grid.Column="1"></TextBlock> 
+                                </Grid>
+                                
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTemplateColumn MappingName="parent.name" HeaderText="Line distribution" Width="300">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <gauge:SfLinearGauge VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                    <gauge:SfLinearGauge.Axis>
+                                        <gauge:LinearAxis Minimum="0" 
+                                                          Maximum="100"
+                                                          AxisLineStrokeThickness="25"
+                                                          BorderThickness="1"
+                                                          ShowLabels="False"
+                                                          ShowTicks="False"
+                                                          CornerStyle="BothCurve">
+                                            <gauge:LinearAxis.Ranges>
+                                                <gauge:LinearGaugeRange StartValue="0"
+                                                                        EndValue="50"
+                                                                        Background="Red" 
+                                                                        StartWidth="25"
+                                                                        EndWidth="25"
+                                                                        />
+                                                <gauge:LinearGaugeRange StartValue="50"
+                                                                        EndValue="80"
+                                                                        Background="Orange" 
+                                                                        StartWidth="25"
+                                                                        EndWidth="25"/>
+                                                <gauge:LinearGaugeRange StartValue="80"
+                                                                        EndValue="100"
+                                                                        Background="Green" 
+                                                                        StartWidth="25"
+                                                                        EndWidth="25"/>
+                                            </gauge:LinearAxis.Ranges>
+                                        </gauge:LinearAxis>
+                                    </gauge:SfLinearGauge.Axis>
+                                </gauge:SfLinearGauge>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50"> <!-- expand button column--> 
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="ExpandClick" Background="Transparent" BorderThickness="0">
+                                    <Image Source="Assets/Expand.svg"></Image>
+                                </Button>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                </treeGrid:TreeGridColumns>
+            </treeGrid:SfTreeGrid.Columns>
+        </treeGrid:SfTreeGrid>
     </Grid>
+
 </Page>

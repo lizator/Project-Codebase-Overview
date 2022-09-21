@@ -29,10 +29,16 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
         }
 
+        public string GetRootPath()
+        {
+            return this.rootPath;
+        }
+
         public void LoadRootFolder(bool loadDummyData = false, bool withMerge = false)
         {
             if (loadDummyData)
             {
+                this.rootPath = "C://SuperDummy/RootPath";
                 if (withMerge)
                 {
                     this.root = DummyDataSummoner.SummonDummyDataAndMerge();
