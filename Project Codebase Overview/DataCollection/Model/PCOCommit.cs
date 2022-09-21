@@ -21,8 +21,29 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.codeLines = codeLines;
             this.commentLines = commentLines;
             this.whiteSpaceLines = whiteSpaceLines;
-            this.author = ContributorManager.GetInstance().GetOrCreateAuthor(email, name);
+            this.author = ContributorManager.GetInstance().GetAuthor(email);
             this.commitDate = commitDate;
+        }
+
+        public void AddLine(LineType type)
+        {
+            if (type == LineType.NORMAL)
+            {
+                this.codeLines++;
+            } else if (type == LineType.COMMENT)
+            {
+                this.commentLines++;
+            } else if (type == LineType.WHITE_SPACE)
+            {
+                this.whiteSpaceLines++;
+            }
+        }
+
+        public enum LineType
+        {
+            NORMAL = 1,
+            COMMENT = 2,
+            WHITE_SPACE = 3,
         }
     }
 }

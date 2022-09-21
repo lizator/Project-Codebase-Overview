@@ -8,15 +8,23 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 {
     internal class Author
     {
-        int id { get; }
-        string name { get; set; }
-        string email { get; set; }
+        public string Name { get; set; }
+        List<string> Aliases { get; }
+        string Email { get; set; }
 
-        public Author(int id, string email, string name)
+        public Author(string email, string name)
         {
-            this.id = id;
-            this.name = name;
-            this.email = email;
+            this.Name = name;
+            this.Email = email;
+            this.Aliases = new List<string> { name };
+        }
+
+        public void AddAlias(string alias)
+        {
+            if (!Aliases.Contains(alias))
+            {
+                this.Aliases.Add(alias);
+            }
         }
     }
 }
