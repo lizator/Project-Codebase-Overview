@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.ContributorManagement.Model
 {
-    internal class Author
+    public class Author:IOwner
     {
         public string Name { get; set; }
         List<string> Aliases { get; }
         string Email { get; set; }
+        public string Color { get; set; }
 
         public Author(string email, string name)
         {

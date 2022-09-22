@@ -8,11 +8,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public class PCOFile : IExplorerItem
     {
-        public string name { get; set; }
+        public string Name { get; set; }
 
-        public object graphModel { get; set;}
+        public object GraphModel { get; set;}
 
-        public PCOFolder parent { get; set; }
+        public PCOFolder Parent { get; set; }
         public List<PCOCommit> commits;
 
         public void CalculateData()
@@ -26,13 +26,13 @@ namespace Project_Codebase_Overview.DataCollection.Model
             {
                 return 1;
             }
-            return string.Compare(this.name, ((PCOFile)obj).name, StringComparison.InvariantCulture);
+            return string.Compare(this.Name, ((PCOFile)obj).Name, StringComparison.InvariantCulture);
         }
 
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
-            this.name = name;
-            this.parent = parent;
+            this.Name = name;
+            this.Parent = parent;
             this.commits = commits ?? new List<PCOCommit>();
         }
     }

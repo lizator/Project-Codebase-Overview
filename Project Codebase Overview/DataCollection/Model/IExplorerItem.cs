@@ -8,10 +8,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public interface IExplorerItem : IComparable
     {
-        public string name { get; set; }
+        public string Name { get; set; }
         public void CalculateData();
-        public object graphModel { get;  }
-        public PCOFolder parent { get; set; }
+        public GraphModel GraphModel { get;  }
+        public PCOFolder Parent { get; set; }
 
     }
 }

@@ -11,18 +11,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public class PCOFolder : IExplorerItem, INotifyCollectionChanged
     {
-        public string name { get; set; }
-        public object graphModel { get; set; }
-        public PCOFolder parent { get; set; }
-        public Dictionary<string, IExplorerItem> children { get; } // <childname, childobject>
+        public string Name { get; set; }
+        public GraphModel GraphModel { get; set; }
+        public PCOFolder Parent { get; set; }
+        public Dictionary<string, IExplorerItem> Children { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public PCOFolder(string name, PCOFolder parent)
         {
-            this.name = name;
-            this.parent = parent;
-            this.children = new Dictionary<string, IExplorerItem>();
+            this.Name = name;
+            this.Parent = parent;
+            this.Children = new Dictionary<string, IExplorerItem>();
+            this.GraphModel = new GraphModel();
         }
         public int CompareTo(object obj)
         {
@@ -30,18 +31,26 @@ namespace Project_Codebase_Overview.DataCollection.Model
             {
                 return -1;
             }
-            return string.Compare(this.name, ((PCOFolder)obj).name, StringComparison.InvariantCulture);
+            return string.Compare(this.Name, ((PCOFolder)obj).Name, StringComparison.InvariantCulture);
         }
 
         public void CalculateData()
         {
-            throw new NotImplementedException();
+            
+            foreach (var child in Children)
+            {
+               
+                child.Value.CalculateData();
+                this.GraphModel.AddLineDistribution(child.Value.GraphModel.LineDistribution);
+                //TODO: FINISH UP ! :)
+            }
+            
         }
 
 
         public void AddChild(IExplorerItem child)
         {
-            children.Add(child.name, child);
+            Children.Add(child.Name, child);
         }
         public void AddChildren(IExplorerItem[] child)
         {
@@ -53,7 +62,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         private List<IExplorerItem> GetSortedChildren()
         {
-            var x = this.children.Values.ToArray();
+            var x = this.Children.Values.ToArray();
             Array.Sort(x);
             return x.ToList();
         }
@@ -63,18 +72,18 @@ namespace Project_Codebase_Overview.DataCollection.Model
             if (list.Length == index + 1) //reached file
             {
                 PCOFile newFile = new PCOFile(list[index], this);
-                children.Add(newFile.name, newFile);
+                Children.Add(newFile.Name, newFile);
                 return newFile;
             }
             else
             {
-                if (!children.ContainsKey(list[index]))
+                if (!Children.ContainsKey(list[index]))
                 {
                     PCOFolder newFolder = new PCOFolder(list[index], this);
-                    children.Add(newFolder.name, newFolder);
+                    Children.Add(newFolder.Name, newFolder);
                 }
 
-                return ((PCOFolder)children[list[index]]).AddChildRecursive(list, index + 1);
+                return ((PCOFolder)Children[list[index]]).AddChildRecursive(list, index + 1);
             }
         }
 

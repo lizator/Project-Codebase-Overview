@@ -13,7 +13,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         public static PCOFolder MergeFolders(PCOFolder folderA, PCOFolder folderB)
         {
-            if (folderA.name != folderB.name || folderA.parent != folderB.parent)
+            if (folderA.Name != folderB.Name || folderA.Parent != folderB.Parent)
             {
                 return null;
             }
@@ -32,9 +32,9 @@ namespace Project_Codebase_Overview.DataCollection
                     folderA.AddChild(item);
                 } else
                 {
-                    if (folderA.children.ContainsKey(item.name))
+                    if (folderA.Children.ContainsKey(item.Name))
                     {
-                        folderA.children[item.name] = Merge((PCOFolder)folderA.children[item.name], (PCOFolder)item);
+                        folderA.Children[item.Name] = Merge((PCOFolder)folderA.Children[item.Name], (PCOFolder)item);
                     } else
                     {
                         folderA.AddChild(item);
