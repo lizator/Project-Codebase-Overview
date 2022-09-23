@@ -31,7 +31,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.GraphModel.LineDistribution[commit.GetAuthor()] += (uint) commit.GetLines();  
                 }
             }
-            this.GraphModel.UpdateSuggestedOwner();
+            //this.GraphModel.UpdateSuggestedOwner();
         }
 
         public int CompareTo(object obj)

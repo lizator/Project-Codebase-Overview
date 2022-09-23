@@ -81,7 +81,7 @@
                                 AllowResizingColumns="False">
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="name" HeaderText="Name"/>
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="Name" HeaderText="Name"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="200">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -108,7 +108,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn MappingName="parent.name" HeaderText="Line distribution" Width="300">
+                    <treeGrid:TreeGridTemplateColumn MappingName="Parent.Name" HeaderText="Line distribution" Width="300">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <gauge:SfLinearGauge VerticalAlignment="Center" VerticalContentAlignment="Center">

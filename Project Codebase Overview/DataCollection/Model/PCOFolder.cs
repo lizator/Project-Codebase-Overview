@@ -42,7 +42,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
                 this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
             }
-            this.GraphModel.UpdateSuggestedOwner();
+            //this.GraphModel.UpdateSuggestedOwner();
         }
 
 

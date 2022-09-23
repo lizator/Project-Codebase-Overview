@@ -26,7 +26,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             {
                 this.RootPath = path;
                 LoadRootFolder();
-                RootFolder.CalculateData();
+                //RootFolder.CalculateData();
             }
         }
 

@@ -69,21 +69,21 @@ namespace Project_Codebase_Overview
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
         {
-            var rootFrame = new Frame();
 
 
             var state = PCOState.GetInstance();
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
             state.GetExplorerState().SetRootPath(path, forceReload: true);
 
+            var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
 
@@ -107,7 +107,7 @@ namespace Project_Codebase_Overview
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
 
@@ -121,7 +121,7 @@ namespace Project_Codebase_Overview
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }   
 
@@ -136,7 +136,7 @@ namespace Project_Codebase_Overview
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
-            window.Content = rootFrame;
+            window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }   
     }

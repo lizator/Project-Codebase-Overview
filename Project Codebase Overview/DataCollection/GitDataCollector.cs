@@ -1,12 +1,17 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.State;
 using Windows.System;
@@ -17,15 +22,24 @@ namespace Project_Codebase_Overview.DataCollection
     internal class GitDataCollector : IVCSDataCollector
     {
 
-        Repository gitRepo;
+        Repository GitRepo;
+        string RootPath;
+        private readonly object RootFolderLock = new object();
         public PCOFolder CollectAllData(string path)
         {
-            var rootPath = path;
+            //return this.SimpleCollectAllData(path);
+            return this.ParallelGetAllData(path);
+            
+        }
+
+        public PCOFolder SimpleCollectAllData(string path)
+        {
+            RootPath = path;
             //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
             //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
             try
             {
-                gitRepo = new Repository(rootPath);
+                GitRepo = new Repository(RootPath);
             }
             catch (Exception e)
             { 
@@ -33,7 +47,7 @@ namespace Project_Codebase_Overview.DataCollection
             }
          
 
-            RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
             //check if there are altered files (IS NOT ALLOWED)
             if (gitStatus.IsDirty)
@@ -41,16 +55,18 @@ namespace Project_Codebase_Overview.DataCollection
                 //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
+            initializeAuthors();
+
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
             
             //create root folder
-            var rootFolderName = Path.GetFileName(rootPath);
+            var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
            
             foreach (string filePath in filePaths)
             {
                 PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                AddFileCommits(addedFile, filePath);
+                AddFileCommitsNonLibGit(addedFile, filePath);
             }
 
             return rootFolder;
@@ -59,7 +75,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         private void AddFileCommits(PCOFile file, string filePath)
         {
-            var blameHunkGroups = gitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Sha);
+            var blameHunkGroups = GitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Sha);
 
             foreach (var group in blameHunkGroups)
             {
@@ -182,10 +198,10 @@ namespace Project_Codebase_Overview.DataCollection
 
         public PCOFolder AlternativeCollectAllData(string path)
         {
-            var rootPath = path;
+            RootPath = path;
             try
             {
-                PCOState.GetInstance().TempGitRepo = new Repository(rootPath);
+                PCOState.GetInstance().TempGitRepo = new Repository(RootPath);
             }
             catch (Exception e)
             {
@@ -203,7 +219,7 @@ namespace Project_Codebase_Overview.DataCollection
 
 
             //create root folder
-            var rootFolderName = Path.GetFileName(rootPath);
+            var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
 
             List<string[]> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath.Split("/")).ToList();
@@ -228,12 +244,10 @@ namespace Project_Codebase_Overview.DataCollection
 
         public PCOFolder ParallelGetAllData(string path)
         {
-            var rootPath = path;
-            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
+            RootPath = path;
             try
             {
-                gitRepo = new Repository(rootPath);
+                GitRepo = new Repository(RootPath);
             }
             catch (Exception e)
             {
@@ -241,42 +255,48 @@ namespace Project_Codebase_Overview.DataCollection
             }
 
 
-            RepositoryStatus gitStatus = gitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
             //check if there are altered files (IS NOT ALLOWED)
             if (gitStatus.IsDirty)
             {
-                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
+
+            initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
 
             //create root folder
-            var rootFolderName = Path.GetFileName(rootPath);
+            var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
 
-            Debug.WriteLine("filepaths.count = " +filePaths.Count());
+            //Debug.WriteLine(filePaths.Count());
+
 
             Parallel.ForEach<string, PCOFolder>(filePaths,
                 () => new PCOFolder(rootFolderName, null),
                 (filePath, loop, threadRootFolder) =>
                 {
                     PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                    AddFileCommits(addedFile, filePath);
+                    AddFileCommitsNonLibGit(addedFile, filePath);
                     return threadRootFolder;
                 },
-                (finalRootFolder) => PCOFolderMergeHelper.MergeFolders(rootFolder, finalRootFolder)
+                (finalThreadRootFolder) => 
+                { 
+                    lock (RootFolderLock)
+                    {
+                        PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
+                    }
+                }
                 );
 
-            Debug.WriteLine("MergeCount = " + PCOState.GetInstance().mergeCounter);
-            PCOState.GetInstance().mergeCounter = 0;
             return rootFolder;
         }
 
         public void testTime()
         {
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            path = "C:\\Users\\Jacob\\IdeaProjects\\dev_ops_assigment";
             var repetitions = 50;
             Stopwatch stopwatch = new Stopwatch();
 
@@ -284,8 +304,7 @@ namespace Project_Codebase_Overview.DataCollection
             for (int i = 0; i < repetitions; i++)
             {
                 //CollectAllData(path);
-                //AlternativeCollectAllData(path);
-                ParallelGetAllData(path);
+                AlternativeCollectAllData(path);
                 if (i%10 == 0)
                 {
                     Debug.WriteLine(i);
