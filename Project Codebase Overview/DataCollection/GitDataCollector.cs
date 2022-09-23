@@ -81,7 +81,9 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 int commitLineCount = group.Sum(hunk => hunk.LineCount);
                 var finalSignature = group.First().FinalSignature;
-                file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
+                var commit = new PCOCommit(finalSignature.Email, finalSignature.Name, finalSignature.When.Date);
+                commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
+                file.commits.Add(commit);
             }
         }
 
@@ -102,7 +104,7 @@ namespace Project_Codebase_Overview.DataCollection
 
             process = Process.Start(processInfo);
 
-            Regex regex = new Regex(@"([a-f0-9]+) \(<([A-Za-z0-9@\.]+)>[ ]+(.{10}).+[0-9]\)(.*)");
+            Regex regex = new Regex(@"([a-f0-9]+) \(<(.+)>[ ]+(.{10}).+[0-9]\)(.*)");
             CultureInfo provider = CultureInfo.InvariantCulture;
 
             var contributorManager = ContributorManager.GetInstance();
@@ -126,8 +128,9 @@ namespace Project_Codebase_Overview.DataCollection
                     if (!commits.ContainsKey(key))
                     {
                         DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                        commits.Add(key, new PCOCommit(0, 0, 0, email, contributorManager.GetAuthor(email).Name, date));
+                        commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
                     }
+
                     if (content.Trim().Length == 0)
                     {
                         commits[key].AddLine(PCOCommit.LineType.WHITE_SPACE);
@@ -162,7 +165,7 @@ namespace Project_Codebase_Overview.DataCollection
 
             var sb = new StringBuilder();
 
-            Regex authorRegex = new Regex(@"Author: (.+) <([A-Za-z0-9@\.]+)>");
+            Regex authorRegex = new Regex(@"Author: (.+) <(.+)>");
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
 
@@ -233,7 +236,9 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 int commitLineCount = group.Sum(hunk => hunk.LineCount);
                 var finalSignature = group.First().FinalSignature;
-                file.commits.Add(new PCOCommit(commitLineCount, 0, 0, finalSignature.Email, finalSignature.Name, finalSignature.When.Date));
+                var commit = new PCOCommit(finalSignature.Email, finalSignature.Name, finalSignature.When.Date);
+                commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
+                file.commits.Add(commit);
             }
         }
 
@@ -266,7 +271,7 @@ namespace Project_Codebase_Overview.DataCollection
             var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
 
-            Debug.WriteLine(filePaths.Count());
+            //Debug.WriteLine(filePaths.Count());
 
 
             Parallel.ForEach<string, PCOFolder>(filePaths,

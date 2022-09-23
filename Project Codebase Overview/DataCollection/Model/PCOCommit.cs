@@ -16,26 +16,26 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private Author author;
         private DateTime commitDate;
 
-        public PCOCommit(int codeLines, int commentLines, int whiteSpaceLines, string email, string name, DateTime commitDate)
+        public PCOCommit(string email, string name, DateTime commitDate)
         {
-            this.codeLines = codeLines;
-            this.commentLines = commentLines;
-            this.whiteSpaceLines = whiteSpaceLines;
+            this.codeLines = 0;
+            this.commentLines = 0;
+            this.whiteSpaceLines = 0;
             this.author = ContributorManager.GetInstance().GetAuthor(email);
             this.commitDate = commitDate;
         }
 
-        public void AddLine(LineType type)
+        public void AddLine(LineType type, int amount = 1)
         {
             if (type == LineType.NORMAL)
             {
-                this.codeLines++;
+                this.codeLines += amount;
             } else if (type == LineType.COMMENT)
             {
-                this.commentLines++;
+                this.commentLines += amount;
             } else if (type == LineType.WHITE_SPACE)
             {
-                this.whiteSpaceLines++;
+                this.whiteSpaceLines += amount;
             }
         }
 
