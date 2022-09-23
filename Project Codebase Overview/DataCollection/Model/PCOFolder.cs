@@ -36,15 +36,13 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public void CalculateData()
         {
-            
             foreach (var child in Children)
             {
-               
                 child.Value.CalculateData();
-                this.GraphModel.AddLineDistribution(child.Value.GraphModel.LineDistribution);
-                //TODO: FINISH UP ! :)
+                this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
+                this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
             }
-            
+            this.GraphModel.UpdateSuggestedOwner();
         }
 
 

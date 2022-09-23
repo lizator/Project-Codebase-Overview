@@ -14,6 +14,7 @@ namespace Project_Codebase_Overview.State
         private static PCOState Instance;
 
         public Repository TempGitRepo;
+        public int mergeCounter;
 
         public static PCOState GetInstance()
         {

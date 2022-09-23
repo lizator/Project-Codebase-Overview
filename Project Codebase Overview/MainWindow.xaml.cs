@@ -116,7 +116,7 @@ namespace Project_Codebase_Overview
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
             var collector = new GitDataCollector();
             var rootFolder = collector.AlternativeCollectAllData(path);
-            PCOState.GetInstance().GetExplorerState().SetRoot(rootFolder);
+            PCOState.GetInstance().GetExplorerState().SetRootFolder(rootFolder);
             
 
             var rootFrame = new Frame();
@@ -131,7 +131,7 @@ namespace Project_Codebase_Overview
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
             var collector = new GitDataCollector();
             var rootFolder = collector.ParallelGetAllData(path);
-            PCOState.GetInstance().GetExplorerState().SetRoot(rootFolder);
+            PCOState.GetInstance().GetExplorerState().SetRootFolder(rootFolder);
             
 
             var rootFrame = new Frame();

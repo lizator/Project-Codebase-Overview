@@ -38,6 +38,22 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 this.whiteSpaceLines += amount;
             }
         }
+        
+        public int GetLines()
+        {
+            //TODO: CURRENT SETTINGS SHOULD CONSIDER WHETHER COMMENTlINES AND WHITESPACE LINES SHOULD BE CONSIDERED
+
+            // if codelines and commentlines considered
+            //return this.codeLines + this.commentLines;
+           
+            //if all lines are considered
+            return this.codeLines + this.whiteSpaceLines + this.commentLines ;
+        }
+        public Author GetAuthor()
+        {
+            return this.author;
+        }
+
 
         public enum LineType
         {

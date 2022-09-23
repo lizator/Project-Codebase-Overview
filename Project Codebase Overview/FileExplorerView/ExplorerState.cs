@@ -12,8 +12,8 @@ namespace Project_Codebase_Overview.FileExplorerView
 {
     public class ExplorerState
     {
-        private PCOFolder root;
-        private string rootPath;
+        private PCOFolder RootFolder;
+        private string RootPath;
 
         public ExplorerState()
         {
@@ -22,36 +22,37 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public void SetRootPath(string path, bool forceReload = false)
         {
-            if (!path.Equals(rootPath) || forceReload)
+            if (!path.Equals(RootPath) || forceReload)
             {
-                this.rootPath = path;
+                this.RootPath = path;
                 LoadRootFolder();
+                RootFolder.CalculateData();
             }
         }
 
         public string GetRootPath()
         {
-            return this.rootPath;
+            return this.RootPath;
         }
 
         public void LoadRootFolder(bool loadDummyData = false, bool withMerge = false)
         {
             if (loadDummyData)
             {
-                this.rootPath = "C://SuperDummy/RootPath";
+                this.RootPath = "C://SuperDummy/RootPath";
                 if (withMerge)
                 {
-                    this.root = DummyDataSummoner.SummonDummyDataAndMerge();
+                    this.RootFolder = DummyDataSummoner.SummonDummyDataAndMerge();
                 } else
                 {
-                    this.root = DummyDataSummoner.SummonDummyData();
+                    this.RootFolder = DummyDataSummoner.SummonDummyData();
                 }
             } else
             {
                 var collector = new GitDataCollector();
                 try
                 {
-                    this.root = collector.CollectAllData(rootPath);
+                    this.RootFolder = collector.CollectAllData(RootPath);
                 } catch (Exception)
                 {
                     throw;
@@ -62,18 +63,18 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public PCOFolder GetRoot()
         {
-            if (this.root != null)
+            if (this.RootFolder != null)
             {
-                return this.root;
+                return this.RootFolder;
             } else
             {
                 throw new Exception("Root folder has not been loaded");
             }
         }
 
-        public void SetRoot(PCOFolder folder)
+        public void SetRootFolder(PCOFolder folder)
         {
-            this.root = folder;
+            this.RootFolder = folder;
         }
     }
 }

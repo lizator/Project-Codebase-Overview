@@ -13,15 +13,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
         IOwner SelectedOwner;
        
         public Dictionary<Author, uint> LineDistribution;
-        uint LinesTotal;
+        public uint LinesTotal;
 
         public GraphModel()
         {
             this.LineDistribution = new Dictionary<Author, uint>();
             this.LinesTotal = 0;
+            SuggestedOwner = null;
+            SelectedOwner = null;
         }
 
-        public void AddLineDistribution(Dictionary<Author, uint> childLineDistributions)
+        public void AddLineDistributions(Dictionary<Author, uint> childLineDistributions)
         {
             foreach(var childLineDistribution in childLineDistributions)
             {
@@ -48,6 +50,12 @@ namespace Project_Codebase_Overview.DataCollection.Model
             //Count line distribution according to team setup
             
             throw new NotImplementedException();
+        }
+
+        internal void UpdateSuggestedOwner()
+        {
+            var highestValue = this.LineDistribution.Values.Max();
+            this.SuggestedOwner = this.LineDistribution.First(x => x.Value == highestValue).Key;
         }
     }
 }
