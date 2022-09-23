@@ -44,8 +44,9 @@ namespace Project_Codebase_Overview
             viewModel.SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetRoot());
 
             GetCurrentRoot();
-            
+
         }
+        
 
         private void ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {

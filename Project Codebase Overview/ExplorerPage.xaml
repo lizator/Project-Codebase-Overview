@@ -15,16 +15,18 @@
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center" />
-          
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
         </Style>
         <Style x:Key="ToolImage" TargetType="Image">
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="Width" Value="40"/>
             <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0"/>
         </Style>
     </Page.Resources>
-   
     
     <Page.DataContext>
         <local:ExplorerViewModel/>
@@ -53,15 +55,15 @@
             <!-- FileExplorer tools -->
             <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
-                   Source="Assets/ArrowLeft.svg"/>
+                   Source="Assets/ArrowLeft.png"/>
             </Button>
             <Button Click="ForwardClick" Grid.Column="1" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
-                   Source="Assets/ArrowRight.svg" />
+                   Source="Assets/ArrowRight.png" />
             </Button>
             <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
-                   Source="Assets/ArrowUp.svg"/>
+                   Source="Assets/ArrowUp.png"/>
             </Button>
            
             <TextBlock HorizontalAlignment="Left" 
@@ -78,7 +80,8 @@
                                 Grid.Row="1"
                                 ColumnWidthMode="Star"
                                 AutoGenerateColumnsMode="None"
-                                AllowResizingColumns="False">
+                                AllowResizingColumns="False"
+                                GridLinesVisibility="Horizontal">
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="Name" HeaderText="Name"/>
@@ -149,7 +152,7 @@
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="ExpandClick" Background="Transparent" BorderThickness="0">
-                                    <Image Source="Assets/Expand.svg"></Image>
+                                    <Image Source="Assets/Expand.png"></Image>
                                 </Button>
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
