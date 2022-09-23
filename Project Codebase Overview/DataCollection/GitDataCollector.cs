@@ -104,7 +104,7 @@ namespace Project_Codebase_Overview.DataCollection
 
             process = Process.Start(processInfo);
 
-            Regex regex = new Regex(@"([a-f0-9]+) \(<(.+)>[ ]+(.{10}).+[0-9]\)(.*)");
+            Regex regex = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\)(.*)");
             CultureInfo provider = CultureInfo.InvariantCulture;
 
             var contributorManager = ContributorManager.GetInstance();
