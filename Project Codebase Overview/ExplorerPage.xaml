@@ -82,7 +82,7 @@
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="Name" HeaderText="Name"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="200">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="150">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
@@ -144,7 +144,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
+                    <treeGrid:TreeGridTextColumn MappingName="Parent.Name" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50"> <!-- expand button column--> 
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
