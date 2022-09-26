@@ -85,6 +85,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
         }
 
+        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner.Name; }
+
         public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
         {
             var explorerGroups = filePaths.GroupBy(path => path[index]);

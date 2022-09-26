@@ -9,7 +9,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public class GraphModel
     {
-        IOwner SuggestedOwner;
+        public IOwner SuggestedOwner;
         IOwner SelectedOwner;
        
         public Dictionary<Author, uint> LineDistribution;

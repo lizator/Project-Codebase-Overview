@@ -43,6 +43,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
             return string.Compare(this.Name, ((PCOFile)obj).Name, StringComparison.InvariantCulture);
         }
 
+        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name; }
+
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
             this.Name = name;

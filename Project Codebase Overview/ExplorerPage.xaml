@@ -92,7 +92,7 @@
                                     <Ellipse Height="20" Width="20" StrokeThickness="1"
                                             Fill="Blue"  Stroke="Black"
                                             Grid.Column="0" ></Ellipse>
-                                    <TextBlock TextTrimming="CharacterEllipsis" Text="Team A" Grid.Column="1"></TextBlock>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock>
                                 </Grid>
                                 
                             </DataTemplate>

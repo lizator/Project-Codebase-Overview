@@ -12,6 +12,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public void CalculateData();
         public GraphModel GraphModel { get;  }
         public PCOFolder Parent { get; set; }
+        public string SuggestedOwnerName { get; }
 
     }
 }
