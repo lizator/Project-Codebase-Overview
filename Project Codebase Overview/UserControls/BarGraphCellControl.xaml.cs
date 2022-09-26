@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -33,39 +34,8 @@ namespace Project_Codebase_Overview.UserControls
         public GraphModel GraphData
         {
             get => (GraphModel)GetValue(GraphDataProperty);
-            set => ImportGraphData(GraphDataProperty, value);
+            set => SetValue(GraphDataProperty, value);
         }
-
-        private void ImportGraphData(DependencyProperty GraphDataProperty, GraphModel gm)
-        {
-
-            SfLinearGauge sfLinearGauge = new SfLinearGauge();
-            sfLinearGauge.Axis.Maximum = 140;
-            sfLinearGauge.Axis.Interval = 10;
-
-            LinearGaugeRange gaugeRange1 = new LinearGaugeRange();
-            gaugeRange1.StartValue = 0;
-            gaugeRange1.EndValue = 50;
-            gaugeRange1.Background = new SolidColorBrush(Colors.Red);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange1);
-
-            LinearGaugeRange gaugeRange2 = new LinearGaugeRange();
-            gaugeRange2.StartValue = 50;
-            gaugeRange2.EndValue = 100;
-            gaugeRange2.Background = new SolidColorBrush(Colors.Orange);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange2);
-
-            LinearGaugeRange gaugeRange3 = new LinearGaugeRange();
-            gaugeRange3.StartValue = 100;
-            gaugeRange3.EndValue = 150;
-            gaugeRange3.Background = new SolidColorBrush(Colors.Green);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange3);
-
-            this.Content = sfLinearGauge;
-
-            SetValue(GraphDataProperty, gm);
-        }
-
 
         DependencyProperty GraphDataProperty = DependencyProperty.Register(
             nameof(GraphData),
@@ -108,24 +78,31 @@ namespace Project_Codebase_Overview.UserControls
             SfLinearGauge sfLinearGauge = new SfLinearGauge();
             sfLinearGauge.Axis.Minimum = 0;
             sfLinearGauge.Axis.Maximum = 100;
+            double currentStartPos = 0;
 
-            LinearGaugeRange gaugeRange1 = new LinearGaugeRange();
-            gaugeRange1.StartValue = 0;
-            gaugeRange1.EndValue = 50;
-            gaugeRange1.Background = new SolidColorBrush(Colors.Red);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange1);
+            //testing purposes adding colors
+            SolidColorBrush[] colors = {
+                new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
+                new SolidColorBrush(Color.FromArgb(255, 0, 255, 0)),
+                new SolidColorBrush(Color.FromArgb(255, 0, 0, 255)),
+                };
+            int count = 0;
 
-            LinearGaugeRange gaugeRange2 = new LinearGaugeRange();
-            gaugeRange2.StartValue = 50;
-            gaugeRange2.EndValue = 100;
-            gaugeRange2.Background = new SolidColorBrush(Colors.Orange);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange2);
+            foreach (var dist in gm.LineDistribution)
+            {
 
-            LinearGaugeRange gaugeRange3 = new LinearGaugeRange();
-            gaugeRange3.StartValue = 100;
-            gaugeRange3.EndValue = 150;
-            gaugeRange3.Background = new SolidColorBrush(Colors.Green);
-            sfLinearGauge.Axis.Ranges.Add(gaugeRange3);
+                LinearGaugeRange gaugeRange = new LinearGaugeRange();
+                gaugeRange.StartValue = currentStartPos;
+                gaugeRange.EndValue = ((double)dist.Value / (double)gm.LinesTotal) * 100 + currentStartPos;
+                gaugeRange.StartWidth = 25;
+                gaugeRange.EndWidth = 25;
+                gaugeRange.Background = colors[count % 3];
+                count++;
+
+                currentStartPos = gaugeRange.EndValue;
+
+                sfLinearGauge.Axis.Ranges.Add(gaugeRange);
+            }
 
             BarGraphControl.Graph = sfLinearGauge;
             

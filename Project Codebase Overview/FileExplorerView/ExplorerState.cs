@@ -1,4 +1,4 @@
-﻿using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.TestDocs;
@@ -27,7 +27,6 @@ namespace Project_Codebase_Overview.FileExplorerView
                 this.RootPath = path;
                 LoadRootFolder();
                 RootFolder.CalculateData();
-                var ko = 20;
             }
         }
 
