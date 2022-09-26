@@ -7,6 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
     xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
+    xmlns:userControls="using:Project_Codebase_Overview.UserControls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   
     <Page.Resources>
@@ -114,7 +115,8 @@
                     <treeGrid:TreeGridTemplateColumn MappingName="Parent.Name" HeaderText="Line distribution" Width="300">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <gauge:SfLinearGauge VerticalAlignment="Center" VerticalContentAlignment="Center">
+                                <userControls:BarGraphCellControl GraphData="{Binding GraphModel}"/>
+                                <!--<gauge:SfLinearGauge VerticalAlignment="Center" VerticalContentAlignment="Center">
                                     <gauge:SfLinearGauge.Axis>
                                         <gauge:LinearAxis Minimum="0" 
                                                           Maximum="100"
@@ -143,7 +145,7 @@
                                             </gauge:LinearAxis.Ranges>
                                         </gauge:LinearAxis>
                                     </gauge:SfLinearGauge.Axis>
-                                </gauge:SfLinearGauge>
+                                </gauge:SfLinearGauge>-->
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
