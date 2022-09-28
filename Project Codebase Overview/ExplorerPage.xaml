@@ -115,7 +115,8 @@
                     <treeGrid:TreeGridTemplateColumn MappingName="Parent.Name" HeaderText="Line distribution" Width="300">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <userControls:BarGraphCellControl GraphData="{Binding GraphModel}"/>
+                                <ContentControl Content="{Binding BarGraph}"/>
+                                <!--<userControls:BarGraphCellControl GraphData="{Binding GraphModel}"/>-->
                                 <!--<gauge:SfLinearGauge VerticalAlignment="Center" VerticalContentAlignment="Center">
                                     <gauge:SfLinearGauge.Axis>
                                         <gauge:LinearAxis Minimum="0" 

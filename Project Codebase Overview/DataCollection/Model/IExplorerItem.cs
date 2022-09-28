@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Controls;
+using Syncfusion.UI.Xaml.Gauges;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +15,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public GraphModel GraphModel { get;  }
         public PCOFolder Parent { get; set; }
         public string SuggestedOwnerName { get; }
+        public SfLinearGauge BarGraph  { get; }
 
     }
 }
