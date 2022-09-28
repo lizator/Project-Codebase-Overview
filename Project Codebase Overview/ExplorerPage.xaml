@@ -7,7 +7,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
     xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
-    xmlns:userControls="using:Project_Codebase_Overview.UserControls"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   
     <Page.Resources>
@@ -76,13 +75,16 @@
 
         <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
                                 ChildPropertyName="SortedChildren"
-                                ItemsSource="{Binding ExplorerItems}"
+                                ItemsSource="{Binding ExplorerItems, Mode=OneWay}"
                                 ShowRowHeader="True"
                                 Grid.Row="1"
                                 ColumnWidthMode="Star"
                                 AutoGenerateColumnsMode="None"
                                 AllowResizingColumns="False"
-                                GridLinesVisibility="Horizontal">
+                                GridLinesVisibility="Horizontal"
+                                SelectionMode="Single"
+                                NavigationMode="Row">
+            
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="Name" HeaderText="Name"/>
@@ -93,7 +95,7 @@
                                     <Ellipse Height="20" Width="20" StrokeThickness="1"
                                             Fill="Blue"  Stroke="Black"
                                             Grid.Column="0" ></Ellipse>
-                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="" Grid.Column="1"></TextBlock>
                                 </Grid>
                                 
                             </DataTemplate>
@@ -106,7 +108,7 @@
                                    <Ellipse Height="20" Width="20" StrokeThickness="1"
                                             Fill="Blue"  Stroke="Black"
                                             Grid.Column="0"></Ellipse>
-                                    <TextBlock TextTrimming="CharacterEllipsis" Text="Team A" Grid.Column="1"></TextBlock> 
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock> 
                                 </Grid>
                                 
                             </DataTemplate>

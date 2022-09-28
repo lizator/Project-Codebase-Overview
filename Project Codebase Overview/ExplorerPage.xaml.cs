@@ -45,6 +45,26 @@ namespace Project_Codebase_Overview
 
             GetCurrentRoot();
 
+            rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
+
+        }
+
+        private void sfTreeGrid_SelectionChanged(object sender, Syncfusion.UI.Xaml.Grids.GridSelectionChangedEventArgs e)
+        {
+            Debug.WriteLine("selection changed!");
+            MenuFlyout menuFlyout = new MenuFlyout();
+            var newlySelected = ((TreeGridRowInfo)e.AddedItems.First()).RowData as ExplorerItem;
+            if (newlySelected.GetType() == typeof(PCOFolder))
+            {
+                MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Set as root" };
+                setRootItem.Click += this.SetRoot;
+                menuFlyout.Items.Add(setRootItem);
+            }
+            else
+            {
+                //any right click functions for FILES
+            }
+            rootTreeGrid.ContextFlyout = menuFlyout;
         }
         
 
@@ -77,6 +97,27 @@ namespace Project_Codebase_Overview
         private void UpClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Up clicked");
+            var parent = viewModel.GetViewRootFolder().Parent;
+            if(parent != null)
+            {
+                viewModel.SetExplorerItems(parent);
+            }
+        }
+
+        private void SetRoot(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = rootTreeGrid.SelectedItem as ExplorerItem;
+            Debug.WriteLine("set new root folder = " + selectedItem.Name);
+            if (selectedItem.GetType() == typeof(PCOFolder))
+            {
+                Debug.WriteLine("this is folder");
+                viewModel.SetExplorerItems((PCOFolder) selectedItem);
+            }
+            else
+            {
+                Debug.WriteLine("this is file");
+            }
+
         }
     }
 }

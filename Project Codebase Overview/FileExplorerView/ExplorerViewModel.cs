@@ -4,6 +4,7 @@ using Project_Codebase_Overview.TestDocs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace Project_Codebase_Overview.FileExplorerView
 {
     public class ExplorerViewModel
     {
+        private PCOFolder viewRootFolder;
+
         public ExplorerViewModel() // TODO add path?
         {
 
@@ -27,12 +30,22 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public void SetExplorerItems(PCOFolder root)
         {
-            var explorerItems = new ObservableCollection<ExplorerItem>();
+            if (this.ExplorerItems == null)
+            {
+                this.ExplorerItems = new ObservableCollection<ExplorerItem>();
+            }
+            this.ExplorerItems.Clear();
+            var explorerItems = new List<ExplorerItem>();
             foreach (var item in root.SortedChildren)
             {
-                explorerItems.Add(item);
+                this.ExplorerItems.Add(item);
             }
-            this.ExplorerItems = explorerItems;
+            this.viewRootFolder = root;
+        }
+
+        public PCOFolder GetViewRootFolder()
+        {
+            return this.viewRootFolder;
         }
     }
 }
