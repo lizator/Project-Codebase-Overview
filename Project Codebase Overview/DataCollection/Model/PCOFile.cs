@@ -12,15 +12,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public class PCOFile : IExplorerItem
     {
-        public string Name { get; set; }
-
-        public GraphModel GraphModel { get; set;}
-
-        public PCOFolder Parent { get; set; }
 
         public List<PCOCommit> commits;
 
-        public void CalculateData()
+        public override void CalculateData()
         {
             //TODO: ask Should this be handled inside graphmodel instead?
             var groupedCommits = this.commits.GroupBy(x => x.GetAuthor());
@@ -38,7 +33,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.GraphModel.UpdateSuggestedOwner();
         }
 
-        public int CompareTo(object obj)
+        public override int CompareTo(object obj)
         {
             if (obj.GetType() != typeof(PCOFile))
             {
@@ -57,49 +52,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = name;
         }
-
-        public SfLinearGauge BarGraph
-        {
-            get => GetBarGraph();
-        }
-        private SfLinearGauge GetBarGraph()
-        {
-            if (_bargraph == null || true )
-            {
-                SfLinearGauge sfLinearGauge = new SfLinearGauge();
-                sfLinearGauge.Axis.Minimum = 0;
-                sfLinearGauge.Axis.Maximum = 100;
-                double currentStartPos = 0;
-
-                //testing purposes adding colors
-                SolidColorBrush[] colors = {
-                new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
-                new SolidColorBrush(Color.FromArgb(255, 0, 255, 0)),
-                new SolidColorBrush(Color.FromArgb(255, 0, 0, 255)),
-                };
-                int count = 0;
-
-                foreach (var dist in this.GraphModel.LineDistribution)
-                {
-
-                    LinearGaugeRange gaugeRange = new LinearGaugeRange();
-                    gaugeRange.StartValue = currentStartPos;
-                    gaugeRange.EndValue = ((double)dist.Value / (double)this.GraphModel.LinesTotal) * 100 + currentStartPos;
-                    gaugeRange.StartWidth = 25;
-                    gaugeRange.EndWidth = 25;
-                    gaugeRange.Background = colors[count % 3];
-                    count++;
-
-                    currentStartPos = gaugeRange.EndValue;
-
-                    sfLinearGauge.Axis.Ranges.Add(gaugeRange);
-                }
-                _bargraph = sfLinearGauge;
-            }
-            return _bargraph;
-        }
-
-        private SfLinearGauge _bargraph { get; set; }
 
     }
 }

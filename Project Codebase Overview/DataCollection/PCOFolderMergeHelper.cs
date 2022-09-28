@@ -25,7 +25,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         private static PCOFolder Merge(PCOFolder folderA, PCOFolder folderB)
         {
-            foreach(IExplorerItem item in folderB.SortedChildren)
+            foreach(ExplorerItem item in folderB.SortedChildren)
             {
                 if (item is PCOFile)
                 {

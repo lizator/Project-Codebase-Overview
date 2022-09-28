@@ -17,9 +17,9 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         }
 
-        private ObservableCollection<IExplorerItem> _explorerItems;
+        private ObservableCollection<ExplorerItem> _explorerItems;
 
-        public ObservableCollection<IExplorerItem> ExplorerItems
+        public ObservableCollection<ExplorerItem> ExplorerItems
         {
             get => _explorerItems;
             set => _explorerItems = value;
@@ -27,7 +27,7 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public void SetExplorerItems(PCOFolder root)
         {
-            var explorerItems = new ObservableCollection<IExplorerItem>();
+            var explorerItems = new ObservableCollection<ExplorerItem>();
             foreach (var item in root.SortedChildren)
             {
                 explorerItems.Add(item);
