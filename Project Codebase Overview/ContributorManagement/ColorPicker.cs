@@ -45,9 +45,11 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             if (AuthorCounter >= HardcodedColors.Count)
             {
-                return Color.FromArgb(255, 150, 150, 150); //Return grey as default
+                return Color.FromArgb(255, 0, 0, 0); //Return black as default
             }
-            return HardcodedColors[AuthorCounter++];
+            var col = HardcodedColors[AuthorCounter];
+            AuthorCounter++;
+            return col;
         }
 
     }
