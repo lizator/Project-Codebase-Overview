@@ -23,7 +23,6 @@
   <ItemGroup>
     <None Remove="ExplorerPage.xaml" />
     <None Remove="UserControl1.xaml" />
-    <None Remove="UserControls\BarGraphCellControl.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -57,11 +56,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="ExplorerPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="UserControls\BarGraphCellControl.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
