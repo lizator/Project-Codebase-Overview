@@ -36,7 +36,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             var distributionAmount = this.GraphModel.LineDistribution.Count();
             var blockCount = 0;
 
-            foreach (var dist in this.GraphModel.LineDistribution )
+            foreach (var dist in this.GraphModel.LineDistribution.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value))
             {
                 var blockSize = ((double)dist.Value / (double)this.GraphModel.LinesTotal) * 100;
                 if (
@@ -52,6 +52,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     gaugeRange.EndWidth = 25;
                     gaugeRange.Background = new SolidColorBrush(Color.FromArgb(255, 150, 150, 150));
 
+                    var msg = string.Format("{0} others: {1:N2}%", distributionAmount-blockCount, blockSize);
+
+                    ToolTipService.SetToolTip(gaugeRange, msg);
+
                     currentStartPos = gaugeRange.EndValue;
 
                     sfLinearGauge.Axis.Ranges.Add(gaugeRange);
@@ -64,6 +68,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     gaugeRange.StartWidth = 25;
                     gaugeRange.EndWidth = 25;
                     gaugeRange.Background = new SolidColorBrush(dist.Key.Color);
+
+                    var msg = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+
+                    ToolTipService.SetToolTip(gaugeRange, msg);
 
                     currentStartPos = gaugeRange.EndValue;
 

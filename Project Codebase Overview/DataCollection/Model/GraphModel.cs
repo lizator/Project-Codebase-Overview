@@ -37,9 +37,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.LineDistribution.Add(childLineDistribution.Key, childLineDistribution.Value);
                 }
             }
-
-            // Sorting when finished collecting
-            this.LineDistribution = this.LineDistribution.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
         }
 
         //For UI purposes
