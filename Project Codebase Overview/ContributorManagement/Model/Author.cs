@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Project_Codebase_Overview.ContributorManagement.Model
 {
@@ -11,7 +12,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public string Name { get; set; }
         List<string> Aliases { get; }
         string Email { get; set; }
-        public string Color { get; set; }
+        public Color Color { get; set; }
 
         public Author(string email, string name)
         {

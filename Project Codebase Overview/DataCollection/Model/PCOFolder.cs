@@ -13,9 +13,9 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public class PCOFolder : IExplorerItem, INotifyCollectionChanged
+    public class PCOFolder : ExplorerItem, INotifyCollectionChanged
     {
-        public Dictionary<string, IExplorerItem> Children { get; } // <childname, childobject>
+        public Dictionary<string, ExplorerItem> Children { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -23,7 +23,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             this.Name = name;
             this.Parent = parent;
-            this.Children = new Dictionary<string, IExplorerItem>();
+            this.Children = new Dictionary<string, ExplorerItem>();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = name;
         }
@@ -49,19 +49,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
 
-        public void AddChild(IExplorerItem child)
+        public void AddChild(ExplorerItem child)
         {
             Children.Add(child.Name, child);
         }
-        public void AddChildren(IExplorerItem[] child)
+        public void AddChildren(ExplorerItem[] child)
         {
             throw new NotImplementedException();
             //children.AddRange(child);
         }
 
-        public List<IExplorerItem> SortedChildren { get => GetSortedChildren(); }
+        public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
 
-        private List<IExplorerItem> GetSortedChildren()
+        private List<ExplorerItem> GetSortedChildren()
         {
             var x = this.Children.Values.ToArray();
             Array.Sort(x);

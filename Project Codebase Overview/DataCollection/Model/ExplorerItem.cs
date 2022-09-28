@@ -10,7 +10,7 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public abstract class IExplorerItem : IComparable
+    public abstract class ExplorerItem : IComparable
     {
         public string Name { get; set; }
         public abstract void CalculateData();
@@ -31,15 +31,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             sfLinearGauge.Axis.Maximum = 100;
             double currentStartPos = 0;
 
-            //testing purposes adding colors
-            SolidColorBrush[] colors = {
-            new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)),
-            new SolidColorBrush(Color.FromArgb(255, 0, 255, 0)),
-            new SolidColorBrush(Color.FromArgb(255, 0, 0, 255)),
-            };
-            int count = 0;
-
-            foreach (var dist in this.GraphModel.LineDistribution)
+            foreach (var dist in this.GraphModel.LineDistribution.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value) )
             {
 
                 LinearGaugeRange gaugeRange = new LinearGaugeRange();
@@ -47,8 +39,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 gaugeRange.EndValue = ((double)dist.Value / (double)this.GraphModel.LinesTotal) * 100 + currentStartPos;
                 gaugeRange.StartWidth = 25;
                 gaugeRange.EndWidth = 25;
-                gaugeRange.Background = colors[count % 3];
-                count++;
+                gaugeRange.Background = new SolidColorBrush(dist.Key.Color);
 
                 currentStartPos = gaugeRange.EndValue;
 

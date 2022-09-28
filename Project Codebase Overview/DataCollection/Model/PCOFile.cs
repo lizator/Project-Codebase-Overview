@@ -10,7 +10,7 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public class PCOFile : IExplorerItem
+    public class PCOFile : ExplorerItem
     {
 
         public List<PCOCommit> commits;
