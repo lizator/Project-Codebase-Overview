@@ -8,7 +8,7 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.ContributorManagement
 {
-    public class ColorPicker
+    public class PCOColorPicker
     {
         private List<Color> HardcodedColors = new List<Color>
         {
@@ -25,18 +25,20 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         private int AuthorCounter = 0;
 
-        private static ColorPicker Instance;
+        private static PCOColorPicker Instance;
 
-        public static ColorPicker GetInstance()
+        public static Color Black { get => Color.FromArgb(255, 0, 0, 0); }
+
+        public static PCOColorPicker GetInstance()
         {
             if (Instance == null)
             {
-                Instance = new ColorPicker();
+                Instance = new PCOColorPicker();
             }
             return Instance;
         }
 
-        private ColorPicker()
+        private PCOColorPicker()
         {
 
         }

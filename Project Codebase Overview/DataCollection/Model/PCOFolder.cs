@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Project_Codebase_Overview.ContributorManagement;
 using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
@@ -88,9 +89,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 return ((PCOFolder)Children[list[index]]).AddChildRecursive(list, index + 1);
             }
         }
-
-        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner.Name; }
-
 
         public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
         {

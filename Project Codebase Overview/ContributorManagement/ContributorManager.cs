@@ -33,7 +33,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         private void AddAuthor(string email, string name)
         {
             Author author = new Author(email, name);
-            var colorPicker = ColorPicker.GetInstance();
+            var colorPicker = PCOColorPicker.GetInstance();
             author.Color = colorPicker.AssignAuthorColor();
             this.Authors.Add(email, author);
 

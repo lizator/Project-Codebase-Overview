@@ -93,9 +93,9 @@
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
                                     <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                            Fill="Blue"  Stroke="Black"
+                                            Fill="{Binding SelectedOwnerColor}"  Stroke="Black"
                                             Grid.Column="0" ></Ellipse>
-                                    <TextBlock TextTrimming="CharacterEllipsis" Text="" Grid.Column="1"></TextBlock>
+                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SelectedOwnerName}" Grid.Column="1"></TextBlock>
                                 </Grid>
                                 
                             </DataTemplate>
@@ -106,9 +106,9 @@
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >
                                    <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                            Fill="Blue"  Stroke="Black"
+                                            Fill="{Binding SuggestedOwnerColor}"  Stroke="Black"
                                             Grid.Column="0"></Ellipse>
-                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock> 
+                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock> 
                                 </Grid>
                                 
                             </DataTemplate>

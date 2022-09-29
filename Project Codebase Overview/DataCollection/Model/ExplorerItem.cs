@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.Graphs;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
@@ -19,7 +20,12 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
-        public string SuggestedOwnerName { get; }
+        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
+        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black); }
+
+        public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; }
+        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black); }
+
         public string LinesTotalString { get; }
 
         public SfLinearGauge BarGraph

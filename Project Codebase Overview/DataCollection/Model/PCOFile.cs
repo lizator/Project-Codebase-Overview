@@ -1,8 +1,10 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Project_Codebase_Overview.ContributorManagement;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,9 +43,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
             return string.Compare(this.Name, ((PCOFile)obj).Name, StringComparison.InvariantCulture);
         }
 
-        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name; }
 
-        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
+        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString("N0", CultureInfo.InvariantCulture); }
 
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
