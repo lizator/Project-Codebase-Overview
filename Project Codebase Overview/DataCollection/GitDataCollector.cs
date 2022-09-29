@@ -27,7 +27,7 @@ namespace Project_Codebase_Overview.DataCollection
         private readonly object RootFolderLock = new object();
         public PCOFolder CollectAllData(string path)
         {
-            return this.SimpleCollectAllData(path);
+            //return this.SimpleCollectAllData(path);
             return this.ParallelGetAllData(path);
             
         }

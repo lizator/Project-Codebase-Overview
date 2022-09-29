@@ -31,7 +31,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.GraphModel.LineDistribution[commit.GetAuthor()] += (uint) commit.GetLines();  
                 }
             }
-            this.GraphModel.UpdateSuggestedOwner();
+            if (this.GraphModel.LinesTotal > 0)
+            {
+                this.GraphModel.UpdateSuggestedOwner();
+            } 
         }
 
         public override int CompareTo(object obj)
