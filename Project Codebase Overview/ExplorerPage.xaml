@@ -121,7 +121,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTextColumn MappingName="Parent.Name" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
+                    <treeGrid:TreeGridTextColumn MappingName="LinesTotal" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50"> <!-- expand button column--> 
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>

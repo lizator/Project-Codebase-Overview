@@ -60,6 +60,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
         public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
+        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
 
         private List<ExplorerItem> GetSortedChildren()
         {

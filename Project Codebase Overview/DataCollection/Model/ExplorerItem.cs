@@ -13,9 +13,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public abstract class ExplorerItem : IComparable
     {
-        private static readonly int BAR_GRAPH_CUT_OFF_POINT = 90;
-        private static readonly int BAR_GRAPH_SMALL_CHECK_STARTING_POINT = 60;
-        private static readonly int BAR_GRAPH_SMALL_CHECK_MIN_SIZE = 5;
         public string Name { get; set; }
         public abstract void CalculateData();
         public abstract int CompareTo(object obj);
@@ -23,6 +20,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
         public string SuggestedOwnerName { get; }
+        public string LinesTotalString { get; }
 
         public SfLinearGauge BarGraph
         {
@@ -40,8 +38,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
             sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
             sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1,2,1,2);
             sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255,0,0,0));
-            sfLinearGauge.Axis.CornerRadius = new Microsoft.UI.Xaml.CornerRadius(20,20,20,20);
-            
 
             foreach (var block in GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal))
             {

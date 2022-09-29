@@ -43,6 +43,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name; }
 
+        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
+
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
         {
             this.Name = name;
