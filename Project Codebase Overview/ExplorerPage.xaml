@@ -117,7 +117,7 @@
                     <treeGrid:TreeGridTemplateColumn MappingName="Parent.Name" HeaderText="Line distribution" Width="300">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding BarGraph}"/>
+                                <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>

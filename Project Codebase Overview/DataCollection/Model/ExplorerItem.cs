@@ -32,14 +32,26 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             SfLinearGauge sfLinearGauge = new SfLinearGauge();
             sfLinearGauge.Axis.Minimum = 0;
-            sfLinearGauge.Axis.Maximum = 100;
+            sfLinearGauge.Axis.Maximum = 101;
+            sfLinearGauge.Axis.ShowLabels = false;
+            sfLinearGauge.Axis.ShowTicks = false;
+            sfLinearGauge.Axis.AxisLineStrokeThickness = 25;
+            sfLinearGauge.Axis.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1,2,1,2);
+            sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255,0,0,0));
+            sfLinearGauge.Axis.CornerRadius = new Microsoft.UI.Xaml.CornerRadius(20,20,20,20);
+            
+
             foreach (var block in GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal))
             {
                 LinearGaugeRange gaugeRange = new LinearGaugeRange();
-                gaugeRange.StartValue = block.StartValue;
-                gaugeRange.EndValue = block.EndValue;
-                gaugeRange.StartWidth = 25;
-                gaugeRange.EndWidth = 25;
+                gaugeRange.StartValue = block.StartValue + 0.5;
+                gaugeRange.EndValue = block.EndValue + 0.5;
+                gaugeRange.StartWidth = 22;
+                gaugeRange.EndWidth = 22;
+                gaugeRange.RangePosition = GaugeElementPosition.Cross;
+                
                 gaugeRange.Background = new SolidColorBrush(block.Color);
 
                 ToolTipService.SetToolTip(gaugeRange, block.ToolTip);
