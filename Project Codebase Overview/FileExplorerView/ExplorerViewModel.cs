@@ -1,5 +1,7 @@
-﻿using Project_Codebase_Overview.DataCollection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.State;
 using Project_Codebase_Overview.TestDocs;
 using System;
 using System.Collections.Generic;
@@ -11,16 +13,21 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.FileExplorerView
 {
-    public class ExplorerViewModel
+    public class ExplorerViewModel : ObservableObject
     {
         private PCOFolder viewRootFolder;
+        public string CurrentRootPath { 
+            get => currentRootPath;
+            set => SetProperty(ref currentRootPath, value); 
+        }
 
-        public ExplorerViewModel() // TODO add path?
+        public ExplorerViewModel()
         {
 
         }
 
         private ObservableCollection<ExplorerItem> _explorerItems;
+        private string currentRootPath;
 
         public ObservableCollection<ExplorerItem> ExplorerItems
         {
@@ -41,11 +48,31 @@ namespace Project_Codebase_Overview.FileExplorerView
                 this.ExplorerItems.Add(item);
             }
             this.viewRootFolder = root;
+            this.CurrentRootPath = PCOState.GetInstance().GetExplorerState().GetCurrentRootPath();
         }
 
-        public PCOFolder GetViewRootFolder()
+        public void SetNewRoot(PCOFolder newFolder)
         {
-            return this.viewRootFolder;
+            PCOState.GetInstance().GetExplorerState().AddFolderHistory(newFolder);
+            SetExplorerItems(newFolder);
+        }
+
+        public void NavigateBack()
+        {
+            SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetBackHistoryFolder());
+        }
+
+        public void NavigateForward()
+        {
+            SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetForwardHistoryFolder());
+        }
+
+        public void NavigateUp()
+        {
+            if(viewRootFolder.Parent != null)
+            {
+                SetNewRoot(viewRootFolder.Parent);
+            }
         }
     }
 }

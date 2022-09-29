@@ -43,8 +43,6 @@ namespace Project_Codebase_Overview
 
             viewModel.SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetRoot());
 
-            GetCurrentRoot();
-
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
         }
@@ -73,12 +71,6 @@ namespace Project_Codebase_Overview
             Debug.WriteLine("imageFailed: Exception: " + e.ErrorMessage);
         }
 
-        private void GetCurrentRoot()
-        {
-            pathText.Text = PCOState.GetInstance().GetExplorerState().GetRootPath();
-            
-        }
-
         private void ExpandClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Expand clicked");
@@ -86,22 +78,20 @@ namespace Project_Codebase_Overview
 
         private void BackClick(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("Back clicked");
+                Debug.WriteLine("Back clicked");
+            viewModel.NavigateBack();
         }
 
         private void ForwardClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Forward clicked");
+            viewModel.NavigateForward();
         }
 
         private void UpClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Up clicked");
-            var parent = viewModel.GetViewRootFolder().Parent;
-            if(parent != null)
-            {
-                viewModel.SetExplorerItems(parent);
-            }
+            viewModel.NavigateUp();
         }
 
         private void SetRoot(object sender, RoutedEventArgs e)
@@ -111,7 +101,7 @@ namespace Project_Codebase_Overview
             if (selectedItem.GetType() == typeof(PCOFolder))
             {
                 Debug.WriteLine("this is folder");
-                viewModel.SetExplorerItems((PCOFolder) selectedItem);
+                viewModel.SetNewRoot((PCOFolder) selectedItem);
             }
             else
             {

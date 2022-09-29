@@ -17,7 +17,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
-            //TODO: ask Should this be handled inside graphmodel instead?
             var groupedCommits = this.commits.GroupBy(x => x.GetAuthor());
 
             foreach (var groupedComm in groupedCommits)
