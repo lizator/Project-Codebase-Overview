@@ -116,6 +116,18 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
         }
 
+        public PCOFolder GetSubFolderFromPath(string path)
+        {
+            string relativePath = path.Substring(RootPath.Length + 1);
+            var folderNames = relativePath.Split('\\');
+            PCOFolder tempFolder = RootFolder;
+            foreach(var folderName in folderNames)
+            {
+                tempFolder = (PCOFolder) tempFolder.Children.Where(folder => folder.Value.Name.Equals(folderName)).First().Value;
+            }
+            return tempFolder;
+        }
+
         public PCOFolder GetRoot()
         {
             if (this.RootFolder != null)

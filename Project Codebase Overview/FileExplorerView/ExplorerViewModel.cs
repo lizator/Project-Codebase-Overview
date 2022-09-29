@@ -74,5 +74,10 @@ namespace Project_Codebase_Overview.FileExplorerView
                 SetNewRoot(viewRootFolder.Parent);
             }
         }
+
+        internal void NavigateToPath(string path)
+        {
+            SetNewRoot(PCOState.GetInstance().GetExplorerState().GetSubFolderFromPath(path));
+        }
     }
 }

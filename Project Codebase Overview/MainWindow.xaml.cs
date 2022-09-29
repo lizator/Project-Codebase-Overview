@@ -45,12 +45,12 @@ namespace Project_Codebase_Overview
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
-            var fp = new FolderPicker();
+            var folderPicker = new FolderPicker();
 
-            IntPtr hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            WinRT.Interop.InitializeWithWindow.Initialize(fp, hwnd);
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
-            var folder = await fp.PickSingleFolderAsync();
+            var folder = await folderPicker.PickSingleFolderAsync();
             if (folder == null)
             {
                 return;

@@ -61,16 +61,16 @@
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowRight.png" />
             </Button>
-            <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}">
+            <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}" Margin="40,0,0,0">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowUp.png"/>
             </Button>
-           
-            <TextBlock HorizontalAlignment="Left" 
+            <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="3" CornerRadius="0"  HorizontalContentAlignment="Left">
+                <TextBlock HorizontalAlignment="Left" 
                        VerticalAlignment="Center"
-                       Grid.Column="3"
-                       Text="{Binding CurrentRootPath, Mode=OneWay}"
-                       x:Name="pathText"></TextBlock>
+                       Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
+            </Button>
+            
         </Grid>
 
         <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
@@ -87,7 +87,7 @@
             
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="Name" HeaderText="Name"/>
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="150">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>

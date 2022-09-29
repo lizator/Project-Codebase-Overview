@@ -22,6 +22,8 @@ using Project_Codebase_Overview.State;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Automation.Peers;
+using Project_Codebase_Overview.Dialogs;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -78,7 +80,7 @@ namespace Project_Codebase_Overview
 
         private void BackClick(object sender, RoutedEventArgs e)
         {
-                Debug.WriteLine("Back clicked");
+            Debug.WriteLine("Back clicked");
             viewModel.NavigateBack();
         }
 
@@ -108,6 +110,38 @@ namespace Project_Codebase_Overview
                 Debug.WriteLine("this is file");
             }
 
+        }
+
+
+        
+        private async void PathClick(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+            folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
+
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle( (Application.Current as App)?.window as MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+
+            var selectedFolder = await folderPicker.PickSingleFolderAsync();
+            if (selectedFolder == null)
+            {
+                return;
+            }
+
+
+            try
+            {
+                string rootpath = PCOState.GetInstance().GetExplorerState().GetRootPath();
+                if (selectedFolder.Path.StartsWith(rootpath))
+                {
+                    viewModel.NavigateToPath(selectedFolder.Path);
+                }
+            }
+            catch (Exception ex)
+            {
+                DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
         }
     }
 }
