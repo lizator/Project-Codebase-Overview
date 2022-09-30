@@ -25,6 +25,11 @@ namespace Project_Codebase_Overview.DataCollection
         Repository GitRepo;
         string RootPath;
         private readonly object RootFolderLock = new object();
+
+
+        private static readonly Regex GIT_BLAME_REGEX = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\)(.*)");
+        private static readonly Regex AUTHOR_REGEX = new Regex(@"Author: (.+) <(.+)>");
+
         public PCOFolder CollectAllData(string path)
         {
             //return this.SimpleCollectAllData(path);
@@ -104,7 +109,6 @@ namespace Project_Codebase_Overview.DataCollection
 
             process = Process.Start(processInfo);
 
-            Regex regex = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\)(.*)");
             CultureInfo provider = CultureInfo.InvariantCulture;
 
             var contributorManager = ContributorManager.GetInstance();
@@ -116,7 +120,7 @@ namespace Project_Codebase_Overview.DataCollection
 
                 var line = e.Data;
                 if (line == null) return;
-                var match = regex.Match(line);
+                var match = GIT_BLAME_REGEX.Match(line);
 
 
                 if (match.Success)
@@ -147,6 +151,50 @@ namespace Project_Codebase_Overview.DataCollection
             process.WaitForExit();
 
             file.commits = commits.Values.ToList();
+                
+            AddCreatorToFile(file, filePath);
+
+        }
+
+        private async void AddCreatorToFile(PCOFile file, string filePath)
+        {
+            var contributorManager = ContributorManager.GetInstance();
+
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --diff-filter=A -- \"" + filePath + "\"");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            var sb = new StringBuilder();
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = AUTHOR_REGEX.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    sb.AppendLine(line);
+                    var name = match.Groups[1].Value;
+                    var email = match.Groups[2].Value;
+
+                    file.Creator = contributorManager.GetAuthor(email);
+                }
+            };
+            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                sb.AppendLine(e.Data);
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
 
         }
 
@@ -165,13 +213,12 @@ namespace Project_Codebase_Overview.DataCollection
 
             var sb = new StringBuilder();
 
-            Regex authorRegex = new Regex(@"Author: (.+) <(.+)>");
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
 
                 var line = e.Data;
                 if (line == null) return;
-                var match = authorRegex.Match(line.Trim());
+                var match = AUTHOR_REGEX.Match(line.Trim());
 
                 if (match.Success)
                 {
@@ -190,8 +237,6 @@ namespace Project_Codebase_Overview.DataCollection
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
             process.WaitForExit();
-            var test = sb.ToString();
-            test = sb.ToString();
 
         }
 

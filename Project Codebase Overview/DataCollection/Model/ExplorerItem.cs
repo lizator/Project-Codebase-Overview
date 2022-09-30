@@ -1,7 +1,9 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.Graphs;
+using Project_Codebase_Overview.Graphs.Model;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
@@ -45,7 +47,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
             sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1,2,1,2);
             sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255,0,0,0));
 
-            foreach (var block in GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal))
+            var blocks = new List<GraphBlock>();
+            if (this.GetType() == typeof(PCOFile))
+            {
+                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal, ((PCOFile)this).Creator);
+            } else
+            {
+                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal);
+            }
+
+
+            foreach (var block in blocks)
             {
                 LinearGaugeRange gaugeRange = new LinearGaugeRange();
                 gaugeRange.StartValue = block.StartValue + 0.5;
@@ -56,7 +68,23 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 
                 gaugeRange.Background = new SolidColorBrush(block.Color);
 
-                ToolTipService.SetToolTip(gaugeRange, block.ToolTip);
+                if (block.IsCreator && block.EndValue - block.StartValue > 10)
+                {
+                    Image img = new Image();
+                    img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
+                    img.Height = 20;
+                    img.Width = 20;
+                    img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                    gaugeRange.Child = img;
+                }
+
+                var tooltip = new ToolTip();
+                var tooltipMsg = new TextBlock();
+                tooltipMsg.Text = block.ToolTip;
+                tooltipMsg.HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center;
+                tooltip.Content = tooltipMsg;
+
+                ToolTipService.SetToolTip(gaugeRange, tooltip);
 
                 sfLinearGauge.Axis.Ranges.Add(gaugeRange);
             }

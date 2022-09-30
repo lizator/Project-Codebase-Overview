@@ -19,8 +19,10 @@ namespace Project_Codebase_Overview.Graphs
         private static readonly int GRAPH_SMALL_CHECK_STARTING_POINT = 60;
         private static readonly int GRAPH_SMALL_CHECK_MIN_SIZE = 5;
 
-        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<Author, uint> distributions, uint linesTotal)
+        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<Author, uint> distributions, uint linesTotal, Author creator = null)
         {
+            //Creator is only given for files
+
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
             var distributionAmount = distributions.Count();
@@ -57,7 +59,18 @@ namespace Project_Codebase_Overview.Graphs
                     block.Color = dist.Key.Color;
                     block.Name = dist.Key.Name;
                     block.Percentage = blockSize;
-                    block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+
+                    block.IsCreator = creator != null && dist.Key.Email == creator.Email;
+
+                    if (block.IsCreator)
+                    {
+                        block.ToolTip = string.Format("{0}: {1:N2}%\nCreator", dist.Key.Name, blockSize);
+                    } else
+                    {
+                        block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+                    }
+
+
 
                     currentStartPos = block.EndValue;
 

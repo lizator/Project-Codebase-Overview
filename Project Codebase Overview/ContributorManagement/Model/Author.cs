@@ -11,7 +11,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
     {
         public string Name { get; set; }
         List<string> Aliases { get; }
-        string Email { get; set; }
+        public string Email { get; set; }
         public Color Color { get; set; }
 
         public Author(string email, string name)
