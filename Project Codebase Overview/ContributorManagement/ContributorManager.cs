@@ -55,5 +55,10 @@ namespace Project_Codebase_Overview.ContributorManagement
                 this.AddAuthor(email, name);
             }
         }
+
+        public List<Author> GetAllAuthors()
+        {
+            return Authors.Values.ToList();
+        }
     }
 }

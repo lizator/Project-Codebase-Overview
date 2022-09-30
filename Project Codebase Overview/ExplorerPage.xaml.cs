@@ -24,6 +24,7 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Project_Codebase_Overview.Dialogs;
 using Windows.Storage.Pickers;
+using Project_Codebase_Overview.ContributorManagement.Model;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -142,6 +143,14 @@ namespace Project_Codebase_Overview
                 DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
                 return;
             }
+        }
+
+        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
+        {
+            Debug.WriteLine("Changed selected owner");
+            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox) sender).DataContext as ExplorerItem;
+            item.GraphModel.SelectedOwner = (IOwner)e.AddedItems[0];
+            item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
         }
     }
 }

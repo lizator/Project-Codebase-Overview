@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
   
@@ -88,20 +89,42 @@
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="150">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="225">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
-                                    <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                            Fill="{Binding SelectedOwnerColor}"  Stroke="Black"
-                                            Grid.Column="0" ></Ellipse>
-                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SelectedOwnerName}" Grid.Column="1"></TextBlock>
-                                </Grid>
-                                
+
+
+                                <editors:SfComboBox ItemsSource="{Binding Owners}" 
+                                                        SelectionChanged="SfComboBox_SelectionChanged"
+                                                        HorizontalAlignment="Stretch"
+                                                        TextMemberPath="Name"
+                                                        IsTextSearchEnabled="True"
+                                                        >
+
+                                        <editors:SfComboBox.LeadingView >
+                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                                          Stroke="Black"
+                                                        Grid.Column="0"  Fill="{Binding SelectedOwnerColor, Mode=OneWay}"/>
+                                    </editors:SfComboBox.LeadingView>
+                                    <editors:SfComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                                                <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                                              Stroke="Black"
+                                                            Grid.Column="0" >
+                                                    <Ellipse.Fill>
+                                                        <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                                <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </editors:SfComboBox.ItemTemplate>
+                                </editors:SfComboBox>
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested team" Width="150">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested team" Width="225">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >

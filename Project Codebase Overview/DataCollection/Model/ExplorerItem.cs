@@ -1,12 +1,16 @@
-﻿using Microsoft.UI.Xaml.Controls;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.Graphs;
+using Syncfusion.UI.Xaml.Data;
 using Project_Codebase_Overview.Graphs.Model;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +18,7 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public abstract class ExplorerItem : IComparable
+    public abstract class ExplorerItem : ObservableObject, IComparable
     {
         public string Name { get; set; }
         public abstract void CalculateData();
@@ -26,9 +30,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black); }
 
         public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; }
-        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black); }
-
+        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
+        private SolidColorBrush selectedOwnerColor;
         public string LinesTotalString { get; }
+
+        public ObservableCollection<IOwner> Owners { get => ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).ToObservableCollection(); }
 
         public SfLinearGauge BarGraph
         {
