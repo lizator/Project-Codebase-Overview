@@ -317,26 +317,47 @@ namespace Project_Codebase_Overview.DataCollection
             var rootFolder = new PCOFolder(rootFolderName, null);
 
             //Debug.WriteLine(filePaths.Count());
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-
-            Parallel.ForEach<string, PCOFolder>(filePaths,
-                () => new PCOFolder(rootFolderName, null),
-                (filePath, loop, threadRootFolder) =>
+            Parallel.ForEach<string, PCOThreadData >(filePaths,
+                new ParallelOptions() { MaxDegreeOfParallelism = 4},
+                () =>new PCOThreadData(new PCOFolder(rootFolderName, null)),
+                (filePath, loop, threadData) =>
                 {
+                    var threadRootFolder = threadData.ThreadRootFolder;
                     PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
                     AddFileCommitsNonLibGit(addedFile, filePath);
-                    return threadRootFolder;
+                    threadData.ThreadFileCount += 1;
+                    return threadData;
                 },
-                (finalThreadRootFolder) => 
+                (finalThreadData) => 
                 { 
                     lock (RootFolderLock)
                     {
+                        var finalThreadRootFolder = finalThreadData.ThreadRootFolder;
                         PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
+
+                        //TODO Add finalThreadData.ThreadFileCount to loading
                     }
                 }
                 );
 
+            stopwatch.Stop();
+            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
             return rootFolder;
+        }
+
+        private class PCOThreadData
+        {
+            public PCOFolder ThreadRootFolder;
+            public int ThreadFileCount;
+
+            public PCOThreadData(PCOFolder f)
+            {
+                this.ThreadRootFolder = f;
+                this.ThreadFileCount = 0;
+            }
         }
 
         public void testTime()
