@@ -147,8 +147,15 @@ namespace Project_Codebase_Overview
 
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
         {
+            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
+            if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
+            {
+                ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
+                item.GraphModel.SelectedOwner = null;
+                item.SelectedOwnerColor = null;
+                return;
+            }
             Debug.WriteLine("Changed selected owner");
-            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox) sender).DataContext as ExplorerItem;
             item.GraphModel.SelectedOwner = (IOwner)e.AddedItems[0];
             item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
         }

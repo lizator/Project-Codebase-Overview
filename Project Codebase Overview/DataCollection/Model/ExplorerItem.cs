@@ -27,18 +27,27 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
-        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black); }
+        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
         public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; }
-        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
+        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
         private SolidColorBrush selectedOwnerColor;
         public string LinesTotalString { get; }
 
-        public ObservableCollection<IOwner> Owners { get => ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).ToObservableCollection(); }
+        public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
 
         public SfLinearGauge BarGraph
         {
             get => GetBarGraph();
+        }
+
+        private ObservableCollection<IOwner> GetOwnerListSorted()
+        {
+            //create "Unselected" entry
+            var authorList = ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).OrderBy(x => x.Name).ToList();
+            authorList.MoveTo(authorList.IndexOf(this.GraphModel.SuggestedOwner), 0);
+            authorList.Add(new Author("Unselected", "Unselected"));
+            return authorList.ToObservableCollection();
         }
         protected SfLinearGauge GetBarGraph()
         {

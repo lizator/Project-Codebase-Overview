@@ -92,13 +92,14 @@
                     <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="225">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-
-
                                 <editors:SfComboBox ItemsSource="{Binding Owners}" 
                                                         SelectionChanged="SfComboBox_SelectionChanged"
                                                         HorizontalAlignment="Stretch"
                                                         TextMemberPath="Name"
                                                         IsTextSearchEnabled="True"
+                                                        IsEditable="True"
+                                                        IsFilteringEnabled="True"
+                                                        PlaceholderText="{Binding SelectedOwnerName}"
                                                         >
 
                                         <editors:SfComboBox.LeadingView >

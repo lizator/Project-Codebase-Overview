@@ -33,7 +33,7 @@ namespace Project_Codebase_Overview
         public App()
         {
             //Register Syncfusion license
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzEyNzEwQDMyMzAyZTMyMmUzMFB0eGROMGZJdkpxbndEeVdPSTl4ZDJycmpCQk5ROVJBZ21XNldhRjN2WWc9");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzMwMDE4QDMyMzAyZTMzMmUzMEJzcy9DVzE4RFRFejZOb1VMbHIxZHRVaXFzVDBOMUVDZWhhUDg3RlAxRnc9");
 
             this.InitializeComponent();
         }
