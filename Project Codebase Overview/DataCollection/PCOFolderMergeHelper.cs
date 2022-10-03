@@ -29,6 +29,7 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 if (item is PCOFile)
                 {
+                    item.Parent = folderA;
                     folderA.AddChild(item);
                 } else
                 {
@@ -37,6 +38,7 @@ namespace Project_Codebase_Overview.DataCollection
                         folderA.Children[item.Name] = Merge((PCOFolder)folderA.Children[item.Name], (PCOFolder)item);
                     } else
                     {
+                        item.Parent = folderA;
                         folderA.AddChild(item);
                     }
                 }
