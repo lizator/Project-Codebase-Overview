@@ -27,7 +27,7 @@
                           AxisLineStrokeThickness="30">
 
                     <gauge:LinearAxis.BarPointers>
-                        <gauge:BarPointer x:Name="LoadPointer" Value="0"
+                        <gauge:BarPointer  Value="{Binding PercentageDone}"
                                   PointerSize="30"
                                   Background="#683ab7"
                                   CornerStyle="BothCurve"
@@ -36,7 +36,7 @@
                                 <CircleEase EasingMode="EaseOut" />
                             </gauge:BarPointer.AnimationEasingFunction>
                             <gauge:BarPointer.Child>
-                                <TextBlock Text="{x:Bind LoadingPercentage}"
+                                <TextBlock Text="{Binding PercentageDone}"
                                    Foreground="White"
                                    Margin="15,0,0,0"
                                    VerticalAlignment="Center"

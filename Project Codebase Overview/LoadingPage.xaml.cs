@@ -43,7 +43,7 @@ namespace Project_Codebase_Overview
             if (e.PropertyName.Equals("PercentageDone"))
             {
                 Debug.WriteLine("loadingpercentagetrigger");
-                LoadPointer.Value = PCOState.GetInstance().GetLoadingState().PercentageDone;
+                //LoadPointer.Value = PCOState.GetInstance().GetLoadingState().PercentageDone;
             }
             else if (e.PropertyName.Equals("IsLoading"))
             {
@@ -68,9 +68,9 @@ namespace Project_Codebase_Overview
             PCOState.GetInstance().GetLoadingState().AddFilesLoaded(-10);
         }
 
-        private void StartTest(object sender, RoutedEventArgs e)
+        private async void StartTest(object sender, RoutedEventArgs e)
         {
-            PCOState.GetInstance().GetLoadingState().TestLoading();
+            await PCOState.GetInstance().GetLoadingState().TestLoading();
         }
     }
 }

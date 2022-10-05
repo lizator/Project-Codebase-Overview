@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Automation.Peers;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace Project_Codebase_Overview.State
 {
@@ -41,10 +43,10 @@ namespace Project_Codebase_Overview.State
 
         public LoadingState()
         {
-            FilesLoaded = 0;
-            PercentageDone = 0;
-            IsLoading = true;
-            TotalFilesToLoad = 100;
+            _filesLoaded = 0;
+            _percentageDone = 0;
+            _isLoading = true;
+            _totalFilesToLoad = 100;
         }
 
         public void SetTotalFilesToLoad(int total)
@@ -61,17 +63,27 @@ namespace Project_Codebase_Overview.State
             }
         }
 
-        public void TestLoading()
+        public async Task<object> TestLoading()
         {
-            TotalFilesToLoad = 100;
-            PercentageDone = 0;
-            FilesLoaded = 0;
-            IsLoading = true;
-            for (int i = 0; i < 10; i++)
+            await System.Threading.Tasks.Task.Run(async () =>
             {
-                System.Threading.Thread.Sleep(700);
-                this.AddFilesLoaded(10);
-            }
+                PercentageDone = 0;
+                FilesLoaded = 0;
+                IsLoading = true;
+                for (int i = 0; i < 10; i++)
+                {
+                    System.Threading.Thread.Sleep(700);
+                    
+                    await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    () =>
+                    {
+                        // Your UI update code goes here!
+                        this.AddFilesLoaded(10);
+                    });
+                    
+                }
+            });
+            return null;
         }
 
 
