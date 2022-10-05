@@ -9,36 +9,10 @@
     mc:Ignorable="d">
     <Grid ColumnDefinitions="50, *" RowDefinitions="*">
         <Frame Grid.Column="0" x:Name="SettingsFrame">
-            <Rectangle Fill="LightGray" Stroke="DarkGray"></Rectangle>
+            <Rectangle Fill="LightGray" Stroke="DarkGray"/>
         </Frame>
         <Frame Grid.Column="1" x:Name="MainFrame">
-            <StackPanel  Orientation="Vertical">
-                <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
-                <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
-                <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
-                <Button BorderThickness="2" x:Name="TestDummyMerge" Click="OpenDummyDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner with Merge</Button>
-                <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
-                <Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>
-                <Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>
-            </StackPanel>
+            <Rectangle Fill="DarkGray" Stroke="LightGray"/>
         </Frame>
     </Grid>
-    
-    <!--<Grid HorizontalAlignment="Left" VerticalAlignment="Center">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel  Orientation="Vertical" Width="500">
-            <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
-        </StackPanel>
-        <StackPanel Width="800" Orientation="Vertical" Grid.Column="1">
-            <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
-            <Button BorderThickness="2" x:Name="TestDummy" Click="OpenDummyData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner</Button>
-            <Button BorderThickness="2" x:Name="TestDummyMerge" Click="OpenDummyDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner with Merge</Button>
-            <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
-            <Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>
-            <Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>
-        </StackPanel>
-    </Grid>-->
 </Window>

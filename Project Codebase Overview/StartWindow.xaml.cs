@@ -59,8 +59,15 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            MainWindow.Instance.FolderSelected();
+            NavigateToExplorerPage();
             Close();
+        }
+
+        private void NavigateToExplorerPage()
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Activate();
+            mainWindow.NavigateToExplorerPage();
         }
     }
 }

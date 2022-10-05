@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Windowing;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -45,7 +47,21 @@ namespace Project_Codebase_Overview
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
+            m_window = new TestStartWindow();
+
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(m_window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
+            if (displayArea is not null)
+            {
+                var CenteredPosition = appWindow.Position;
+                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
+                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
+                appWindow.Move(CenteredPosition);
+            }
+
             m_window.Activate();
         }
 

@@ -34,121 +34,17 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class MainWindow : Window
     {
-        public static MainWindow Instance;
         public MainWindow()
         {
-            Instance = this;
             this.InitializeComponent();
         }
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-        }
-
-        private void start_test(object sender, RoutedEventArgs e)
-        {
-            GitDataCollector collector = new GitDataCollector();
-            collector.testTime();
-        }
-
-        private async void UseAsIntended(object sender, RoutedEventArgs e)
-        {
-            StartWindow window = new();
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
-
-            appWindow.Resize(new Windows.Graphics.SizeInt32(700, 500));
-            presenter.IsResizable = false;
-
-            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
-            if (displayArea is not null)
-            {
-                var CenteredPosition = appWindow.Position;
-                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
-                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
-                appWindow.Move(CenteredPosition);
-            }
-
-            window.Activate();
-        }
-
-
-        public async void FolderSelected()
+        public async void NavigateToExplorerPage()
         {
             var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
+            var window = this;
             window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
-
-        private async void OpenPCOMaster(object sender, RoutedEventArgs e)
-        {
-
-
-            var state = PCOState.GetInstance();
-            var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            await state.GetExplorerState().SetRootPath(path, forceReload: true);
-
-            var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
-            window.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
-        }
-
-        private async void OpenDummyData(object sender, RoutedEventArgs e)
-        {
-
-            var state = PCOState.GetInstance();
-            state.GetExplorerState().LoadRootFolder(loadDummyData: true);
-
-            var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
-            window.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
-        }
-
-        private async void OpenDummyDataMerge(object sender, RoutedEventArgs e)
-        {
-
-            var state = PCOState.GetInstance();
-            state.GetExplorerState().LoadRootFolder(loadDummyData: true, withMerge: true);
-
-            var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
-            window.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
-        }
-
-        private async void RunAltGetData(object sender, RoutedEventArgs e)
-        {
-            var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            var collector = new GitDataCollector();
-            var rootFolder = collector.AlternativeCollectAllData(path);
-            PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
-            
-
-            var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
-            window.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
-        }   
-
-
-        private async void RunAltGetDataMerge(object sender, RoutedEventArgs e)
-        {
-            var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            var collector = new GitDataCollector();
-            var rootFolder = collector.ParallelGetAllData(path);
-            PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
-            
-
-            var rootFrame = new Frame();
-            var window = (Application.Current as App)?.window as MainWindow;
-            window.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
-        }   
     }
 }
