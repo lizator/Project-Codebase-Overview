@@ -59,7 +59,7 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            MainWindow.Instance.SelectFolder();
+            MainWindow.Instance.FolderSelected();
             Close();
         }
     }

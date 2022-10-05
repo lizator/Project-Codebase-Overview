@@ -73,11 +73,10 @@ namespace Project_Codebase_Overview
             }
 
             window.Activate();
-            //SelectFolder();
         }
 
 
-        public async void SelectFolder()
+        public async void FolderSelected()
         {
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
