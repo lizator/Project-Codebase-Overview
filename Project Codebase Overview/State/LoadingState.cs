@@ -65,7 +65,9 @@ namespace Project_Codebase_Overview.State
 
         public async Task<object> TestLoading()
         {
-            await System.Threading.Tasks.Task.Run(async () =>
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+            await System.Threading.Tasks.Task.Run(() =>
             {
                 PercentageDone = 0;
                 FilesLoaded = 0;
@@ -73,14 +75,11 @@ namespace Project_Codebase_Overview.State
                 for (int i = 0; i < 10; i++)
                 {
                     System.Threading.Thread.Sleep(700);
-                    
-                    await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                    () =>
+                    dispatcherQueue.TryEnqueue(() =>
                     {
-                        // Your UI update code goes here!
                         this.AddFilesLoaded(10);
                     });
-                    
+
                 }
             });
             return null;
