@@ -62,6 +62,7 @@ namespace Project_Codebase_Overview
         private void NavigateToExplorerPage()
         {
             var mainWindow = new MainWindow();
+            (Application.Current as App)?.SetMainWindow(mainWindow);
             mainWindow.Activate();
             mainWindow.NavigateToExplorerPage();
         }

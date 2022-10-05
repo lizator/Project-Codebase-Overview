@@ -47,9 +47,9 @@ namespace Project_Codebase_Overview
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new TestStartWindow();
+            s_window = new TestStartWindow();
 
-            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(m_window);
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(s_window);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
 
@@ -62,11 +62,20 @@ namespace Project_Codebase_Overview
                 appWindow.Move(CenteredPosition);
             }
 
-            m_window.Activate();
+            s_window.Activate();
         }
+
+        public void SetMainWindow(MainWindow mainWindow)
+        {
+            m_window = mainWindow;
+        }
+
+        private Window s_window;
+
+        public Window window => s_window;
 
         private Window m_window;
 
-        public Window window => m_window;
+        public Window MainWindow => m_window;
     }
 }
