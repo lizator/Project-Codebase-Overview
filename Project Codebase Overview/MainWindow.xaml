@@ -20,6 +20,7 @@
                 <Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>
                 <Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>
                 <Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>
+                <Button BorderThickness="2" x:Name="TestLoading" Click="TestLoadingClick" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test</Button>
             </StackPanel>
         </Frame>
     </Grid>

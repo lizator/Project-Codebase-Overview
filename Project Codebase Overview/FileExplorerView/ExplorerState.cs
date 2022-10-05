@@ -15,7 +15,7 @@ namespace Project_Codebase_Overview.FileExplorerView
         private PCOFolder RootFolder;
         private string RootPath;
         private List<PCOFolder> FolderHistory = new List<PCOFolder>();
-        private int CurrentRooIndex;
+        private int CurrentRootIndex;
         private static readonly int MAX_HISTORY_SIZE = 20;
 
         public ExplorerState()
@@ -25,41 +25,41 @@ namespace Project_Codebase_Overview.FileExplorerView
         public void AddFolderHistory(PCOFolder addedFolder)
         {
             //remove forwardhistory
-            FolderHistory = FolderHistory.GetRange(0, CurrentRooIndex + 1);
+            FolderHistory = FolderHistory.GetRange(0, CurrentRootIndex + 1);
 
             //if max history reached remove start
             if (FolderHistory.Count == MAX_HISTORY_SIZE)
             {
                 FolderHistory.RemoveAt(0);
-                CurrentRooIndex -= 1;//index shifts left due to removal
+                CurrentRootIndex -= 1;//index shifts left due to removal
             }
 
             FolderHistory.Add(addedFolder);
-            CurrentRooIndex += 1;
+            CurrentRootIndex += 1;
         }
         public PCOFolder GetForwardHistoryFolder()
         {
-            if (FolderHistory.Count > CurrentRooIndex + 1)
+            if (FolderHistory.Count > CurrentRootIndex + 1)
             {
-                CurrentRooIndex += 1;
+                CurrentRootIndex += 1;
             }
-            return FolderHistory[CurrentRooIndex];
+            return FolderHistory[CurrentRootIndex];
         }
 
         public PCOFolder GetBackHistoryFolder()
         {
-            if (CurrentRooIndex > 0)
+            if (CurrentRootIndex > 0)
             { 
-                CurrentRooIndex -= 1;
+                CurrentRootIndex -= 1;
             }
-            return FolderHistory[CurrentRooIndex];
+            return FolderHistory[CurrentRootIndex];
         }
 
         public void ResetHistory(PCOFolder newRoot)
         {
             FolderHistory.Clear();
             FolderHistory.Add(newRoot);
-            CurrentRooIndex = 0;
+            CurrentRootIndex = 0;
         }
  
         public async Task<object> SetRootPath(string path, bool forceReload = false)
@@ -75,7 +75,7 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public string GetCurrentRootPath()
         {
-            PCOFolder tempFolder = FolderHistory[CurrentRooIndex];
+            PCOFolder tempFolder = FolderHistory[CurrentRootIndex];
             string path = "";
             while (tempFolder.Parent != null)
             {

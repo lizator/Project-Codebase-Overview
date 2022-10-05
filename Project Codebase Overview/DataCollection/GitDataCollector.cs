@@ -324,6 +324,9 @@ namespace Project_Codebase_Overview.DataCollection
             var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
 
+            //set loading
+            PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+
             //Debug.WriteLine(filePaths.Count());
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -347,12 +350,14 @@ namespace Project_Codebase_Overview.DataCollection
                         PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
 
                         //TODO Add finalThreadData.ThreadFileCount to loading
+                        PCOState.GetInstance().GetLoadingState().AddFilesLoaded(finalThreadData.ThreadFileCount);
                     }
                 }
                 );
 
             stopwatch.Stop();
             Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
+            PCOState.GetInstance().GetLoadingState().IsLoading = false;
             return rootFolder;
         }
 

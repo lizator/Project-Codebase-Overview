@@ -139,6 +139,14 @@ namespace Project_Codebase_Overview
             var window = (Application.Current as App)?.window as MainWindow;
             window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
-        }   
+        }
+
+        private void TestLoadingClick(object sender, RoutedEventArgs e)
+        {
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.MainFrame.Content = rootFrame;
+            rootFrame.Navigate(typeof(LoadingPage));
+        }
     }
 }
