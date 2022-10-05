@@ -26,46 +26,40 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class LoadingPage : Page
     {
-        double LoadingPercentage = 0;
+        
         public LoadingPage()
         {
             this.InitializeComponent();
-            this.DataContext =  PCOState.GetInstance().GetLoadingState();
 
-           
+            RepoNameText.Text = PCOState.GetInstance().GetExplorerState().GetRootPath();
+            this.DataContext =  PCOState.GetInstance().GetLoadingState();
 
             PCOState.GetInstance().GetLoadingState().PropertyChanged += LoadingStatePropertyChanged;
         }
 
         private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Debug.WriteLine("loadingstate trigger");
-            if (e.PropertyName.Equals("PercentageDone"))
-            {
-                Debug.WriteLine("loadingpercentagetrigger");
-                //LoadPointer.Value = PCOState.GetInstance().GetLoadingState().PercentageDone;
-            }
-            else if (e.PropertyName.Equals("IsLoading"))
+            if (e.PropertyName.Equals("IsLoading"))
             {
                 Debug.WriteLine("Loading trigger");
                 if (!PCOState.GetInstance().GetLoadingState().IsLoading)
                 {
                     Debug.WriteLine("Loading is now false!");
-
+                    
                 }
             }
         }
 
         private void Add10(object sender, RoutedEventArgs e)
         {
-            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(10);
+            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(1);
             PCOState.GetInstance().GetLoadingState().IsLoading = false;
 
         }
 
         private void Sub10(object sender, RoutedEventArgs e)
         {
-            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(-10);
+            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(-1);
         }
 
         private async void StartTest(object sender, RoutedEventArgs e)

@@ -148,5 +148,35 @@ namespace Project_Codebase_Overview
             window.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(LoadingPage));
         }
+        private async void TestLoadingIntended(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            if (folder == null)
+            {
+                return;
+            }
+
+
+            try
+            {
+                var state = PCOState.GetInstance();
+                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+            }
+            catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
+
+            var rootFrame = new Frame();
+            var window = (Application.Current as App)?.window as MainWindow;
+            window.MainFrame.Content = rootFrame;
+            rootFrame.Navigate(typeof(ExplorerPage));
+        }
     }
 }
