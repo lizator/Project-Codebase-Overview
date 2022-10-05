@@ -1,0 +1,26 @@
+﻿<Window
+    x:Class="Project_Codebase_Overview.StartWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid RowDefinitions="auto,*">
+        <Grid Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="Project Codebase Overview" FontSize="40" FontFamily="Rockwell"  Margin="0 2 0 20"/>
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="3*,2*">
+            <Grid Grid.Column="0" RowDefinitions="*,auto">
+                <TextBlock Grid.Row="0" Text="Select a local Git repository to begin" FontSize="22" FontFamily="Rockwell" HorizontalTextAlignment="Center"/>
+                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0 6 0 10">
+                    <Button Content="Select Repository" Click="SelectFolder" FontSize="18" Margin="4" Width="200"/>
+                    <Button Content="Load Rave" FontSize="18" Margin="4" Width="200" IsEnabled="False"/>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Column="1" Background="Blue"></Grid>
+            
+        </Grid>
+    </Grid>
+</Window>

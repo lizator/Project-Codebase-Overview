@@ -1,3 +1,5 @@
+﻿using Microsoft.UI;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,9 +15,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Display;
 using Windows.Storage.Pickers;
+using Windows.UI.ViewManagement;
+using Windows.UI.WindowManagement;
+using AppWindow = Microsoft.UI.Windowing.AppWindow;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,8 +34,10 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        public static MainWindow Instance;
         public MainWindow()
         {
+            Instance = this;
             this.InitializeComponent();
         }
 
@@ -45,29 +54,31 @@ namespace Project_Codebase_Overview
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new FolderPicker();
+            StartWindow window = new();
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+            OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
 
-            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+            appWindow.Resize(new Windows.Graphics.SizeInt32(700, 500));
+            presenter.IsResizable = false;
 
-            var folder = await folderPicker.PickSingleFolderAsync();
-            if (folder == null)
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
+            if (displayArea is not null)
             {
-                return;
+                var CenteredPosition = appWindow.Position;
+                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
+                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
+                appWindow.Move(CenteredPosition);
             }
 
+            window.Activate();
+            //SelectFolder();
+        }
 
-            try
-            {
-                var state = PCOState.GetInstance();
-                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
-            }
-            catch (Exception ex)
-            {
-                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
-                return;
-            }
 
+        public async void SelectFolder()
+        {
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
             window.MainFrame.Content = rootFrame;
