@@ -34,12 +34,12 @@ namespace Project_Codebase_Overview.State
             set => SetProperty(ref _filesLoaded, value);
         }
         private int _filesLoaded;
-        public double PercentageDone
+        public int PercentageDone
         {
             get => _percentageDone;
             set => SetProperty(ref _percentageDone, value);
         }
-        private double _percentageDone;
+        private int _percentageDone;
 
         public LoadingState()
         {
@@ -56,7 +56,8 @@ namespace Project_Codebase_Overview.State
         public void AddFilesLoaded(int additionalFilesLoaded)
         {
             FilesLoaded += additionalFilesLoaded;
-            PercentageDone = (double)FilesLoaded / (double)TotalFilesToLoad * 100;
+            double x = ((double)FilesLoaded / (double)TotalFilesToLoad * 100);
+            PercentageDone = (int)x;
         }
 
         public async Task<object> TestLoading()

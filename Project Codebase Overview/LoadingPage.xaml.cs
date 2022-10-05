@@ -42,31 +42,12 @@ namespace Project_Codebase_Overview
         private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals("IsLoading"))
-            {
-                Debug.WriteLine("Loading trigger");
+            { 
                 if (!PCOState.GetInstance().GetLoadingState().IsLoading)
                 {
-                    Debug.WriteLine("Loading is finished!!");
                     ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
                 }
             }
-        }
-
-        private void Add10(object sender, RoutedEventArgs e)
-        {
-            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(1);
-            PCOState.GetInstance().GetLoadingState().IsLoading = false;
-
-        }
-
-        private void Sub10(object sender, RoutedEventArgs e)
-        {
-            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(-1);
-        }
-
-        private async void StartTest(object sender, RoutedEventArgs e)
-        {
-            await PCOState.GetInstance().GetLoadingState().TestLoading();
         }
     }
 }
