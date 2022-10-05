@@ -62,14 +62,15 @@ namespace Project_Codebase_Overview.FileExplorerView
             CurrentRooIndex = 0;
         }
  
-        public void SetRootPath(string path, bool forceReload = false)
+        public async Task<object> SetRootPath(string path, bool forceReload = false)
         {
             if (!path.Equals(RootPath) || forceReload)
             {
                 this.RootPath = path;
-                LoadRootFolder();
+                await LoadRootFolder();
                 RootFolder.CalculateData();
             }
+            return null;
         }
 
         public string GetCurrentRootPath()
@@ -89,7 +90,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             return this.RootPath;
         }
 
-        public void LoadRootFolder(bool loadDummyData = false, bool withMerge = false)
+        public async Task<object> LoadRootFolder(bool loadDummyData = false, bool withMerge = false)
         {
             if (loadDummyData)
             {
@@ -106,7 +107,8 @@ namespace Project_Codebase_Overview.FileExplorerView
                 var collector = new GitDataCollector();
                 try
                 {
-                    this.RootFolder = collector.CollectAllData(RootPath);
+                    var folder = await collector.CollectAllData(RootPath);
+                    this.RootFolder = folder;
                     ResetHistory(this.RootFolder);
                 } catch (Exception)
                 {
@@ -114,6 +116,8 @@ namespace Project_Codebase_Overview.FileExplorerView
                 }
                 
             }
+
+            return null;
         }
 
         public PCOFolder GetSubFolderFromPath(string path)

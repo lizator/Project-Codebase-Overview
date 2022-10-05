@@ -25,16 +25,24 @@ namespace Project_Codebase_Overview.DataCollection
         Repository GitRepo;
         string RootPath;
         private readonly object RootFolderLock = new object();
+        private PCOFolder RootFolder;
 
 
         private static readonly Regex GIT_BLAME_REGEX = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\)(.*)");
         private static readonly Regex AUTHOR_REGEX = new Regex(@"Author: (.+) <(.+)>");
 
-        public PCOFolder CollectAllData(string path)
+        public async Task<PCOFolder> CollectAllData(string path)
         {
             //return this.SimpleCollectAllData(path);
-            return this.ParallelGetAllData(path);
-            
+
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                RootFolder = this.ParallelGetAllData(path);
+                //PCOState.GetInstance().GetExplorerState().TestSetRootFolder(RootFolder);
+            });
+
+            return RootFolder;
+
         }
 
         public PCOFolder SimpleCollectAllData(string path)

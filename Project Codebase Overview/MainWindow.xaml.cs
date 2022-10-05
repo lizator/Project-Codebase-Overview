@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -60,10 +60,11 @@ namespace Project_Codebase_Overview
             try
             {
                 var state = PCOState.GetInstance();
-                state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
-            } catch (Exception ex)
+                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+            }
+            catch (Exception ex)
             {
-                DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
                 return;
             }
 
@@ -79,7 +80,7 @@ namespace Project_Codebase_Overview
 
             var state = PCOState.GetInstance();
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            state.GetExplorerState().SetRootPath(path, forceReload: true);
+            await state.GetExplorerState().SetRootPath(path, forceReload: true);
 
             var rootFrame = new Frame();
             var window = (Application.Current as App)?.window as MainWindow;
