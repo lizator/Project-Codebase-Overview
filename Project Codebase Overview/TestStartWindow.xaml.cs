@@ -18,6 +18,8 @@ using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.State;
 using System.Threading.Tasks;
 using System.Threading;
+using Project_Codebase_Overview.Dialogs;
+using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -119,6 +121,40 @@ namespace Project_Codebase_Overview
         {
             GitDataCollector collector = new GitDataCollector();
             collector.testTime();
+        }
+
+        private void TestLoadingClick(object sender, RoutedEventArgs e)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Activate();
+            mainWindow.NavigateToLoadingPage();
+        }
+        private async void TestLoadingIntended(object sender, RoutedEventArgs e)
+        {
+            var folderPicker = new FolderPicker();
+
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            if (folder == null)
+            {
+                return;
+            }
+
+
+            try
+            {
+                var state = PCOState.GetInstance();
+                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+            }
+            catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
+
+            NavigateToExplorerPage();
         }
     }
 }

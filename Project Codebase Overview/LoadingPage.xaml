@@ -1,0 +1,64 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.LoadingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview.State"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.DataContext>
+        <local:LoadingState/>
+    </Page.DataContext>
+
+    <StackPanel Orientation="Vertical" VerticalAlignment="Center" Width="500" Spacing="20">
+        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="Scanning repository" HorizontalAlignment="Center" />
+        <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" x:Name="RepoNameText" HorizontalAlignment="Center" />
+        <gauge:SfLinearGauge>
+            <gauge:SfLinearGauge.Axis>
+                <gauge:LinearAxis ShowLabels="False"
+                          ShowTicks="False"
+                          CornerStyle="BothCurve"
+                          AxisLineStrokeThickness="30"
+                                  Minimum="-6"
+                                  Maximum="100" >
+
+                    <gauge:LinearAxis.BarPointers>
+                        <gauge:BarPointer  Value="{Binding PercentageDone}"
+                                  PointerSize="30"
+                                  Background="CornflowerBlue"
+                                  CornerStyle="BothCurve"
+                                  EnableAnimation="True"
+                                  AnimationDuration="200">
+                            
+                            <gauge:BarPointer.Child>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,5,0">
+                                    <TextBlock Text="{Binding PercentageDone}"
+                                               Foreground="White"/>
+                                    <TextBlock Text=" %"
+                                               Foreground="White"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                                
+                            </gauge:BarPointer.Child>
+                        </gauge:BarPointer>
+                    </gauge:LinearAxis.BarPointers>
+                </gauge:LinearAxis>
+            </gauge:SfLinearGauge.Axis>
+        </gauge:SfLinearGauge>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <TextBlock Text="{Binding FilesLoaded}" />
+            <TextBlock Text=" of "/>
+            <TextBlock Text="{Binding TotalFilesToLoad}"/>
+            <TextBlock Text=" files scanned"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,100,0,0">
+            <Button Click="Add10">Add 10</Button>
+            <Button Click="Sub10">Sub10</Button>
+            <Button Click="StartTest">Start test</Button>
+        </StackPanel>
+    </StackPanel>
+</Page>
