@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using System.Threading;
 using Project_Codebase_Overview.Dialogs;
 using Windows.Storage.Pickers;
+using LibGit2Sharp;
+using Windows.ApplicationModel.VoiceCommands;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -38,6 +40,7 @@ namespace Project_Codebase_Overview
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
             StartWindow window = new();
             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
@@ -62,21 +65,25 @@ namespace Project_Codebase_Overview
         private void NavigateToExplorerPage()
         {
             var mainWindow = new MainWindow();
-            (Application.Current as App)?.SetMainWindow(mainWindow);
             mainWindow.Activate();
             mainWindow.NavigateToExplorerPage();
+        }
+        private void NavigateToLoadingPage()
+        {
+            MainWindow window = new MainWindow();
+            window.Activate();
+            window.NavigateToLoadingPage();
         }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
         {
-
+            PCOState.GetInstance().ClearState();
 
             var state = PCOState.GetInstance();
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            await state.GetExplorerState().SetRootPath(path, forceReload: true);
+            state.GetExplorerState().SetRootPath(path);
 
-            NavigateToExplorerPage();
-            
+            NavigateToLoadingPage();
         }
 
         private async void OpenDummyData(object sender, RoutedEventArgs e)
@@ -112,7 +119,7 @@ namespace Project_Codebase_Overview
         {
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
             var collector = new GitDataCollector();
-            var rootFolder = collector.ParallelGetAllData(path);
+            var rootFolder = collector.ParallelGetAllData(path, null);
             PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
 
             NavigateToExplorerPage();
@@ -132,6 +139,8 @@ namespace Project_Codebase_Overview
         }
         private async void TestLoadingIntended(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
+
             var folderPicker = new FolderPicker();
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -143,19 +152,22 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-
             try
             {
-                var state = PCOState.GetInstance();
-                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+                //test if repo available
+                var testingRepo = new Repository(folder.Path);
             }
             catch (Exception ex)
             {
-                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
                 return;
             }
 
-            NavigateToExplorerPage();
+            PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
+            
+            MainWindow window = new MainWindow();
+            window.Activate();
+            window.NavigateToLoadingPage();
         }
     }
 }

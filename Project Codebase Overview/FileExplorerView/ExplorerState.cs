@@ -1,6 +1,7 @@
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Dialogs;
+using Project_Codebase_Overview.State;
 using Project_Codebase_Overview.TestDocs;
 using System;
 using System.Collections.Generic;
@@ -62,14 +63,17 @@ namespace Project_Codebase_Overview.FileExplorerView
             CurrentRootIndex = 0;
         }
  
-        public async Task<object> SetRootPath(string path, bool forceReload = false)
+        public void SetRootPath(string path)
         {
-            if (!path.Equals(RootPath) || forceReload)
-            {
-                this.RootPath = path;
-                await LoadRootFolder();
-                RootFolder.CalculateData();
-            }
+            this.RootPath = path;
+           
+        }
+
+        public async Task<object> InitializeRoot()
+        {
+            await LoadRootFolder();
+            RootFolder.CalculateData();
+            PCOState.GetInstance().GetLoadingState().IsLoading = false;
             return null;
         }
 

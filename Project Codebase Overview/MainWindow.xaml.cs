@@ -41,16 +41,18 @@ namespace Project_Codebase_Overview
 
         public async void NavigateToExplorerPage()
         {
+            (Application.Current as App)?.SetMainWindow(this);
+
             var rootFrame = new Frame();
-            var window = this;
-            window.MainFrame.Content = rootFrame;
+            this.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
         public async void NavigateToLoadingPage()
         {
+            (Application.Current as App)?.SetMainWindow(this);
+            
             var rootFrame = new Frame();
-            var window = this;
-            window.MainFrame.Content = rootFrame;
+            this.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(LoadingPage));
         }
     }

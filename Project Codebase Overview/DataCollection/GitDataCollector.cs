@@ -34,10 +34,11 @@ namespace Project_Codebase_Overview.DataCollection
         public async Task<PCOFolder> CollectAllData(string path)
         {
             //return this.SimpleCollectAllData(path);
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
 
             await System.Threading.Tasks.Task.Run(() =>
             {
-                RootFolder = this.ParallelGetAllData(path);
+                RootFolder = this.ParallelGetAllData(path, dispatcherQueue);
                 //PCOState.GetInstance().GetExplorerState().TestSetRootFolder(RootFolder);
             });
 
@@ -295,7 +296,7 @@ namespace Project_Codebase_Overview.DataCollection
             }
         }
 
-        public PCOFolder ParallelGetAllData(string path)
+        public PCOFolder ParallelGetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
         {
             RootPath = path;
             try
@@ -325,7 +326,11 @@ namespace Project_Codebase_Overview.DataCollection
             var rootFolder = new PCOFolder(rootFolderName, null);
 
             //set loading
-            PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+            dispatcherQueue.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+            });
+            
 
             //Debug.WriteLine(filePaths.Count());
             Stopwatch stopwatch = new Stopwatch();
@@ -350,14 +355,18 @@ namespace Project_Codebase_Overview.DataCollection
                         PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
 
                         //TODO Add finalThreadData.ThreadFileCount to loading
-                        PCOState.GetInstance().GetLoadingState().AddFilesLoaded(finalThreadData.ThreadFileCount);
+                        dispatcherQueue.TryEnqueue(() =>
+                        {
+                            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(finalThreadData.ThreadFileCount);
+                        });
+                        
                     }
                 }
                 );
 
             stopwatch.Stop();
             Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
-            PCOState.GetInstance().GetLoadingState().IsLoading = false;
+            
             return rootFolder;
         }
 

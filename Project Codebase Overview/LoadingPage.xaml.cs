@@ -29,12 +29,14 @@ namespace Project_Codebase_Overview
         
         public LoadingPage()
         {
+            //init component
             this.InitializeComponent();
-
             RepoNameText.Text = PCOState.GetInstance().GetExplorerState().GetRootPath();
-            this.DataContext =  PCOState.GetInstance().GetLoadingState();
-
+            this.DataContext = PCOState.GetInstance().GetLoadingState();
             PCOState.GetInstance().GetLoadingState().PropertyChanged += LoadingStatePropertyChanged;
+
+            //start load
+            PCOState.GetInstance().GetExplorerState().InitializeRoot();
         }
 
         private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -44,8 +46,8 @@ namespace Project_Codebase_Overview
                 Debug.WriteLine("Loading trigger");
                 if (!PCOState.GetInstance().GetLoadingState().IsLoading)
                 {
-                    Debug.WriteLine("Loading is now false!");
-                    
+                    Debug.WriteLine("Loading is finished!!");
+                    ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
                 }
             }
         }

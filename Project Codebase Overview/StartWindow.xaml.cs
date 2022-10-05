@@ -51,7 +51,7 @@ namespace Project_Codebase_Overview
             try
             {
                 var state = PCOState.GetInstance();
-                await state.GetExplorerState().SetRootPath(folder.Path, forceReload: true);
+                state.GetExplorerState().SetRootPath(folder.Path);
             }
             catch (Exception ex)
             {

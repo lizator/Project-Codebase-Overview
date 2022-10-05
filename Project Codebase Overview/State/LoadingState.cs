@@ -56,11 +56,7 @@ namespace Project_Codebase_Overview.State
         public void AddFilesLoaded(int additionalFilesLoaded)
         {
             FilesLoaded += additionalFilesLoaded;
-            PercentageDone = (double) FilesLoaded / (double) TotalFilesToLoad * 100;
-            if(FilesLoaded >= TotalFilesToLoad)
-            {
-                IsLoading = false;
-            }
+            PercentageDone = (double)FilesLoaded / (double)TotalFilesToLoad * 100;
         }
 
         public async Task<object> TestLoading()

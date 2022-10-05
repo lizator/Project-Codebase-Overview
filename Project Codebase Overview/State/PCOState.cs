@@ -41,5 +41,11 @@ namespace Project_Codebase_Overview.State
         {
             return LoadingState;
         }
+
+        public void ClearState()
+        {
+            ExplorerState = new ExplorerState();
+            LoadingState = new LoadingState();
+        }
     }
 }
