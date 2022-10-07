@@ -86,57 +86,63 @@ namespace Project_Codebase_Overview
             NavigateToLoadingPage();
         }
 
-        private async void OpenDummyData(object sender, RoutedEventArgs e)
-        {
+        //private async void OpenDummyData(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
 
-            var state = PCOState.GetInstance();
-            state.GetExplorerState().LoadRootFolder(loadDummyData: true);
+        //    var state = PCOState.GetInstance();
+        //    state.GetExplorerState().LoadRootFolder(loadDummyData: true);
 
-            NavigateToExplorerPage();
-        }
+        //    NavigateToExplorerPage();
+        //}
 
-        private async void OpenDummyDataMerge(object sender, RoutedEventArgs e)
-        {
+        //private async void OpenDummyDataMerge(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
 
-            var state = PCOState.GetInstance();
-            state.GetExplorerState().LoadRootFolder(loadDummyData: true, withMerge: true);
+        //    var state = PCOState.GetInstance();
+        //    state.GetExplorerState().LoadRootFolder(loadDummyData: true, withMerge: true);
 
-            NavigateToExplorerPage();
-        }
+        //    NavigateToExplorerPage();
+        //}
 
-        private async void RunAltGetData(object sender, RoutedEventArgs e)
-        {
-            var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            var collector = new GitDataCollector();
-            var rootFolder = collector.AlternativeCollectAllData(path);
-            PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
+        //private async void RunAltGetData(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
+        //    var path = "C:\\TestRepos\\Project-Codebase-Overview";
+        //    var collector = new GitDataCollector();
+        //    var rootFolder = collector.AlternativeCollectAllData(path);
+        //    PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
 
-            NavigateToExplorerPage();
-        }
+        //    NavigateToExplorerPage();
+        //}
 
 
-        private async void RunAltGetDataMerge(object sender, RoutedEventArgs e)
-        {
-            var path = "C:\\TestRepos\\Project-Codebase-Overview";
-            var collector = new GitDataCollector();
-            var rootFolder = collector.ParallelGetAllData(path, null);
-            PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
+        //private async void RunAltGetDataMerge(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
+        //    var path = "C:\\TestRepos\\Project-Codebase-Overview";
+        //    var collector = new GitDataCollector();
+        //    var rootFolder = collector.ParallelGetAllData(path, null);
+        //    PCOState.GetInstance().GetExplorerState().TestSetRootFolder(rootFolder);
 
-            NavigateToExplorerPage();
-        }
+        //    NavigateToExplorerPage();
+        //}
 
-        private void start_test(object sender, RoutedEventArgs e)
-        {
-            GitDataCollector collector = new GitDataCollector();
-            collector.testTime();
-        }
+        //private void start_test(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
+        //    GitDataCollector collector = new GitDataCollector();
+        //    collector.testTime();
+        //}
 
-        private void TestLoadingClick(object sender, RoutedEventArgs e)
-        {
-            var mainWindow = new MainWindow();
-            mainWindow.Activate();
-            mainWindow.NavigateToLoadingPage();
-        }
+        //private void TestLoadingClick(object sender, RoutedEventArgs e)
+        //{
+        //    PCOState.GetInstance().ClearState();
+        //    var mainWindow = new MainWindow();
+        //    mainWindow.Activate();
+        //    mainWindow.NavigateToLoadingPage();
+        //}
         private async void TestLoadingIntended(object sender, RoutedEventArgs e)
         {
             PCOState.GetInstance().ClearState();

@@ -1,4 +1,5 @@
-﻿using Microsoft.UI;
+﻿using LibGit2Sharp;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -12,11 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Pickers;
-using Windows.UI.ViewManagement;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -36,6 +37,8 @@ namespace Project_Codebase_Overview
 
         private async void SelectFolder(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
+
             var folderPicker = new FolderPicker();
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -47,19 +50,22 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-
             try
             {
-                var state = PCOState.GetInstance();
-                state.GetExplorerState().SetRootPath(folder.Path);
+                //test if repo available
+                var testingRepo = new Repository(folder.Path);
             }
             catch (Exception ex)
             {
-                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
                 return;
             }
 
-            NavigateToExplorerPage();
+            PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
+
+            MainWindow window = new MainWindow();
+            window.Activate();
+            window.NavigateToLoadingPage();
             Close();
         }
 
