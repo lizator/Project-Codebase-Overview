@@ -1,21 +1,26 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using LibGit2Sharp;
+using Microsoft.PowerShell.Commands;
+using Microsoft.UI.Xaml.Shapes;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.State;
 using Windows.System;
 using static System.Net.WebRequestMethods;
+using Path = System.IO.Path;
 
 namespace Project_Codebase_Overview.DataCollection
 {
@@ -28,7 +33,8 @@ namespace Project_Codebase_Overview.DataCollection
         private PCOFolder RootFolder;
 
 
-        private static readonly Regex GIT_BLAME_REGEX = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\)(.*)");
+        private static readonly Regex GIT_BLAME_REGEX = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\).*");
+        private static readonly string GIT_BLAME_PS_REGEX = "(?<Key>[\\^]?[a-f0-9]+) .*\\([<](?<Email>.+)[>][ ]+(?<DateString>[0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [\\-\\+]{0,1}[0-9]{4}[ ]+[0-9]+\\).*";
         private static readonly Regex AUTHOR_REGEX = new Regex(@"Author: (.+) <(.+)>");
 
         public async Task<PCOFolder> CollectAllData(string path)
@@ -41,6 +47,8 @@ namespace Project_Codebase_Overview.DataCollection
                 RootFolder = this.ParallelGetAllData(path, dispatcherQueue);
                 //PCOState.GetInstance().GetExplorerState().TestSetRootFolder(RootFolder);
             });
+
+            PCOState.GetInstance().GetTestState().PrintWatches();
 
             return RootFolder;
 
@@ -80,7 +88,7 @@ namespace Project_Codebase_Overview.DataCollection
             foreach (string filePath in filePaths)
             {
                 PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                AddFileCommitsNonLibGit(addedFile, filePath);
+                AddFileCommitsCMD(addedFile, filePath);
             }
 
             return rootFolder;
@@ -102,7 +110,7 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
 
-        private async void AddFileCommitsNonLibGit(PCOFile file, string filePath)
+        private async void AddFileCommitsCMD(PCOFile file, string filePath)
         {
             ProcessStartInfo processInfo;
             Process process;
@@ -122,10 +130,8 @@ namespace Project_Codebase_Overview.DataCollection
 
             var contributorManager = ContributorManager.GetInstance();
 
-            StringBuilder sb = new StringBuilder();
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
-                sb.AppendLine(e.Data);
 
                 var line = e.Data;
                 if (line == null) return;
@@ -137,20 +143,13 @@ namespace Project_Codebase_Overview.DataCollection
                     var key = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
                     var datestring = match.Groups[3].Value;
-                    var content = match.Groups[4].Value;
                     if (!commits.ContainsKey(key))
                     {
                         DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
                         commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
                     }
-
-                    if (content.Trim().Length == 0)
-                    {
-                        commits[key].AddLine(PCOCommit.LineType.WHITE_SPACE);
-                    } else
-                    {
-                        commits[key].AddLine(PCOCommit.LineType.NORMAL);
-                    }
+                     commits[key].AddLine(PCOCommit.LineType.NORMAL);
+                    
 
                 }
             };
@@ -161,6 +160,46 @@ namespace Project_Codebase_Overview.DataCollection
 
             file.commits = commits.Values.ToList();
                 
+            AddCreatorToFile(file, filePath);
+
+        }
+
+        private async void AddFileCommitsPS(PCOFile file, string filePath)
+        {
+
+            var commits = new Dictionary<string, PCOCommit>();
+
+            PowerShell powerShell = PowerShell.Create();
+
+            powerShell.AddScript("cd \"" + RootPath + "\"");
+            powerShell.AddScript("$Pattern = @('" + GIT_BLAME_PS_REGEX + "')");
+            powerShell.AddScript("$Blame = foreach ($line in git blame -e "+ filePath +") {\r\n    if ($line -match $Pattern) {\r\n        $Matches.Remove(0)\r\n        $Matches.Key + '|' + $Matches.Email + '|' + $Matches.DateString\r\n    } \r\n} ");
+            powerShell.AddScript("$Blame | Group-Object -NoElement");
+
+            CultureInfo provider = CultureInfo.InvariantCulture;
+            var contributorManager = ContributorManager.GetInstance();
+
+            Collection<PSObject> output = powerShell.Invoke();
+
+            foreach (PSObject obj in output)
+            {
+                var outCommit = obj.ImmediateBaseObject as GroupInfoNoElement;
+                int lineCount = outCommit.Count;
+                string[] parameterList = outCommit.Name.Split("|");
+
+                var key = parameterList[0];
+                var email = parameterList[1];
+                var datestring = parameterList[2];
+                if (!commits.ContainsKey(key))
+                {
+                    DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
+                    commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
+                }
+                commits[key].AddLine(PCOCommit.LineType.NORMAL, lineCount);
+            }
+
+            file.commits = commits.Values.ToList();
+
             AddCreatorToFile(file, filePath);
 
         }
@@ -178,8 +217,6 @@ namespace Project_Codebase_Overview.DataCollection
 
             var process = Process.Start(processInfo);
 
-            var sb = new StringBuilder();
-
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
 
@@ -189,20 +226,14 @@ namespace Project_Codebase_Overview.DataCollection
 
                 if (match.Success)
                 {
-                    sb.AppendLine(line);
                     var name = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
 
                     file.Creator = contributorManager.GetAuthor(email);
                 }
             };
-            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
-            {
-                sb.AppendLine(e.Data);
-            };
 
             process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
             process.WaitForExit();
 
         }
@@ -220,8 +251,6 @@ namespace Project_Codebase_Overview.DataCollection
 
             var process = Process.Start(processInfo);
 
-            var sb = new StringBuilder();
-
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
 
@@ -231,20 +260,14 @@ namespace Project_Codebase_Overview.DataCollection
 
                 if (match.Success)
                 {
-                    sb.AppendLine(line);
                     var name = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
 
                     contributorManager.InitializeAuthor(email, name);
                 }
             };
-            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
-            {
-                sb.AppendLine(e.Data);
-            };
 
             process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
             process.WaitForExit();
 
         }
@@ -343,8 +366,19 @@ namespace Project_Codebase_Overview.DataCollection
                 {
                     var threadRootFolder = threadData.ThreadRootFolder;
                     PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                    AddFileCommitsNonLibGit(addedFile, filePath);
+
+                    var blameWatch = new Stopwatch();
+                    blameWatch.Start();
+                    AddFileCommitsCMD(addedFile, filePath);
+                    blameWatch.Stop();
+
                     threadData.ThreadFileCount += 1;
+
+                    dispatcherQueue.TryEnqueue(() =>
+                    {
+                        PCOState.GetInstance().GetLoadingState().AddFilesLoaded(1);
+                        PCOState.GetInstance().GetTestState().AddWatchTime("Blame", blameWatch.ElapsedMilliseconds);
+                    });
                     return threadData;
                 },
                 (finalThreadData) => 
@@ -355,10 +389,6 @@ namespace Project_Codebase_Overview.DataCollection
                         PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
 
                         //TODO Add finalThreadData.ThreadFileCount to loading
-                        dispatcherQueue.TryEnqueue(() =>
-                        {
-                            PCOState.GetInstance().GetLoadingState().AddFilesLoaded(finalThreadData.ThreadFileCount);
-                        });
                         
                     }
                 }
