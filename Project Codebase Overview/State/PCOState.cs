@@ -12,6 +12,7 @@ namespace Project_Codebase_Overview.State
     {
         private ExplorerState ExplorerState;
         private LoadingState LoadingState;
+        private TestState TestState;
         private static PCOState Instance;
 
         public Repository TempGitRepo;
@@ -30,6 +31,7 @@ namespace Project_Codebase_Overview.State
         {
             ExplorerState = new ExplorerState();
             LoadingState = new LoadingState();
+            TestState = new TestState();
         }
 
         public ExplorerState GetExplorerState()
@@ -42,10 +44,16 @@ namespace Project_Codebase_Overview.State
             return LoadingState;
         }
 
+        public TestState GetTestState()
+        {
+            return TestState;
+        }
+
         public void ClearState()
         {
             ExplorerState = new ExplorerState();
             LoadingState = new LoadingState();
+            TestState = new TestState();
         }
     }
 }
