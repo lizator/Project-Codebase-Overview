@@ -7,8 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
-    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges">
+    <!--Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
   
     <Page.Resources>
         <Style x:Key="ToolButton" TargetType="Button">
@@ -44,7 +44,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Background="LightGray" Grid.Row="0">
+        <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
@@ -117,7 +117,7 @@
                                                         <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
                                                     </Ellipse.Fill>
                                                 </Ellipse>
-                                                <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                                <TextBlock Margin="5,0,0,0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
                                             </Grid>
                                         </DataTemplate>
                                     </editors:SfComboBox.ItemTemplate>
