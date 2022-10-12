@@ -22,6 +22,7 @@ using Project_Codebase_Overview.Dialogs;
 using Windows.Storage.Pickers;
 using LibGit2Sharp;
 using Windows.ApplicationModel.VoiceCommands;
+using System.Diagnostics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -84,6 +85,149 @@ namespace Project_Codebase_Overview
             state.GetExplorerState().SetRootPath(path);
 
             NavigateToLoadingPage();
+        }
+
+        private async void DoDataOptimization2(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ClearState();
+
+            GitDataCollector collector = new GitDataCollector();
+
+            var state = PCOState.GetInstance();
+            var path = "C:\\TestRepos\\monero";
+
+            state.GetExplorerState().SetRootPath(path);
+
+            var stopwatch = new Stopwatch();
+
+            Debug.WriteLine("starting test!");
+
+            stopwatch.Start();
+            collector.Parallel2GetAllData(path, null, -1);
+            stopwatch.Stop();
+            var parallelNone = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel none done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Parallel2GetAllData(path, null, 16);
+            stopwatch.Stop();
+            var parallel16 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel16 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Parallel2GetAllData(path, null, 32);
+            stopwatch.Stop();
+            var parallel32 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel32 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Parallel2GetAllData(path, null, 64);
+            stopwatch.Stop();
+            var parallel64 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel64 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Parallel2GetAllData(path, null, 128);
+            stopwatch.Stop();
+            var parallel128 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel128 done");
+
+            Debug.WriteLine("_________________________");
+            Debug.WriteLine("TESTING DATA OPTIMISATION");
+            Debug.WriteLine("Parallel none: " + parallelNone / 1000 + " seconds");
+            Debug.WriteLine("Parallel   16: " + parallel16 / 1000 + " seconds");
+            Debug.WriteLine("Parallel   32: " + parallel32 / 1000 + " seconds");
+            Debug.WriteLine("Parallel   64: " + parallel64 / 1000 + " seconds");
+            Debug.WriteLine("Parallel  128: " + parallel128 / 1000 + " seconds");
+            Debug.WriteLine("_________________________");
+        }
+
+        private async void DoDataOptimization(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ClearState();
+
+            GitDataCollector collector = new GitDataCollector();
+
+            var state = PCOState.GetInstance();
+            var path = "C:\\TestRepos\\monero";
+            //var path = "C:\\TestRepos\\Project-Codebase-Overview";
+
+            state.GetExplorerState().SetRootPath(path);
+
+            var stopwatch = new Stopwatch();
+
+            Debug.WriteLine("starting test!");
+            stopwatch.Start();
+            collector.SimpleCollectAllData(path);
+            stopwatch.Stop();
+            var simple1 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel16 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Simple2CollectAllData(path, null);
+            stopwatch.Stop();
+            var simple2 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel32 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.ParallelGetAllData(path, null);
+            stopwatch.Stop();
+            var parallel1 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel64 done");
+
+            PCOState.GetInstance().ClearState();
+
+            state.GetExplorerState().SetRootPath(path);
+
+            stopwatch.Restart();
+            collector.Parallel2GetAllData(path, null);
+            stopwatch.Stop();
+            var parallel2 = stopwatch.ElapsedMilliseconds;
+
+            Debug.WriteLine("parallel128 done");
+
+            Debug.WriteLine("_________________________");
+            Debug.WriteLine("TESTING DATA OPTIMISATION");
+            Debug.WriteLine("Simple 1:   " + simple1 / 1000 + " seconds");
+            Debug.WriteLine("Simple 2:   " + simple2 / 1000 + " seconds");
+            Debug.WriteLine("Parallel 1: " + parallel1 / 1000 + " seconds");
+            Debug.WriteLine("Parallel 2: " + parallel2 / 1000 + " seconds");
+            Debug.WriteLine("_________________________");
+
+
+
         }
 
         //private async void OpenDummyData(object sender, RoutedEventArgs e)

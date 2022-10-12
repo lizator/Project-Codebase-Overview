@@ -19,7 +19,7 @@
                     <Button Content="Load Rave" FontSize="18" Margin="4" Width="200" IsEnabled="False"/>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Column="1" Background="Blue"></Grid>
+            <Grid Grid.Column="1" Background="DarkGray"></Grid>
             
         </Grid>
     </Grid>
