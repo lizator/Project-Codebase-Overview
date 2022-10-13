@@ -57,7 +57,7 @@ namespace Project_Codebase_Overview
             var newlySelected = ((TreeGridRowInfo)e.AddedItems.First()).RowData as ExplorerItem;
             if (newlySelected.GetType() == typeof(PCOFolder))
             {
-                MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Set as root" };
+                MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to Folder" };
                 setRootItem.Click += this.SetRoot;
                 menuFlyout.Items.Add(setRootItem);
             }
