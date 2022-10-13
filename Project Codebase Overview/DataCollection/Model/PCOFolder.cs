@@ -92,6 +92,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
         {
+            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
             var explorerGroups = filePaths.GroupBy(path => path[index]);
 
             foreach (var group in explorerGroups)

@@ -183,7 +183,7 @@ namespace Project_Codebase_Overview
             stopwatch.Stop();
             var simple1 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel16 done");
+            Debug.WriteLine("simple1 done");
 
             PCOState.GetInstance().ClearState();
 
@@ -194,7 +194,7 @@ namespace Project_Codebase_Overview
             stopwatch.Stop();
             var simple2 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel32 done");
+            Debug.WriteLine("simple2 done");
 
             PCOState.GetInstance().ClearState();
 
@@ -205,7 +205,7 @@ namespace Project_Codebase_Overview
             stopwatch.Stop();
             var parallel1 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel64 done");
+            Debug.WriteLine("parallel1 done");
 
             PCOState.GetInstance().ClearState();
 
@@ -216,7 +216,7 @@ namespace Project_Codebase_Overview
             stopwatch.Stop();
             var parallel2 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel128 done");
+            Debug.WriteLine("parallel2 done");
 
             Debug.WriteLine("_________________________");
             Debug.WriteLine("TESTING DATA OPTIMISATION");

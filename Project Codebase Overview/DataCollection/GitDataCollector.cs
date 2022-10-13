@@ -59,6 +59,8 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
         public PCOFolder SimpleCollectAllData(string path)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        // could be important to keep around for optimization testing
         {
             RootPath = path;
             //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
@@ -99,6 +101,7 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
          public PCOFolder Simple2CollectAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             RootPath = path;
             try
@@ -137,7 +140,7 @@ namespace Project_Codebase_Overview.DataCollection
             //create root folder
             var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
-            var threadDataTemp = new PCOThreadData(rootFolder, RootPath, dispatcherQueue);
+            var threadDataTemp = new PCOGitThreadData(rootFolder, RootPath, dispatcherQueue);
 
             stopwatch.Start();
 
@@ -157,22 +160,8 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
 
-        private void AddFileCommits(PCOFile file, string filePath)
-        {
-            var blameHunkGroups = GitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Sha);
-
-            foreach (var group in blameHunkGroups)
-            {
-                int commitLineCount = group.Sum(hunk => hunk.LineCount);
-                var finalSignature = group.First().FinalSignature;
-                var commit = new PCOCommit(finalSignature.Email, finalSignature.Name, finalSignature.When.Date);
-                commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
-                file.commits.Add(commit);
-            }
-        }
-
-
         private async void AddFileCommitsCMD(PCOFile file, string filePath)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             ProcessStartInfo processInfo;
             Process process;
@@ -226,47 +215,8 @@ namespace Project_Codebase_Overview.DataCollection
 
         }
 
-        private async void AddFileCommitsPS(PCOFile file, string filePath)
-        {
-
-            var commits = new Dictionary<string, PCOCommit>();
-
-            PowerShell powerShell = PowerShell.Create();
-
-            powerShell.AddScript("cd \"" + RootPath + "\"");
-            powerShell.AddScript("$Pattern = @('" + GIT_BLAME_PS_REGEX + "')");
-            powerShell.AddScript("$Blame = foreach ($line in git blame -e "+ filePath +") {\r\n    if ($line -match $Pattern) {\r\n        $Matches.Remove(0)\r\n        $Matches.Key + '|' + $Matches.Email + '|' + $Matches.DateString\r\n    } \r\n} ");
-            powerShell.AddScript("$Blame | Group-Object -NoElement");
-
-            CultureInfo provider = CultureInfo.InvariantCulture;
-            var contributorManager = ContributorManager.GetInstance();
-
-            Collection<PSObject> output = powerShell.Invoke();
-
-            foreach (PSObject obj in output)
-            {
-                var outCommit = obj.ImmediateBaseObject as GroupInfoNoElement;
-                int lineCount = outCommit.Count;
-                string[] parameterList = outCommit.Name.Split("|");
-
-                var key = parameterList[0];
-                var email = parameterList[1];
-                var datestring = parameterList[2];
-                if (!commits.ContainsKey(key))
-                {
-                    DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                    commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
-                }
-                commits[key].AddLine(PCOCommit.LineType.NORMAL, lineCount);
-            }
-
-            file.commits = commits.Values.ToList();
-
-            AddCreatorToFile(file, filePath);
-
-        }
-
         private async void AddCreatorToFile(PCOFile file, string filePath)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             return;
             var contributorManager = ContributorManager.GetInstance();
@@ -338,6 +288,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         public PCOFolder AlternativeCollectAllData(string path)
         {
+            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
             RootPath = path;
             try
             {
@@ -383,6 +334,7 @@ namespace Project_Codebase_Overview.DataCollection
         }
 
         public PCOFolder ParallelGetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             RootPath = path;
             try
@@ -422,7 +374,7 @@ namespace Project_Codebase_Overview.DataCollection
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Parallel.ForEach<string, PCOThreadData>(filePaths,
+            Parallel.ForEach<string, PCOGitThreadData>(filePaths,
                 new ParallelOptions() { MaxDegreeOfParallelism = 4 },
                 () => new(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue),
                 (filePath, loop, threadData) =>
@@ -433,8 +385,6 @@ namespace Project_Codebase_Overview.DataCollection
                     AddFileCommitsCMD(addedFile, filePath);
 
                     threadData.ThreadFileCount += 1;
-
-                    AddCreatorToFile(addedFile, filePath);
 
                     return threadData;
                 },
@@ -496,7 +446,7 @@ namespace Project_Codebase_Overview.DataCollection
             });
             
 
-            //Debug.WriteLine(filePaths.Count());
+            // Testing parallel block size start TODO: remove parallelChunkSetter and use PARALLEL_CUNK_SIZE parameter instead
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -505,18 +455,21 @@ namespace Project_Codebase_Overview.DataCollection
                 parallelChunkSetter = PARALLEL_CHUNK_SIZE;
             }
 
-            var rangePartitioner = Partitioner.Create(0, filePaths.Count(), Math.Max(parallelChunkSetter, 1));
+            var rangePartitioner = Partitioner.Create(0, filePaths.Count(), Math.Max(parallelChunkSetter, 1)); //Keep this line after testing is done
             if (parallelChunkSetter == -1)
             {
                 rangePartitioner = Partitioner.Create(0, filePaths.Count());
             }
+            // Testing End
+
+
 
             Parallel.ForEach(rangePartitioner,
                 new ParallelOptions() { MaxDegreeOfParallelism = 4 },
                 (range, loop) =>
                 {
 
-                    var threadData = new PCOThreadData(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue);
+                    var threadData = new PCOGitThreadData(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue);
                     var threadRootFolder = threadData.ThreadRootFolder;
 
                     for (int i = range.Item1; i < range.Item2; i++)
@@ -527,21 +480,13 @@ namespace Project_Codebase_Overview.DataCollection
                         threadData.AddFileCommitsCMD(addedFile, filePath);
 
                         threadData.ThreadFileCount += 1;
-
-                        AddCreatorToFile(addedFile, filePath);
                     }
-
-
                     threadData.Invoke();
-
 
                     lock (RootFolderLock)
                     {
                         var finalThreadRootFolder = threadData.ThreadRootFolder;
                         PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
-
-                        //TODO Add finalThreadData.ThreadFileCount to loading
-
                     }
                 });
 
@@ -551,26 +496,34 @@ namespace Project_Codebase_Overview.DataCollection
             return rootFolder;
         }
 
-        private class PCOThreadData
+        private class PCOGitThreadData
         {
             public PCOFolder ThreadRootFolder;
             public int ThreadFileCount;
             public int CurrentIndex;
+            public int CurrentCreatorIndex;
             private ProcessStartInfo ProcessInfo;
             public Process Process;
+            private ProcessStartInfo CreatorProcessInfo;
+            public Process CreatorProcess;
             public List<PCOFile> Files;
             public Dictionary<string, PCOCommit> CurrentCommits;
             public List<string> Commands;
+            public List<string> CreatorCommands;
+            public bool IsGettingCreator;
+            public Author CurrentCreator;
 
-            public PCOThreadData(PCOFolder f, string rootPath, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+            public PCOGitThreadData(PCOFolder f, string rootPath, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
             {
                 this.Commands = new List<string>();
+                this.CreatorCommands = new List<string>();
                 this.Files = new List<PCOFile>();
                 this.CurrentCommits = new Dictionary<string, PCOCommit>();
                 this.ThreadRootFolder = f;
                 this.ThreadFileCount = 0;
                 this.CurrentIndex = -1;
-
+                this.CurrentCreatorIndex = -1;
+                this.IsGettingCreator = false;
 
                 this.ProcessInfo = new ProcessStartInfo("cmd.exe");
 
@@ -583,6 +536,18 @@ namespace Project_Codebase_Overview.DataCollection
                 this.Process = new Process();
                 this.Process.StartInfo = ProcessInfo;
 
+                this.CreatorProcessInfo = new ProcessStartInfo("cmd.exe");
+
+                CreatorProcessInfo.RedirectStandardInput = CreatorProcessInfo.RedirectStandardOutput = CreatorProcessInfo.RedirectStandardError = true;
+                CreatorProcessInfo.CreateNoWindow = true;
+                CreatorProcessInfo.UseShellExecute = false;
+                CreatorProcessInfo.WorkingDirectory = rootPath;
+                CreatorProcessInfo.FileName = "cmd.exe";
+
+                this.CreatorProcess = new Process();
+                this.CreatorProcess.StartInfo = CreatorProcessInfo;
+
+
                 CultureInfo provider = CultureInfo.InvariantCulture;
 
                 var contributorManager = ContributorManager.GetInstance();
@@ -593,36 +558,87 @@ namespace Project_Codebase_Overview.DataCollection
                 {
                     var line = e.Data;
                     if (line == null) return;
-                    if (line.StartsWith("file:"))
+                    if (line.StartsWith("file-creator:"))
                     {
+                        this.IsGettingCreator = true;
                         if (this.CurrentIndex != -1)
                         {
                             this.Files[this.CurrentIndex].commits = this.CurrentCommits.Values.ToList();
+                            this.Files[this.CurrentIndex].Creator = this.CurrentCreator;
                             this.CurrentCommits = new Dictionary<string, PCOCommit>();
                             dispatcherQueue?.TryEnqueue(() =>
                             {
                                 PCOState.GetInstance().GetLoadingState().AddFilesLoaded(1);
                             });
                         }
+
                         this.CurrentIndex++;
+                    } else if (line.StartsWith("file-blame:")) 
+                    {
+                        this.IsGettingCreator = false;
                     }
                     else
                     {
-                        var match = GIT_BLAME_REGEX.Match(line);
+                        if (this.IsGettingCreator)
+                        {
+                            
+                            var match = AUTHOR_REGEX.Match(line.Trim());
+
+                            if (match.Success)
+                            {
+                                var name = match.Groups[1].Value;
+                                var email = match.Groups[2].Value;
+
+                                this.CurrentCreator = contributorManager.GetAuthor(email);
+                            }
+                        } else
+                        {
+                            var match = GIT_BLAME_REGEX.Match(line);
+
+                            if (match.Success)
+                            {
+                                var key = match.Groups[1].Value;
+                                var email = match.Groups[2].Value;
+                                var datestring = match.Groups[3].Value;
+                                if (!CurrentCommits.ContainsKey(key))
+                                {
+                                    DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
+                                    CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
+                                }
+                                CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
+
+                            }
+                        }
+                        
+                    }
+
+                };
+
+                this.CreatorProcess.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+                {
+                    var line = e.Data;
+                    if (line == null) return;
+                    if (line.StartsWith("file-creator:"))
+                    {
+                        if (this.CurrentCreatorIndex != -1)
+                        {
+                            this.Files[this.CurrentCreatorIndex].Creator = this.CurrentCreator;
+                        }
+
+                        this.CurrentCreatorIndex++;
+                    }
+                    else
+                    {
+                        var match = AUTHOR_REGEX.Match(line.Trim());
 
                         if (match.Success)
                         {
-                            var key = match.Groups[1].Value;
+                            var name = match.Groups[1].Value;
                             var email = match.Groups[2].Value;
-                            var datestring = match.Groups[3].Value;
-                            if (!CurrentCommits.ContainsKey(key))
-                            {
-                                DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                                CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
-                            }
-                            CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 
+                            this.CurrentCreator = contributorManager.GetAuthor(email);
                         }
+
                     }
 
                 };
@@ -634,14 +650,21 @@ namespace Project_Codebase_Overview.DataCollection
 
                 this.Files.Add(file);
 
-                this.Commands.Add("echo file:" + filePath);
+                this.Commands.Add("echo file-creator:" + filePath);
+                //this.Commands.Add("git log --diff-filter=A -- \"" + filePath + "\"");
+                this.Commands.Add("echo file-blame:" + filePath);
                 this.Commands.Add("git blame -e \"" + filePath + "\"");
+
+                this.CreatorCommands.Add("echo file-creator:" + filePath);
+                this.CreatorCommands.Add("git log --diff-filter=A -- \"" + filePath + "\"");
 
             }
 
             public async void Invoke()
             {
-                this.Commands.Add("echo file:Done");
+                this.Commands.Add("echo file-creator:Done");
+                this.CreatorCommands.Add("echo file-creator:Done");
+
                 this.Process.Start();
                 this.Process.BeginOutputReadLine();
                 this.Process.BeginErrorReadLine();
@@ -652,16 +675,33 @@ namespace Project_Codebase_Overview.DataCollection
                     {
                         sw.WriteLine(cmd);
                     }
-                    Debug.WriteLine("Thead with " + (this.Commands.Count() - 1) / 2 + " files Completed");
-                    
+                    Debug.WriteLine("Thead with " + (this.Commands.Count() - 1) / 3 + " files Completed");
+
                 }
 
                 this.Process.WaitForExit();
+
+
+                //this.CreatorProcess.Start();
+                //this.CreatorProcess.BeginOutputReadLine();
+                //this.CreatorProcess.BeginErrorReadLine();
+
+                //using (StreamWriter sw = this.CreatorProcess.StandardInput)
+                //{
+                //    foreach (var cmd in this.CreatorCommands)
+                //    {
+                //        sw.WriteLine(cmd);
+                //    }
+
+                //}
+
+                //this.CreatorProcess.WaitForExit();
             }
 
         }
 
         public void testTime()
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             var path = "C:\\TestRepos\\Project-Codebase-Overview";
             var repetitions = 50;
