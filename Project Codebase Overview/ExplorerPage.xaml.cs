@@ -74,9 +74,11 @@ namespace Project_Codebase_Overview
             Debug.WriteLine("imageFailed: Exception: " + e.ErrorMessage);
         }
 
-        private void ExpandClick(object sender, RoutedEventArgs e)
+        private async void ExpandClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Expand clicked");
+            ExplorerItem item = ((Button)sender).DataContext as ExplorerItem;
+            await DialogHandler.ShowExplorerItemDialog(item, this.XamlRoot);
         }
 
         private void BackClick(object sender, RoutedEventArgs e)

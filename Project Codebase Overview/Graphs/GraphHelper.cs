@@ -1,7 +1,9 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Graphs.Model;
+using Syncfusion.UI.Xaml.Charts;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
@@ -83,6 +85,39 @@ namespace Project_Codebase_Overview.Graphs
             }
 
             return blockList;
+        }
+
+        public static SfCircularChart GetPieChartFromExplorerItem(ExplorerItem item)
+        {
+            List<GraphBlock> blocks = GraphHelper.GetGraphBlocksFromDistribution(item.GraphModel.LineDistribution, item.GraphModel.LinesTotal, null);
+
+            //piechart for linedistribution between contributors
+            SfCircularChart lineDistChart = new SfCircularChart();
+            lineDistChart.Header = "Contributor line distribution";
+            lineDistChart.Legend = new ChartLegend();
+
+            //make color pallette for series
+            var colorPallette = blocks.Select(x => new SolidColorBrush(x.Color) as Brush).ToList();
+            //create series (pie slices)
+            var lineDistSeries = new PieSeries();
+            lineDistSeries.ItemsSource = blocks;
+            lineDistSeries.XBindingPath = "Name";
+            lineDistSeries.YBindingPath = "Percentage";
+            lineDistSeries.ShowDataLabels = true;
+            lineDistSeries.DataLabelSettings = new CircularDataLabelSettings()
+            {
+                Position = CircularSeriesLabelPosition.OutsideExtended,
+                ShowConnectorLine = true,
+                Context = LabelContext.Percentage,
+                //TODO: make template in XAML for label to show name and percentage!
+            };
+
+            lineDistSeries.PaletteBrushes = colorPallette;
+            lineDistSeries.EnableAnimation = true;
+
+            lineDistChart.Series.Add(lineDistSeries);
+
+            return lineDistChart;
         }
     }
 }
