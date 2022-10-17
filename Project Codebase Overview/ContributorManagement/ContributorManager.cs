@@ -17,6 +17,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         public static void ResetInstance()
         {
             Instance = null;
+            PCOColorPicker.ResetInstance();
         }
 
         private ContributorManager()

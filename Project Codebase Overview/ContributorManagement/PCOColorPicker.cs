@@ -26,6 +26,10 @@ namespace Project_Codebase_Overview.ContributorManagement
         private int AuthorCounter = 0;
 
         private static PCOColorPicker Instance;
+        public static void ResetInstance()
+        {
+            Instance = null;
+        }
 
         public static Color Black { get => Color.FromArgb(255, 0, 0, 0); }
         public static Color Tranparent { get => Color.FromArgb(0, 0, 0, 0); }
