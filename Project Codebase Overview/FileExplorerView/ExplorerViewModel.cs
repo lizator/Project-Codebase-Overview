@@ -1,25 +1,35 @@
-﻿using Project_Codebase_Overview.DataCollection;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.State;
 using Project_Codebase_Overview.TestDocs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.FileExplorerView
 {
-    public class ExplorerViewModel
+    public class ExplorerViewModel : ObservableObject
     {
-        public ExplorerViewModel() // TODO add path?
+        private PCOFolder viewRootFolder;
+        public string CurrentRootPath { 
+            get => currentRootPath;
+            set => SetProperty(ref currentRootPath, value); 
+        }
+
+        public ExplorerViewModel()
         {
 
         }
 
-        private ObservableCollection<IExplorerItem> _explorerItems;
+        private ObservableCollection<ExplorerItem> _explorerItems;
+        private string currentRootPath;
 
-        public ObservableCollection<IExplorerItem> ExplorerItems
+        public ObservableCollection<ExplorerItem> ExplorerItems
         {
             get => _explorerItems;
             set => _explorerItems = value;
@@ -27,12 +37,47 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public void SetExplorerItems(PCOFolder root)
         {
-            var explorerItems = new ObservableCollection<IExplorerItem>();
+            if (this.ExplorerItems == null)
+            {
+                this.ExplorerItems = new ObservableCollection<ExplorerItem>();
+            }
+            this.ExplorerItems.Clear();
+            var explorerItems = new List<ExplorerItem>();
             foreach (var item in root.SortedChildren)
             {
-                explorerItems.Add(item);
+                this.ExplorerItems.Add(item);
             }
-            this.ExplorerItems = explorerItems;
+            this.viewRootFolder = root;
+            this.CurrentRootPath = PCOState.GetInstance().GetExplorerState().GetCurrentRootPath();
+        }
+
+        public void SetNewRoot(PCOFolder newFolder)
+        {
+            PCOState.GetInstance().GetExplorerState().AddFolderHistory(newFolder);
+            SetExplorerItems(newFolder);
+        }
+
+        public void NavigateBack()
+        {
+            SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetBackHistoryFolder());
+        }
+
+        public void NavigateForward()
+        {
+            SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetForwardHistoryFolder());
+        }
+
+        public void NavigateUp()
+        {
+            if(viewRootFolder.Parent != null)
+            {
+                SetNewRoot(viewRootFolder.Parent);
+            }
+        }
+
+        internal void NavigateToPath(string path)
+        {
+            SetNewRoot(PCOState.GetInstance().GetExplorerState().GetSubFolderFromPath(path));
         }
     }
 }

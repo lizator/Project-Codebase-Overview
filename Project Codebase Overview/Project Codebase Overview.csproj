@@ -22,6 +22,11 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="ExplorerPage.xaml" />
+    <None Remove="SettingsPage.xaml" />
+    <None Remove="StartWindow.xaml" />
+    <None Remove="TestStartWindow.xaml" />
+    <None Remove="LoadingPage.xaml" />
+    <None Remove="UserControl1.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,12 +40,15 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
     <PackageReference Include="LibGit2Sharp" Version="0.26.2" />
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.4" />
+    <PackageReference Include="Microsoft.PowerShell.SDK" Version="7.2.6" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.5" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.1" />
-    <PackageReference Include="Syncfusion.Core.WinUI" Version="20.2.0.48" />
-    <PackageReference Include="Syncfusion.Editors.WinUI" Version="20.2.0.48" />
-    <PackageReference Include="Syncfusion.Grid.WinUI" Version="20.2.0.48" />
+    <PackageReference Include="Syncfusion.Core.WinUI" Version="20.3.0.47" />
+    <PackageReference Include="Syncfusion.Editors.WinUI" Version="20.3.0.47" />
+    <PackageReference Include="Syncfusion.Gauge.WinUI" Version="20.3.0.47" />
+    <PackageReference Include="Syncfusion.Grid.WinUI" Version="20.3.0.47" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
@@ -51,6 +59,26 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="TestStartWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="StartWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="LoadingPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ExplorerPage.xaml">

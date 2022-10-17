@@ -11,44 +11,60 @@ namespace Project_Codebase_Overview.ContributorManagement
 {
     internal class ContributorManager
     {
-        Dictionary<string, Author> authors;
+        Dictionary<string, Author> Authors;
+        private static ContributorManager Instance = null;
 
-        private static ContributorManager instance = null;
-        private int idCounter;
+        public static void ResetInstance()
+        {
+            Instance = null;
+            PCOColorPicker.ResetInstance();
+        }
+
         private ContributorManager()
         {
-            authors = new Dictionary<string, Author>();
-            idCounter = 1;
+            Authors = new Dictionary<string, Author>();
         }
 
         public static ContributorManager GetInstance()
         {
-            if(instance == null)
+            if(Instance == null)
             {
-                instance = new ContributorManager();
+                Instance = new ContributorManager();
             }
-            return instance;
+            return Instance;
         }
 
-        public void AddAuthor(string email, string name)
+
+
+        private void AddAuthor(string email, string name)
         {
-            Author author = new Author(idCounter, email, name);
-            this.authors.Add(email, author);
-            idCounter++;
+            Author author = new Author(email, name);
+            var colorPicker = PCOColorPicker.GetInstance();
+            author.Color = colorPicker.AssignAuthorColor();
+            this.Authors.Add(email, author);
+
+
         }
 
         public Author GetAuthor (string email)
         {
-            return this.authors[email];
+            return this.Authors[email];
         }
 
-        public Author GetOrCreateAuthor (string email, string name)
+        public void InitializeAuthor(string email, string name)
         {
-            if (!authors.ContainsKey(email))
+            if (this.Authors.ContainsKey(email))
             {
-                AddAuthor(email, name);
+                this.Authors[email].AddAlias(name);
+            } else
+            {
+                this.AddAuthor(email, name);
             }
-            return GetAuthor(email);
+        }
+
+        public List<Author> GetAllAuthors()
+        {
+            return Authors.Values.ToList();
         }
     }
 }

@@ -6,44 +6,158 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
+    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges">
+    <!--Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
+  
+    <Page.Resources>
+        <Style x:Key="ToolButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style x:Key="ToolImage" TargetType="Image">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </Page.Resources>
+    
     <Page.DataContext>
         <local:ExplorerViewModel/>
     </Page.DataContext>
-    <Grid>
+
+
+
+    <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="80*"/>
+            <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid Background="Aqua" Grid.Column="0"> <!-- Settings sidemenu TODO -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="50"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <!-- FileExplorer tools -->
+            <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowLeft.png"/>
+            </Button>
+            <Button Click="ForwardClick" Grid.Column="1" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowRight.png" />
+            </Button>
+            <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}" Margin="40,0,0,0">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowUp.png"/>
+            </Button>
+            <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="3" CornerRadius="0"  HorizontalContentAlignment="Left">
+                <TextBlock HorizontalAlignment="Left" 
+                       VerticalAlignment="Center"
+                       Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
+            </Button>
             
         </Grid>
 
-        <Grid HorizontalAlignment="Right" Grid.Column="1">
+        <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
+                                ChildPropertyName="SortedChildren"
+                                ItemsSource="{Binding ExplorerItems, Mode=OneWay}"
+                                ShowRowHeader="True"
+                                Grid.Row="1"
+                                ColumnWidthMode="Star"
+                                AutoGenerateColumnsMode="None"
+                                AllowResizingColumns="False"
+                                GridLinesVisibility="Horizontal"
+                                SelectionMode="Single"
+                                NavigationMode="Row">
+            
+            <treeGrid:SfTreeGrid.Columns>
+                <treeGrid:TreeGridColumns>
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="225">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <editors:SfComboBox ItemsSource="{Binding Owners}" 
+                                                        SelectionChanged="SfComboBox_SelectionChanged"
+                                                        HorizontalAlignment="Stretch"
+                                                        TextMemberPath="Name"
+                                                        IsTextSearchEnabled="True"
+                                                        IsEditable="True"
+                                                        IsFilteringEnabled="True"
+                                                        PlaceholderText="{Binding SelectedOwnerName}"
+                                                        >
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="60"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-
-            <Grid Background="Red" Width="8000"></Grid> <!-- FileExplorer tools -->
-            <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
-                                 ChildPropertyName="SortedChildren"
-                                 ItemsSource="{Binding ExplorerItems}"
-                                 ShowRowHeader="True"
-                                 Grid.Row="1"
-                                 ColumnWidthMode="AutoLastColumnFill"
-                                 AutoGenerateColumnsMode="None"
-                                 AllowResizingColumns="True">
-                <treeGrid:SfTreeGrid.Columns>
-                    <treeGrid:TreeGridColumns>
-                        <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  MappingName="name" HeaderText="Name"/>
-                        <treeGrid:TreeGridTextColumn MappingName="parent.name" HeaderText="Parent"/>
-                    </treeGrid:TreeGridColumns>
-                </treeGrid:SfTreeGrid.Columns>
-            </treeGrid:SfTreeGrid>
-
-        </Grid>
+                                        <editors:SfComboBox.LeadingView >
+                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                                          Stroke="Black"
+                                                        Grid.Column="0"  Fill="{Binding SelectedOwnerColor, Mode=OneWay}"/>
+                                    </editors:SfComboBox.LeadingView>
+                                    <editors:SfComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                                                <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                                              Stroke="Black"
+                                                            Grid.Column="0" >
+                                                    <Ellipse.Fill>
+                                                        <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+                                                <TextBlock Margin="5,0,0,0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </editors:SfComboBox.ItemTemplate>
+                                </editors:SfComboBox>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested team" Width="225">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >
+                                   <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                            Fill="{Binding SuggestedOwnerColor}"  Stroke="Black"
+                                            Grid.Column="0"></Ellipse>
+                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock> 
+                                </Grid>
+                                
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTemplateColumn MappingName="Parent.Name" HeaderText="Line distribution" Width="300">
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                    <treeGrid:TreeGridTextColumn MappingName="LinesTotal" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
+                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50"> <!-- expand button column--> 
+                        <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="ExpandClick" Background="Transparent" BorderThickness="0">
+                                    <Image Source="Assets/Expand.png"></Image>
+                                </Button>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                    </treeGrid:TreeGridTemplateColumn>
+                </treeGrid:TreeGridColumns>
+            </treeGrid:SfTreeGrid.Columns>
+        </treeGrid:SfTreeGrid>
     </Grid>
+
 </Page>

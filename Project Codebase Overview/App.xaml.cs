@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Windowing;
+using Microsoft.UI;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -33,7 +35,7 @@ namespace Project_Codebase_Overview
         public App()
         {
             //Register Syncfusion license
-            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzEyNzEwQDMyMzAyZTMyMmUzMFB0eGROMGZJdkpxbndEeVdPSTl4ZDJycmpCQk5ROVJBZ21XNldhRjN2WWc9");
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("NzMwMDE4QDMyMzAyZTMzMmUzMEJzcy9DVzE4RFRFejZOb1VMbHIxZHRVaXFzVDBOMUVDZWhhUDg3RlAxRnc9");
 
             this.InitializeComponent();
         }
@@ -45,12 +47,35 @@ namespace Project_Codebase_Overview
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            s_window = new TestStartWindow();
+
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(s_window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
+            if (displayArea is not null)
+            {
+                var CenteredPosition = appWindow.Position;
+                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
+                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
+                appWindow.Move(CenteredPosition);
+            }
+
+            s_window.Activate();
         }
+
+        public void SetMainWindow(MainWindow mainWindow)
+        {
+            m_window = mainWindow;
+        }
+
+        private Window s_window;
+
+        public Window window => s_window;
 
         private Window m_window;
 
-        public Window window => m_window;
+        public Window MainWindow => m_window;
     }
 }

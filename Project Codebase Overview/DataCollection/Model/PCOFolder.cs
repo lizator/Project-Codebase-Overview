@@ -1,4 +1,8 @@
-﻿using Syncfusion.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
+using Project_Codebase_Overview.ContributorManagement;
+using Syncfusion.UI.Xaml.Data;
+using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -6,54 +10,62 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
-    public class PCOFolder : IExplorerItem, INotifyCollectionChanged
+    public class PCOFolder : ExplorerItem, INotifyCollectionChanged
     {
-        public string name { get; set; }
-        public object graphModel { get; set; }
-        public PCOFolder parent { get; set; }
-        public Dictionary<string, IExplorerItem> children { get; } // <childname, childobject>
+        public Dictionary<string, ExplorerItem> Children { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public PCOFolder(string name, PCOFolder parent)
         {
-            this.name = name;
-            this.parent = parent;
-            this.children = new Dictionary<string, IExplorerItem>();
+            this.Name = name;
+            this.Parent = parent;
+            this.Children = new Dictionary<string, ExplorerItem>();
+            this.GraphModel = new GraphModel();
+            this.GraphModel.FileName = name;
         }
-        public int CompareTo(object obj)
+
+        public override int CompareTo(object obj)
         {
             if (obj.GetType() != typeof(PCOFolder))
             {
                 return -1;
             }
-            return string.Compare(this.name, ((PCOFolder)obj).name, StringComparison.InvariantCulture);
+            return string.Compare(this.Name, ((PCOFolder)obj).Name, StringComparison.InvariantCulture);
         }
 
-        public void CalculateData()
+        public override void CalculateData()
         {
-            throw new NotImplementedException();
+            foreach (var child in Children)
+            {
+                child.Value.CalculateData();
+                this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
+                this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
+            }
+            this.GraphModel.UpdateSuggestedOwner();
         }
 
 
-        public void AddChild(IExplorerItem child)
+        public void AddChild(ExplorerItem child)
         {
-            children.Add(child.name, child);
+            Children.Add(child.Name, child);
         }
-        public void AddChildren(IExplorerItem[] child)
+        public void AddChildren(ExplorerItem[] child)
         {
             throw new NotImplementedException();
             //children.AddRange(child);
         }
 
-        public List<IExplorerItem> SortedChildren { get => GetSortedChildren(); }
+        public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
+        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
 
-        private List<IExplorerItem> GetSortedChildren()
+        private List<ExplorerItem> GetSortedChildren()
         {
-            var x = this.children.Values.ToArray();
+            var x = this.Children.Values.ToArray();
             Array.Sort(x);
             return x.ToList();
         }
@@ -63,23 +75,24 @@ namespace Project_Codebase_Overview.DataCollection.Model
             if (list.Length == index + 1) //reached file
             {
                 PCOFile newFile = new PCOFile(list[index], this);
-                children.Add(newFile.name, newFile);
+                Children.Add(newFile.Name, newFile);
                 return newFile;
             }
             else
             {
-                if (!children.ContainsKey(list[index]))
+                if (!Children.ContainsKey(list[index]))
                 {
                     PCOFolder newFolder = new PCOFolder(list[index], this);
-                    children.Add(newFolder.name, newFolder);
+                    Children.Add(newFolder.Name, newFolder);
                 }
 
-                return ((PCOFolder)children[list[index]]).AddChildRecursive(list, index + 1);
+                return ((PCOFolder)Children[list[index]]).AddChildRecursive(list, index + 1);
             }
         }
 
         public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
         {
+            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
             var explorerGroups = filePaths.GroupBy(path => path[index]);
 
             foreach (var group in explorerGroups)
