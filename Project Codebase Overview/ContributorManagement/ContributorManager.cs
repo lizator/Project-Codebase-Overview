@@ -14,7 +14,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         Dictionary<string, Author> Authors;
         private static ContributorManager Instance = null;
 
-        public void ResetInstance()
+        public static void ResetInstance()
         {
             Instance = null;
         }
