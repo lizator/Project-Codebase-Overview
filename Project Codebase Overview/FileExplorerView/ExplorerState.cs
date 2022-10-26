@@ -76,6 +76,11 @@ namespace Project_Codebase_Overview.FileExplorerView
             PCOState.GetInstance().GetLoadingState().IsLoading = false;
             return null;
         }
+        
+        public PCOFolder GetCurrentRootFolder()
+        {
+            return FolderHistory[CurrentRootIndex];
+        }
 
         public string GetCurrentRootPath()
         {

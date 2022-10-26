@@ -15,6 +15,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public Dictionary<Author, uint> LineDistribution;
         public uint LinesTotal;
         public string FileName;
+        public double x;
+        public double y;
 
         public GraphModel()
         {

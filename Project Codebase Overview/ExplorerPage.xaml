@@ -43,17 +43,18 @@
             <RowDefinition Height="60" />
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        
+        <!-- FileExplorer tools -->
         <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
             
-            <!-- FileExplorer tools -->
             <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowLeft.png"/>
@@ -71,9 +72,16 @@
                        VerticalAlignment="Center"
                        Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
             </Button>
+            <Button x:Name="ViewSwitch" Click="GraphExplorerSwitch" Grid.Column="4">
+                Graph overview
+            </Button>
             
         </Grid>
 
+        <!--Graph view active--> 
+        <ContentControl x:Name="GraphHolder" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"></ContentControl>
+        
+        <!--Explorer view active:-->
         <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
                                 ChildPropertyName="SortedChildren"
                                 ItemsSource="{Binding ExplorerItems, Mode=OneWay}"

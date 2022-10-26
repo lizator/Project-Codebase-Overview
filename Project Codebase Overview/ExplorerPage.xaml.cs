@@ -25,6 +25,7 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Project_Codebase_Overview.Dialogs;
 using Windows.Storage.Pickers;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.Graphs;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -37,6 +38,8 @@ namespace Project_Codebase_Overview
     public sealed partial class ExplorerPage : Page
     {
         ExplorerViewModel viewModel;
+
+        bool GraphViewActive = false;
         public ExplorerPage()
         {
 
@@ -160,6 +163,30 @@ namespace Project_Codebase_Overview
             Debug.WriteLine("Changed selected owner");
             item.GraphModel.SelectedOwner = (IOwner)e.AddedItems[0];
             item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
+        }
+
+        private void GraphExplorerSwitch(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("clicked graph button");
+            if (GraphViewActive)
+            {
+                //go to explorer view
+                ViewSwitch.Content = "Graph View";
+                GraphViewActive = false;
+                GraphHolder.Visibility = Visibility.Collapsed;
+                rootTreeGrid.Visibility = Visibility.Visible;
+
+            }
+            else
+            {
+                //go to graph view
+                ViewSwitch.Content = "Explorer View";
+                GraphViewActive = true;
+                rootTreeGrid.Visibility = Visibility.Collapsed;
+                GraphHolder.Visibility = Visibility.Visible;
+                GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
+            }
+            
         }
     }
 }
