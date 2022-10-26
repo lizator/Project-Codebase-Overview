@@ -7,9 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
-    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges">
+    xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
+    x:Name="ExplorerPageName">
     <!--Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">-->
-  
+
     <Page.Resources>
         <Style x:Key="ToolButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -27,8 +28,14 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0"/>
         </Style>
+        <DataTemplate x:Key="SunburstTooltipTemplate">
+            <StackPanel  Background="{StaticResource FlyoutBackgroundThemeBrush}" CornerRadius="4" Padding="2,2,2,2" BorderBrush="DarkGray" BorderThickness="1" Visibility="{Binding Item.Visibility}" >
+                <TextBlock Text="{Binding Item.Name}" Foreground="Black"/>
+            </StackPanel>
+
+        </DataTemplate>
     </Page.Resources>
-    
+
     <Page.DataContext>
         <local:ExplorerViewModel/>
     </Page.DataContext>
@@ -45,16 +52,17 @@
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
+        <!-- FileExplorer tools -->
         <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
-                <ColumnDefinition Width="50"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
-            <!-- FileExplorer tools -->
+
             <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowLeft.png"/>
@@ -72,9 +80,16 @@
                        VerticalAlignment="Center"
                        Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
             </Button>
-            
+            <Button x:Name="ViewSwitch" Click="GraphExplorerSwitch" Grid.Column="4">
+                Graph overview
+            </Button>
+
         </Grid>
 
+        <!--Graph view active-->
+        <ContentControl x:Name="GraphHolder" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"></ContentControl>
+
+        <!--Explorer view active:-->
         <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
                                 ChildPropertyName="SortedChildren"
                                 ItemsSource="{Binding ExplorerItems, Mode=OneWay}"
@@ -86,7 +101,7 @@
                                 GridLinesVisibility="Horizontal"
                                 SelectionMode="Single"
                                 NavigationMode="Row">
-            
+
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
@@ -103,8 +118,8 @@
                                                         PlaceholderText="{Binding SelectedOwnerName}"
                                                         >
 
-                                        <editors:SfComboBox.LeadingView >
-                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                    <editors:SfComboBox.LeadingView >
+                                        <Ellipse Height="20" Width="20" StrokeThickness="1"
                                                           Stroke="Black"
                                                         Grid.Column="0"  Fill="{Binding SelectedOwnerColor, Mode=OneWay}"/>
                                     </editors:SfComboBox.LeadingView>
@@ -130,12 +145,12 @@
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >
-                                   <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                    <Ellipse Height="20" Width="20" StrokeThickness="1"
                                             Fill="{Binding SuggestedOwnerColor}"  Stroke="Black"
                                             Grid.Column="0"></Ellipse>
-                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock> 
+                                    <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding SuggestedOwnerName}" Grid.Column="1"></TextBlock>
                                 </Grid>
-                                
+
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
@@ -147,7 +162,8 @@
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
                     <treeGrid:TreeGridTextColumn MappingName="LinesTotal" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50"> <!-- expand button column--> 
+                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50">
+                        <!-- expand button column-->
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Button Click="ExpandClick" Background="Transparent" BorderThickness="0">

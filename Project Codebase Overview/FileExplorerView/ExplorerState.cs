@@ -77,6 +77,11 @@ namespace Project_Codebase_Overview.FileExplorerView
             return null;
         }
 
+        public PCOFolder GetCurrentRootFolder()
+        {
+            return FolderHistory[CurrentRootIndex];
+        }
+
         public string GetCurrentRootPath()
         {
             PCOFolder tempFolder = FolderHistory[CurrentRootIndex];
