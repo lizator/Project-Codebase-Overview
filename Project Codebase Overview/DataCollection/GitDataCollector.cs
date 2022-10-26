@@ -85,10 +85,12 @@ namespace Project_Codebase_Overview.DataCollection
                 //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
-            initializeAuthors();
+            //initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
-            
+
+            initializeAuthorsAndCreators(filePaths);
+
             //create root folder
             var rootFolderName = Path.GetFileName(RootPath);
             var rootFolder = new PCOFolder(rootFolderName, null);
@@ -125,10 +127,11 @@ namespace Project_Codebase_Overview.DataCollection
             }
 
 
-            initializeAuthors();
+            //initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
 
+            initializeAuthorsAndCreators(filePaths);
 
             //set loading
             
@@ -418,9 +421,11 @@ namespace Project_Codebase_Overview.DataCollection
                 throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
-            initializeAuthors();
+            //initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
 
             //create root folder
             var rootFolderName = Path.GetFileName(RootPath);
@@ -453,7 +458,7 @@ namespace Project_Codebase_Overview.DataCollection
                 },
                 (finalThreadData) =>
                 {
-                    finalThreadData.Invoke();
+                    //finalThreadData.Invoke();
 
 
                     lock (RootFolderLock)
