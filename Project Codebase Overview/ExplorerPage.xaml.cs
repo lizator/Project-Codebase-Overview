@@ -25,6 +25,9 @@ using Microsoft.UI.Xaml.Automation.Peers;
 using Project_Codebase_Overview.Dialogs;
 using Windows.Storage.Pickers;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Microsoft.UI.Xaml.Shapes;
+using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.ContributorManagement;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -54,8 +57,8 @@ namespace Project_Codebase_Overview
         {
             Debug.WriteLine("selection changed!");
             MenuFlyout menuFlyout = new MenuFlyout();
-            var newlySelected = ((TreeGridRowInfo)e.AddedItems.First()).RowData as ExplorerItem;
-            if (newlySelected.GetType() == typeof(PCOFolder))
+            var newlySelected = ((TreeGridRowInfo)e.AddedItems.FirstOrDefault())?.RowData as ExplorerItem;
+            if (newlySelected != null && newlySelected.GetType() == typeof(PCOFolder))
             {
                 MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to Folder" };
                 setRootItem.Click += this.SetRoot;

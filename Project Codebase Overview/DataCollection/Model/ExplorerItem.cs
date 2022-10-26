@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -45,7 +45,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             //create "Unselected" entry
             var authorList = ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).OrderBy(x => x.Name).ToList();
-            authorList.MoveTo(authorList.IndexOf(this.GraphModel.SuggestedOwner), 0);
+            if (this.GraphModel.SuggestedOwner != null)
+            {
+                authorList.MoveTo(authorList.IndexOf(this.GraphModel.SuggestedOwner), 0);
+            }
             authorList.Add(new Author("Unselected", "Unselected"));
             return authorList.ToObservableCollection();
         }
@@ -108,6 +111,30 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
         protected SfLinearGauge _bargraph { get; set; }
+
+        public void GenerateBarGraph()
+        {
+            this.GetBarGraph();
+        }
+
+        public string GetRelativePath()
+        {
+            PCOFolder tempFolder = this.Parent;
+            string relativePath = "";
+            if (this is PCOFolder folder)
+            {
+                tempFolder = folder;
+            } else
+            {
+                relativePath = this.Name;
+            }
+            while (tempFolder?.Parent != null)
+            {
+                relativePath = tempFolder.Name + "\\" + relativePath;
+                tempFolder = tempFolder.Parent;
+            }
+            return relativePath;
+        }
 
     }
 }

@@ -47,6 +47,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
             }
             this.GraphModel.UpdateSuggestedOwner();
+            this.GenerateBarGraph();
         }
 
 

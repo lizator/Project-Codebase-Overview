@@ -12,6 +12,7 @@ namespace Project_Codebase_Overview.ContributorManagement
     internal class ContributorManager
     {
         Dictionary<string, Author> Authors;
+        Dictionary<string, Author> FileCreators; //Dict <filepath, creator> 
         private static ContributorManager Instance = null;
 
         public static void ResetInstance()
@@ -23,6 +24,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         private ContributorManager()
         {
             Authors = new Dictionary<string, Author>();
+            FileCreators = new Dictionary<string, Author>();
         }
 
         public static ContributorManager GetInstance()
@@ -34,7 +36,19 @@ namespace Project_Codebase_Overview.ContributorManagement
             return Instance;
         }
 
+        public void UpdateCreator(string path, string email)
+        {
+            FileCreators[path] = GetAuthor(email);
+        }
 
+        public Author GetCreatorFromPath(string path)
+        {
+            if (FileCreators.TryGetValue(path, out Author creator))
+            {
+                return creator;
+            }
+            return null;
+        }
 
         private void AddAuthor(string email, string name)
         {
@@ -42,8 +56,6 @@ namespace Project_Codebase_Overview.ContributorManagement
             var colorPicker = PCOColorPicker.GetInstance();
             author.Color = colorPicker.AssignAuthorColor();
             this.Authors.Add(email, author);
-
-
         }
 
         public Author GetAuthor (string email)

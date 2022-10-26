@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
+using System.Management.Automation.Language;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -38,7 +39,8 @@ namespace Project_Codebase_Overview.DataCollection
 
         private static readonly Regex GIT_BLAME_REGEX = new Regex(@"([a-f0-9]+) .*\(<(.+)>[ ]+([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [-\+]{0,1}[0-9}{4}[ ]+[0-9]\).*");
         private static readonly string GIT_BLAME_PS_REGEX = "(?<Key>[\\^]?[a-f0-9]+) .*\\([<](?<Email>.+)[>][ ]+(?<DateString>[0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9]{2}:[0-9]{2}:[0-9]{2} [\\-\\+]{0,1}[0-9]{4}[ ]+[0-9]+\\).*";
-        private static readonly Regex AUTHOR_REGEX = new Regex(@"Author: (.+) <(.+)>");
+        public static readonly Regex AUTHOR_REGEX = new Regex(@"Author: (.+) <(.+)>");
+        public static readonly Regex AUTHOR_REGEX_2 = new Regex(@"Commit - (.+) - (.+) - (.+)");
         private static readonly int PARALLEL_CHUNK_SIZE = 64;
 
         public async Task<PCOFolder> CollectAllData(string path)
@@ -285,6 +287,67 @@ namespace Project_Codebase_Overview.DataCollection
 
         }
 
+        private async void initializeAuthorsAndCreators(List<string> filepaths)
+        {
+            var contributorManager = ContributorManager.GetInstance();
+
+            var currentEmail = "";
+            var maxFilepathLength = 0;
+            foreach (var path in filepaths)
+            {
+                maxFilepathLength = Math.Max(maxFilepathLength, path.Length);
+            }
+
+
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --pretty=format:\"Commit - %h - %ae - %an\" --stat=" + maxFilepathLength*2 + "," + maxFilepathLength*2  );
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError =  true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = AUTHOR_REGEX_2.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    var name = match.Groups[3].Value;
+                    currentEmail = match.Groups[2].Value;
+
+                    contributorManager.InitializeAuthor(currentEmail, name);
+                } else if (line.Trim().Length > 0)
+                {
+                    var split = line.Split('|');
+                    if (split.Length == 2)
+                    {
+                        var currPath = split[0].Trim();
+
+                        while (currPath.Contains('{') && currPath.Contains('}') && currPath.Contains("=>"))
+                        {
+                            var firstIndex = currPath.IndexOf('{');
+                            var lastIndex = currPath.IndexOf('}');
+                            var str = currPath.Substring(firstIndex, lastIndex - firstIndex + 1);
+                            var lastStr = str.Split("=>")[1].Trim();
+                            var newSubString = lastStr.Substring(0, lastStr.Length - 1);
+                            currPath = currPath.Replace(str, newSubString);
+                        }
+
+                        contributorManager.UpdateCreator(currPath, currentEmail);
+                    }
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+        }
+
 
         public PCOFolder AlternativeCollectAllData(string path)
         {
@@ -431,9 +494,11 @@ namespace Project_Codebase_Overview.DataCollection
                 throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
-            initializeAuthors();
+            //initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
 
             //create root folder
             var rootFolderName = Path.GetFileName(RootPath);
@@ -504,26 +569,20 @@ namespace Project_Codebase_Overview.DataCollection
             public int CurrentCreatorIndex;
             private ProcessStartInfo ProcessInfo;
             public Process Process;
-            private ProcessStartInfo CreatorProcessInfo;
-            public Process CreatorProcess;
             public List<PCOFile> Files;
             public Dictionary<string, PCOCommit> CurrentCommits;
             public List<string> Commands;
-            public List<string> CreatorCommands;
-            public bool IsGettingCreator;
-            public Author CurrentCreator;
+            public String CurrentPath;
 
             public PCOGitThreadData(PCOFolder f, string rootPath, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
             {
                 this.Commands = new List<string>();
-                this.CreatorCommands = new List<string>();
                 this.Files = new List<PCOFile>();
                 this.CurrentCommits = new Dictionary<string, PCOCommit>();
                 this.ThreadRootFolder = f;
                 this.ThreadFileCount = 0;
                 this.CurrentIndex = -1;
-                this.CurrentCreatorIndex = -1;
-                this.IsGettingCreator = false;
+                this.CurrentPath = "";
 
                 this.ProcessInfo = new ProcessStartInfo("cmd.exe");
 
@@ -536,18 +595,6 @@ namespace Project_Codebase_Overview.DataCollection
                 this.Process = new Process();
                 this.Process.StartInfo = ProcessInfo;
 
-                this.CreatorProcessInfo = new ProcessStartInfo("cmd.exe");
-
-                CreatorProcessInfo.RedirectStandardInput = CreatorProcessInfo.RedirectStandardOutput = CreatorProcessInfo.RedirectStandardError = true;
-                CreatorProcessInfo.CreateNoWindow = true;
-                CreatorProcessInfo.UseShellExecute = false;
-                CreatorProcessInfo.WorkingDirectory = rootPath;
-                CreatorProcessInfo.FileName = "cmd.exe";
-
-                this.CreatorProcess = new Process();
-                this.CreatorProcess.StartInfo = CreatorProcessInfo;
-
-
                 CultureInfo provider = CultureInfo.InvariantCulture;
 
                 var contributorManager = ContributorManager.GetInstance();
@@ -558,87 +605,42 @@ namespace Project_Codebase_Overview.DataCollection
                 {
                     var line = e.Data;
                     if (line == null) return;
-                    if (line.StartsWith("file-creator:"))
+                    if (line.StartsWith("file:"))
                     {
-                        this.IsGettingCreator = true;
                         if (this.CurrentIndex != -1)
                         {
                             this.Files[this.CurrentIndex].commits = this.CurrentCommits.Values.ToList();
-                            this.Files[this.CurrentIndex].Creator = this.CurrentCreator;
+                            this.Files[this.CurrentIndex].Creator = contributorManager.GetCreatorFromPath(this.CurrentPath);
+                            if (this.Files[this.CurrentIndex].Creator == null)
+                            {
+                                Debug.WriteLine("Could not find creator by currentPath: \"" + this.CurrentPath + "\"");
+                            }
                             this.CurrentCommits = new Dictionary<string, PCOCommit>();
                             dispatcherQueue?.TryEnqueue(() =>
                             {
                                 PCOState.GetInstance().GetLoadingState().AddFilesLoaded(1);
                             });
                         }
-
+                        this.CurrentPath = line.Split(':')[1];
                         this.CurrentIndex++;
-                    } else if (line.StartsWith("file-blame:")) 
-                    {
-                        this.IsGettingCreator = false;
-                    }
+                    } 
                     else
                     {
-                        if (this.IsGettingCreator)
-                        {
-                            
-                            var match = AUTHOR_REGEX.Match(line.Trim());
-
-                            if (match.Success)
-                            {
-                                var name = match.Groups[1].Value;
-                                var email = match.Groups[2].Value;
-
-                                this.CurrentCreator = contributorManager.GetAuthor(email);
-                            }
-                        } else
-                        {
-                            var match = GIT_BLAME_REGEX.Match(line);
-
-                            if (match.Success)
-                            {
-                                var key = match.Groups[1].Value;
-                                var email = match.Groups[2].Value;
-                                var datestring = match.Groups[3].Value;
-                                if (!CurrentCommits.ContainsKey(key))
-                                {
-                                    DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                                    CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
-                                }
-                                CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
-
-                            }
-                        }
-                        
-                    }
-
-                };
-
-                this.CreatorProcess.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
-                {
-                    var line = e.Data;
-                    if (line == null) return;
-                    if (line.StartsWith("file-creator:"))
-                    {
-                        if (this.CurrentCreatorIndex != -1)
-                        {
-                            this.Files[this.CurrentCreatorIndex].Creator = this.CurrentCreator;
-                        }
-
-                        this.CurrentCreatorIndex++;
-                    }
-                    else
-                    {
-                        var match = AUTHOR_REGEX.Match(line.Trim());
+                        var match = GIT_BLAME_REGEX.Match(line);
 
                         if (match.Success)
                         {
-                            var name = match.Groups[1].Value;
+                            var key = match.Groups[1].Value;
                             var email = match.Groups[2].Value;
+                            var datestring = match.Groups[3].Value;
+                            if (!CurrentCommits.ContainsKey(key))
+                            {
+                                DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
+                                CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
+                            }
+                            CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 
-                            this.CurrentCreator = contributorManager.GetAuthor(email);
                         }
-
                     }
 
                 };
@@ -650,20 +652,14 @@ namespace Project_Codebase_Overview.DataCollection
 
                 this.Files.Add(file);
 
-                this.Commands.Add("echo file-creator:" + filePath);
-                //this.Commands.Add("git log --diff-filter=A -- \"" + filePath + "\"");
-                this.Commands.Add("echo file-blame:" + filePath);
+                this.Commands.Add("echo file:" + filePath);
                 this.Commands.Add("git blame -e \"" + filePath + "\"");
-
-                this.CreatorCommands.Add("echo file-creator:" + filePath);
-                this.CreatorCommands.Add("git log --diff-filter=A -- \"" + filePath + "\"");
 
             }
 
             public async void Invoke()
             {
-                this.Commands.Add("echo file-creator:Done");
-                this.CreatorCommands.Add("echo file-creator:Done");
+                this.Commands.Add("echo file:Done");
 
                 this.Process.Start();
                 this.Process.BeginOutputReadLine();
@@ -675,27 +671,10 @@ namespace Project_Codebase_Overview.DataCollection
                     {
                         sw.WriteLine(cmd);
                     }
-                    Debug.WriteLine("Thead with " + (this.Commands.Count() - 1) / 3 + " files Completed");
+                    Debug.WriteLine("Thead with " + (this.Commands.Count() - 1) / 2 + " files Completed");
 
                 }
-
                 this.Process.WaitForExit();
-
-
-                //this.CreatorProcess.Start();
-                //this.CreatorProcess.BeginOutputReadLine();
-                //this.CreatorProcess.BeginErrorReadLine();
-
-                //using (StreamWriter sw = this.CreatorProcess.StandardInput)
-                //{
-                //    foreach (var cmd in this.CreatorCommands)
-                //    {
-                //        sw.WriteLine(cmd);
-                //    }
-
-                //}
-
-                //this.CreatorProcess.WaitForExit();
             }
 
         }

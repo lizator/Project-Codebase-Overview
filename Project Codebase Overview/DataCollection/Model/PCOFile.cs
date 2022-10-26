@@ -46,6 +46,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             if (this.GraphModel.LinesTotal > 0)
             {
                 this.GraphModel.UpdateSuggestedOwner();
+                this.GenerateBarGraph();
             }
         }
 

@@ -86,7 +86,7 @@ namespace Project_Codebase_Overview.FileExplorerView
                 path = tempFolder.Name + "\\" + path;
                 tempFolder = tempFolder.Parent;
             }
-            path = RootPath + "\\" + path;
+            path = RootPath + "\\" + FolderHistory[CurrentRootIndex].GetRelativePath();
             return path;
         }
         public string GetRootPath()
