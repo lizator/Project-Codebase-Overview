@@ -23,6 +23,14 @@ using Windows.Storage.Pickers;
 using LibGit2Sharp;
 using Windows.ApplicationModel.VoiceCommands;
 using System.Diagnostics;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.Graphs.Model;
+using Project_Codebase_Overview.Graphs;
+using Syncfusion.UI.Xaml.Gauges;
+using Windows.UI;
+using Project_Codebase_Overview.ContributorManagement;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -37,6 +45,132 @@ namespace Project_Codebase_Overview
         public TestStartWindow()
         {
             this.InitializeComponent();
+        }
+
+        public class TestObservableClass : ObservableObject
+        {
+
+            public bool plusTest = false;
+
+            public TestObservableClass()
+            {
+                test();
+            }
+
+            public void test()
+            {
+                SfLinearGauge sfLinearGauge = new SfLinearGauge();
+                sfLinearGauge.Axis.Minimum = 0;
+                sfLinearGauge.Axis.Maximum = 91;
+                sfLinearGauge.Axis.ShowLabels = false;
+                sfLinearGauge.Axis.ShowTicks = false;
+                sfLinearGauge.Axis.AxisLineStrokeThickness = 25;
+                sfLinearGauge.Axis.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+                sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+                sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+                sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+
+                var blocks = new List<GraphBlock>();
+                var sizes = new List<int> { 30, 30, 30 };
+                if (plusTest) sizes = new List<int> { 50, 20, 20 };
+                var curr = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    var block = new GraphBlock();
+                    block.StartValue = curr;
+                    curr += sizes[i];
+                    block.EndValue = curr;
+                    block.Color = PCOColorPicker.HardcodedColors[i];
+                    blocks.Add(block);
+                }
+
+
+                foreach (var block in blocks)
+                {
+                    LinearGaugeRange gaugeRange = new LinearGaugeRange();
+                    gaugeRange.StartValue = block.StartValue + 0.5;
+                    gaugeRange.EndValue = block.EndValue + 0.5;
+                    gaugeRange.StartWidth = 22;
+                    gaugeRange.EndWidth = 22;
+                    gaugeRange.RangePosition = GaugeElementPosition.Cross;
+
+                    gaugeRange.Background = new SolidColorBrush(block.Color);
+
+                    sfLinearGauge.Axis.Ranges.Add(gaugeRange);
+                }
+                this.BarGraph = sfLinearGauge;
+            }
+            public SfLinearGauge BarGraph { get => _barGraph; set => SetProperty(ref _barGraph, value); }
+
+            public SfLinearGauge _barGraph;
+        }
+
+
+        public TestObservableClass TestObj = new TestObservableClass();
+        public TestObservableClass TestObj2;
+
+        private async void test3(object sender, RoutedEventArgs e)
+        {
+            
+            TestObj2 = new TestObservableClass();
+
+            testGauge.Content = TestObj2._barGraph;
+
+        }
+
+        private async void test(object sender, RoutedEventArgs e)
+        {
+            SfLinearGauge sfLinearGauge = new SfLinearGauge();
+            sfLinearGauge.Axis.Minimum = 0;
+            sfLinearGauge.Axis.Maximum = 91;
+            sfLinearGauge.Axis.ShowLabels = false;
+            sfLinearGauge.Axis.ShowTicks = false;
+            sfLinearGauge.Axis.AxisLineStrokeThickness = 25;
+            sfLinearGauge.Axis.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+            sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+
+            var blocks = new List<GraphBlock>();
+
+            var sizes = new List<int> { 30, 30, 30};
+            //if (plusTest) sizes = new List<int> { 50, 20, 20 };
+            var curr = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                var block = new GraphBlock();
+                block.StartValue = curr;
+                curr += sizes[i];
+                block.EndValue = curr;
+                block.Color = PCOColorPicker.HardcodedColors[i];
+            }
+
+
+            foreach (var block in blocks)
+            {
+                LinearGaugeRange gaugeRange = new LinearGaugeRange();
+                gaugeRange.StartValue = block.StartValue + 0.5;
+                gaugeRange.EndValue = block.EndValue + 0.5;
+                gaugeRange.StartWidth = 22;
+                gaugeRange.EndWidth = 22;
+                gaugeRange.RangePosition = GaugeElementPosition.Cross;
+
+                gaugeRange.Background = new SolidColorBrush(block.Color);
+
+                sfLinearGauge.Axis.Ranges.Add(gaugeRange);
+            }
+            TestObj.BarGraph = sfLinearGauge;
+        }
+
+        public void test1(object sender, RoutedEventArgs e) 
+        {
+            TestObj.plusTest = false;
+            TestObj.test();
+        }
+        public void test2(object sender, RoutedEventArgs e) 
+        {
+            TestObj.plusTest = true;
+            TestObj.test();
         }
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)

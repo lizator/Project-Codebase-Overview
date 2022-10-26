@@ -10,7 +10,7 @@ namespace Project_Codebase_Overview.ContributorManagement
 {
     public class PCOColorPicker
     {
-        private List<Color> HardcodedColors = new List<Color>
+        public static List<Color> HardcodedColors = new List<Color>
         {
             Color.FromArgb(255,255,0,0), //red
             Color.FromArgb(255,0,230,0), //green
