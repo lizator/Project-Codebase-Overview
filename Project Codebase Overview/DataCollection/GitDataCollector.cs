@@ -676,7 +676,7 @@ namespace Project_Codebase_Overview.DataCollection
                     {
                         sw.WriteLine(cmd);
                     }
-                    Debug.WriteLine("Thead with " + (this.Commands.Count() - 1) / 2 + " files Completed");
+                    //Debug.WriteLine("Thread with " + (this.Commands.Count() - 1) / 2 + " files Completed");
 
                 }
                 this.Process.WaitForExit();

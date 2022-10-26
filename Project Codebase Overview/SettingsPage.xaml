@@ -68,7 +68,7 @@
             </ListView>
 
             <!-- Explorer Settings -->
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Eplorer"  VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
 
             <TextBlock Grid.Row="3" Grid.Column="0" Text="Data selection"  VerticalAlignment="Center" />
             <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{x:Bind DataSelectionOptions}" SelectedIndex="0"  VerticalAlignment="Center" HorizontalAlignment="Right"/> <!-- diplaymemberpath and selectedmemberpath when objectified!-->
