@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,23 +38,21 @@ namespace Project_Codebase_Overview
         public MainWindow()
         {
             this.InitializeComponent();
+            (Application.Current as App)?.SetMainWindow(this);
         }
 
         public async void NavigateToExplorerPage()
         {
             (Application.Current as App)?.SetMainWindow(this);
-
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
+            this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
+            
         }
-        public async void NavigateToLoadingPage()
+
+        public async void NavigateToManagementPage()
         {
             (Application.Current as App)?.SetMainWindow(this);
+            this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
             
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(LoadingPage));
         }
     }
 }

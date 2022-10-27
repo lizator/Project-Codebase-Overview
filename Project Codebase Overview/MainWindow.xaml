@@ -7,12 +7,5 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
-    <Grid ColumnDefinitions="auto, *" RowDefinitions="*">
-        <Frame Grid.Column="0" x:Name="SettingsFrame">
-            <local:SettingsPage></local:SettingsPage>
-        </Frame>
-        <Frame Grid.Column="1" x:Name="MainFrame">
-            <Rectangle Fill="DarkGray" Stroke="LightGray"/>
-        </Frame>
-    </Grid>
+    <Frame x:Name="NavigationFrame"/>
 </Window>

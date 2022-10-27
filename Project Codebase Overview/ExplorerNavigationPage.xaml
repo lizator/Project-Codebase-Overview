@@ -1,0 +1,18 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.ExplorerNavigationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    >
+    <Grid x:Name="RootGrid" ColumnDefinitions="auto, *" RowDefinitions="*">
+        <Frame Grid.Column="0" x:Name="SettingsFrame">
+            <local:SettingsPage></local:SettingsPage>
+        </Frame>
+        <Frame Grid.Column="1" x:Name="MainFrame">
+            <Rectangle Fill="DarkGray" Stroke="LightGray"/>
+        </Frame>
+    </Grid>
+</Page>

@@ -207,7 +207,7 @@ namespace Project_Codebase_Overview
         {
             MainWindow window = new MainWindow();
             window.Activate();
-            window.NavigateToLoadingPage();
+            window.NavigateToExplorerPage();
         }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
@@ -304,7 +304,8 @@ namespace Project_Codebase_Overview
             GitDataCollector collector = new GitDataCollector();
 
             var state = PCOState.GetInstance();
-            var path = "C:\\TestRepos\\monero";
+            //var path = "C:\\TestRepos\\monero";
+            var path = "C:\\TestRepos\\vscode";
             //var path = "C:\\TestRepos\\Project-Codebase-Overview";
 
             state.GetExplorerState().SetRootPath(path);
@@ -313,7 +314,7 @@ namespace Project_Codebase_Overview
 
             Debug.WriteLine("starting test!");
             stopwatch.Start();
-            collector.SimpleCollectAllData(path);
+            //collector.SimpleCollectAllData(path);
             stopwatch.Stop();
             var simple1 = stopwatch.ElapsedMilliseconds;
 
@@ -451,7 +452,7 @@ namespace Project_Codebase_Overview
             
             MainWindow window = new MainWindow();
             window.Activate();
-            window.NavigateToLoadingPage();
+            window.NavigateToExplorerPage();
         }
     }
 }
