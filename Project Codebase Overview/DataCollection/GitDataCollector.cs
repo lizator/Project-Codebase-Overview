@@ -202,7 +202,7 @@ namespace Project_Codebase_Overview.DataCollection
                     if (!commits.ContainsKey(key))
                     {
                         DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                        commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
+                        commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email)?.Name ?? email, date));
                     }
                      commits[key].AddLine(PCOCommit.LineType.NORMAL);
                     
@@ -641,7 +641,7 @@ namespace Project_Codebase_Overview.DataCollection
                             if (!CurrentCommits.ContainsKey(key))
                             {
                                 DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                                CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email).Name, date));
+                                CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email)?.Name ?? email, date));
                             }
                             CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 

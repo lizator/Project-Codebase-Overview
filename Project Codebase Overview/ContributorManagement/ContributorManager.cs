@@ -60,7 +60,11 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         public Author GetAuthor (string email)
         {
-            return this.Authors[email];
+            if (this.Authors.TryGetValue(email, out Author author))
+            {
+                return author;
+            }
+            return null;
         }
 
         public void InitializeAuthor(string email, string name)
