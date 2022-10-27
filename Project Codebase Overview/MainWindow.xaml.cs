@@ -43,15 +43,13 @@ namespace Project_Codebase_Overview
 
         public async void NavigateToExplorerPage()
         {
-            (Application.Current as App)?.SetMainWindow(this);
             this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
             
         }
 
         public async void NavigateToManagementPage()
         {
-            (Application.Current as App)?.SetMainWindow(this);
-            this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
+            this.NavigationFrame.Navigate(typeof(ManagementPage));
             
         }
     }

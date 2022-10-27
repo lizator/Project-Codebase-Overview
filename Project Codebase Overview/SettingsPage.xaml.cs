@@ -73,6 +73,11 @@ namespace Project_Codebase_Overview
             }
         }
 
+        private void ManageClicked(object sender, RoutedEventArgs e)
+        {
+            ((Application.Current as App)?.MainWindow as MainWindow).NavigateToManagementPage();
+        }
+
         private void DecayChecked(object sender, RoutedEventArgs e)
         {
             DecayCheckBox.Content = "Enabled";

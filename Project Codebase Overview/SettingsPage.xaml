@@ -46,7 +46,7 @@
             
             <!-- owner title + manage  (row 0)  -->
             <TextBlock  Grid.Row="0" Grid.Column="0" Text="Teams" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
-            <Button Grid.Row="0" Grid.Column="1"  Click="UpdateOwnerList"  VerticalAlignment="Center" HorizontalAlignment="Right">Manage</Button>
+            <Button Grid.Row="0" Grid.Column="1"  Click="ManageClicked"  VerticalAlignment="Center" HorizontalAlignment="Right">Manage</Button>
             
             <!-- author list -->
             <ListView Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2"

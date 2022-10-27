@@ -23,6 +23,7 @@
   <ItemGroup>
     <None Remove="ExplorerNavigationPage.xaml" />
     <None Remove="ExplorerPage.xaml" />
+    <None Remove="ManagementPage.xaml" />
     <None Remove="SettingsPage.xaml" />
     <None Remove="StartWindow.xaml" />
     <None Remove="TestStartWindow.xaml" />
@@ -61,6 +62,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="ManagementPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="ExplorerNavigationPage.xaml">
