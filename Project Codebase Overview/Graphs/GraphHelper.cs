@@ -1,19 +1,28 @@
 ﻿using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Shapes;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.Graphs.Model;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Charts;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Media.Playback;
+using Windows.Security.Authentication.Web.Provider;
 using Windows.UI;
+using static Project_Codebase_Overview.ExplorerPage;
 
 namespace Project_Codebase_Overview.Graphs
 {
@@ -122,8 +131,9 @@ namespace Project_Codebase_Overview.Graphs
 
             return lineDistChart;
         }
+        
 
-        internal static object GetCurrentSunburst(DataTemplate tooltipTemplate)
+        internal static object GetCurrentSunburst(DataTemplate tooltipTemplate, PointerEventHandler sunburstOnClickMethod)
         {
             Grid grid = new Grid();
             SfCircularChart circularChart = new SfCircularChart();
@@ -132,10 +142,13 @@ namespace Project_Codebase_Overview.Graphs
             tooltipBehavior.ShowDuration = 8000;
 
             circularChart.TooltipBehavior = tooltipBehavior;
+            circularChart.PointerPressed += sunburstOnClickMethod;
+
+            
 
             PCOFolder rootFolder = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder();
 
-            int maxDepth = 6;
+            int maxDepth = 4;
             //initialize lists of data
             List<List<DoughnutDataUnit>> dataLists = new List<List<DoughnutDataUnit>>();
             for(int i = 0; i < maxDepth; i++)
@@ -151,15 +164,16 @@ namespace Project_Codebase_Overview.Graphs
             foreach(List<DoughnutDataUnit> list in dataLists)
             {
                 DoughnutSeries series = new DoughnutSeries();
-                //series.ItemsSource = rootFolder.Children.Values.Select(x => new {Name=x.Name, LinesTotal=x.GraphModel.LinesTotal});
-                series.ItemsSource = list.Select(x => new { Name = x.Name, LinesTotal = x.LinesTotal, Visibility = x.Visibility});
+                
+                series.ItemsSource = list.Select(x => new { Name = x.Name, LinesTotal = x.LinesTotal, Visibility = x.Visibility, ExplorerItem = x.ExplorerItem}).ToList();
                 series.XBindingPath = "Name";
                 series.YBindingPath = "LinesTotal";
+                
                 series.Radius = 1;
                 series.InnerRadius = 0.05;
+
                 series.EnableTooltip = true;
                 series.TooltipTemplate = tooltipTemplate;
-                
 
                 series.PaletteBrushes = list.Select(x => new SolidColorBrush(x.Color) as Brush).ToList();
                 series.Stroke = new SolidColorBrush(Colors.White);
@@ -172,33 +186,19 @@ namespace Project_Codebase_Overview.Graphs
             
         }
 
-        class DoughnutDataUnit
-        {
-            public string Name;
-            public Color Color;
-            public uint LinesTotal;
-            public Visibility Visibility;
-            public DoughnutDataUnit(string name, uint linesTotal, Color color, Visibility visibility)
-            {
-                Name = name;
-                Color = color;
-                LinesTotal = linesTotal;
-                Visibility = visibility;
-            }
-        }
-
+       
         //get the name and lines data for each level in the graph
         private static void GetDoughnutDataLists(int depth, int maxDepth, ExplorerItem explorerItem, List<List<DoughnutDataUnit>> dataLists)
         {
-            //add data from current explorer item
             if (depth == maxDepth)
             {
                 return;
             }
 
+            //add data from current explorer 
             dataLists[depth].Add(
                         new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesTotal, 
-                        explorerItem.GraphModel.SuggestedOwner.Color, Visibility.Visible));
+                        explorerItem.GraphModel.SuggestedOwner.Color, Visibility.Visible, explorerItem));
 
             if (explorerItem.GetType() == typeof(PCOFile))
             {
@@ -206,7 +206,7 @@ namespace Project_Codebase_Overview.Graphs
                 //create whitespace outwards
                 for(int i = depth+1; i < maxDepth; i++)
                 {
-                    dataLists[i].Add( new DoughnutDataUnit("", explorerItem.GraphModel.LinesTotal, Colors.White, Visibility.Collapsed));
+                    dataLists[i].Add( new DoughnutDataUnit("empty", explorerItem.GraphModel.LinesTotal, Colors.White, Visibility.Collapsed, null));
                 }
             }
             else
@@ -221,7 +221,10 @@ namespace Project_Codebase_Overview.Graphs
             
         }
         
+     
 
-        
+
+
+
     }
 }

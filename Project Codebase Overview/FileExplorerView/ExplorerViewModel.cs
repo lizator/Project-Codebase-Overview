@@ -51,7 +51,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             this.CurrentRootPath = PCOState.GetInstance().GetExplorerState().GetCurrentRootPath();
         }
 
-        public void SetNewRoot(PCOFolder newFolder)
+        public void NavigateNewRoot(PCOFolder newFolder)
         {
             PCOState.GetInstance().GetExplorerState().AddFolderHistory(newFolder);
             SetExplorerItems(newFolder);
@@ -71,13 +71,13 @@ namespace Project_Codebase_Overview.FileExplorerView
         {
             if(viewRootFolder.Parent != null)
             {
-                SetNewRoot(viewRootFolder.Parent);
+                NavigateNewRoot(viewRootFolder.Parent);
             }
         }
 
         internal void NavigateToPath(string path)
         {
-            SetNewRoot(PCOState.GetInstance().GetExplorerState().GetSubFolderFromPath(path));
+            NavigateNewRoot(PCOState.GetInstance().GetExplorerState().GetSubFolderFromPath(path));
         }
     }
 }

@@ -15,7 +15,6 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
-using Syncfusion.UI.Xaml.TreeGrid;
 using System.Collections.ObjectModel;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.State;
@@ -29,6 +28,10 @@ using Project_Codebase_Overview.Graphs;
 using Microsoft.UI.Xaml.Shapes;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.ContributorManagement;
+using Syncfusion.UI.Xaml.Charts;
+using Path = Microsoft.UI.Xaml.Shapes.Path;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.VoiceCommands;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -63,7 +66,7 @@ namespace Project_Codebase_Overview
             var newlySelected = ((TreeGridRowInfo)e.AddedItems.FirstOrDefault())?.RowData as ExplorerItem;
             if (newlySelected != null && newlySelected.GetType() == typeof(PCOFolder))
             {
-                MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to Folder" };
+                MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to folder" };
                 setRootItem.Click += this.SetRoot;
                 menuFlyout.Items.Add(setRootItem);
             }
@@ -91,18 +94,21 @@ namespace Project_Codebase_Overview
         {
             Debug.WriteLine("Back clicked");
             viewModel.NavigateBack();
+            UpdateGraphViewIfActive();
         }
 
         private void ForwardClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Forward clicked");
             viewModel.NavigateForward();
+            UpdateGraphViewIfActive();
         }
 
         private void UpClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Up clicked");
             viewModel.NavigateUp();
+            UpdateGraphViewIfActive();
         }
 
         private void SetRoot(object sender, RoutedEventArgs e)
@@ -112,7 +118,7 @@ namespace Project_Codebase_Overview
             if (selectedItem.GetType() == typeof(PCOFolder))
             {
                 Debug.WriteLine("this is folder");
-                viewModel.SetNewRoot((PCOFolder)selectedItem);
+                viewModel.NavigateNewRoot((PCOFolder)selectedItem);
             }
             else
             {
@@ -121,7 +127,13 @@ namespace Project_Codebase_Overview
 
         }
 
-
+        private void UpdateGraphViewIfActive()
+        {
+            if (this.GraphViewActive)
+            {
+                GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
+            }
+        }
         
         private async void PathClick(object sender, RoutedEventArgs e)
         {
@@ -148,7 +160,7 @@ namespace Project_Codebase_Overview
             }
             catch (Exception ex)
             {
-                DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
                 return;
             }
         }
@@ -188,7 +200,46 @@ namespace Project_Codebase_Overview
                 rootTreeGrid.Visibility = Visibility.Collapsed;
                 GraphHolder.Visibility = Visibility.Visible;
                 //GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
-                GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate);
+                GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
+            }
+
+        }
+        private void SunburstOnClickAsync(object sender, PointerRoutedEventArgs e)
+        {
+            var source = e.OriginalSource as Path;
+            if (source != null)
+            {
+                var tag = source.Tag as ChartSegment;
+                var clickedItem = (dynamic)tag.Item;
+
+                if (clickedItem.ExplorerItem == null) return;
+
+                if (e.GetCurrentPoint((UIElement)sender).Properties.IsRightButtonPressed)
+                {
+                    var dc = ((FrameworkElement)e.OriginalSource).DataContext as ExplorerViewModel;
+
+                    MenuFlyout flyout = new MenuFlyout();
+                    MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
+                    flyoutItem.Text = "Navigate to: " + clickedItem.Name;
+                    flyoutItem.Click += async delegate (object sender, RoutedEventArgs e)
+                    {
+                        if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
+                        {
+                            viewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
+                            GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
+                        }
+                        else
+                        {
+                            await DialogHandler.ShowErrorDialog("Navigation not possible. Selected item is a file", this.XamlRoot);
+                        }
+                    };
+
+                    flyout.Items.Add(flyoutItem);
+
+                    Microsoft.UI.Input.PointerPoint pointerPoint = e.GetCurrentPoint((UIElement)sender);
+                    Point ptElement = new Point(pointerPoint.Position.X, pointerPoint.Position.Y);
+                    flyout.ShowAt((FrameworkElement)sender, ptElement);
+                }
             }
 
         }
