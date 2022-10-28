@@ -209,6 +209,12 @@ namespace Project_Codebase_Overview
             window.Activate();
             window.NavigateToLoadingPage();
         }
+        private void NavigateToManagementPage()
+        {
+            MainWindow window = new MainWindow();
+            window.Activate();
+            window.NavigateToManagementPage();
+        }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
         {
@@ -219,6 +225,11 @@ namespace Project_Codebase_Overview
             state.GetExplorerState().SetRootPath(path);
 
             NavigateToLoadingPage();
+        }
+
+        private async void OpenManagementPage(object sender, RoutedEventArgs e)
+        {
+            NavigateToManagementPage();
         }
 
         private async void DoDataOptimization2(object sender, RoutedEventArgs e)

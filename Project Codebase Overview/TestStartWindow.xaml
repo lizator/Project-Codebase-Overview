@@ -18,6 +18,7 @@
             <!--<Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>-->
             <!--<Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>-->
             <Button BorderThickness="2" x:Name="TestLoading2" Click="TestLoadingIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test Intended</Button>
+            <Button BorderThickness="2" x:Name="ManagementPage" Click="OpenManagementPage" Margin="8,8,8,8" HorizontalAlignment="Center">Open simple management page</Button>
             <!--<Button BorderThickness="2" x:Name="TestLoading" Click="TestLoadingClick" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test</Button>-->
         </StackPanel>
 
