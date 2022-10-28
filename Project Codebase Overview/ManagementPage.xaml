@@ -25,14 +25,34 @@
             <Setter Property="Margin" Value="0"/>
         </Style>
     </Page.Resources>
+    
     <Grid RowDefinitions="auto, *">
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" ColumnDefinitions="80, *, 80" Padding="0, 10, 0, 0">
             <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowLeft.png"/>
             </Button>
-            
+            <TextBlock Text="Management" 
+                       FontSize="36" 
+                       FontFamily="Rockwell"
+                       Grid.Column="1" 
+                       HorizontalAlignment="Center" 
+                       HorizontalTextAlignment="Center"
+                       VerticalAlignment="Center">
+            </TextBlock>
         </Grid>
-
+        <Pivot Grid.Row="1">
+            <Pivot.RightHeader>
+                <CommandBar ClosedDisplayMode="Compact">
+                    <AppBarButton Icon="Add" Label="Add team"/>
+                </CommandBar>
+            </Pivot.RightHeader>
+            <PivotItem Header="Team management" HorizontalContentAlignment="Center">
+                <TextBlock Text="Team management goes here" />
+            </PivotItem>
+            <PivotItem Header="User management" HorizontalAlignment="Center">
+                <TextBlock Text="User management goes here" />
+            </PivotItem>
+        </Pivot>
     </Grid>
 </Page>
