@@ -207,7 +207,7 @@ namespace Project_Codebase_Overview
         {
             MainWindow window = new MainWindow();
             window.Activate();
-            window.NavigateToExplorerPage();
+            window.NavigateToLoadingPage();
         }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
@@ -452,7 +452,7 @@ namespace Project_Codebase_Overview
             
             MainWindow window = new MainWindow();
             window.Activate();
-            window.NavigateToExplorerPage();
+            window.NavigateToLoadingPage();
         }
     }
 }

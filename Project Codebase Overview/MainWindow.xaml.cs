@@ -41,16 +41,19 @@ namespace Project_Codebase_Overview
             (Application.Current as App)?.SetMainWindow(this);
         }
 
+        public async void NavigateToLoadingPage()
+        {
+            this.NavigationFrame.Navigate(typeof(LoadingPage));
+        }
+
         public async void NavigateToExplorerPage()
         {
             this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
-            
         }
 
         public async void NavigateToManagementPage()
         {
             this.NavigationFrame.Navigate(typeof(ManagementPage));
-            
         }
     }
 }

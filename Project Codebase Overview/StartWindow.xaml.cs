@@ -65,7 +65,7 @@ namespace Project_Codebase_Overview
 
             MainWindow window = new MainWindow();
             window.Activate();
-            window.NavigateToExplorerPage();
+            window.NavigateToLoadingPage();
             Close();
         }
 

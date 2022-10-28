@@ -28,13 +28,7 @@ namespace Project_Codebase_Overview
         public ExplorerNavigationPage()
         {
             this.InitializeComponent();
-            if (PCOState.GetInstance().GetLoadingState().IsLoading)
-            {
-                NavigateToLoadingPage();
-            } else
-            {
-                NavigateToExplorerPage();
-            }
+            NavigateToExplorerPage();
         }
 
         public async void NavigateToExplorerPage()
