@@ -188,7 +188,7 @@ namespace Project_Codebase_Overview
                 //go to explorer view
                 ViewSwitch.Content = "Graph View";
                 GraphViewActive = false;
-                GraphHolder.Visibility = Visibility.Collapsed;
+                GraphView.Visibility = Visibility.Collapsed;
                 rootTreeGrid.Visibility = Visibility.Visible;
 
             }
@@ -198,7 +198,7 @@ namespace Project_Codebase_Overview
                 ViewSwitch.Content = "Explorer View";
                 GraphViewActive = true;
                 rootTreeGrid.Visibility = Visibility.Collapsed;
-                GraphHolder.Visibility = Visibility.Visible;
+                GraphView.Visibility = Visibility.Visible;
                 //GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
                 GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
             }
@@ -213,6 +213,8 @@ namespace Project_Codebase_Overview
                 var clickedItem = (dynamic)tag.Item;
 
                 if (clickedItem.ExplorerItem == null) return;
+                
+                viewModel.SelectedGraphItem = clickedItem.ExplorerItem;
 
                 if (e.GetCurrentPoint((UIElement)sender).Properties.IsRightButtonPressed)
                 {

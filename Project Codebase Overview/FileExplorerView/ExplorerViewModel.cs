@@ -16,6 +16,11 @@ namespace Project_Codebase_Overview.FileExplorerView
     public class ExplorerViewModel : ObservableObject
     {
         private PCOFolder viewRootFolder;
+        public ExplorerItem SelectedGraphItem{
+            get => _selectedGraphItem;
+            set => SetProperty(ref _selectedGraphItem, value);
+        }
+        private ExplorerItem _selectedGraphItem;
         public string CurrentRootPath { 
             get => currentRootPath;
             set => SetProperty(ref currentRootPath, value); 
