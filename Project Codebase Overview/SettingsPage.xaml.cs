@@ -47,7 +47,7 @@ namespace Project_Codebase_Overview
 
             DecayCheckBox.IsChecked = true;
 
-            PCOState.GetInstance().GetLoadingState().PropertyChanged += LoadingStatePropertyChanged;
+            UpdateOwnerList();
 
             ExpanderClick(null,null);
         }
@@ -58,12 +58,12 @@ namespace Project_Codebase_Overview
             {
                 if (!PCOState.GetInstance().GetLoadingState().IsLoading)
                 {
-                    UpdateOwnerList(null, null);
+                    UpdateOwnerList();
                 }
             }
         }
 
-        private void UpdateOwnerList(object sender, RoutedEventArgs e)
+        private void UpdateOwnerList()
         {
             OwnersList.Clear();
             var list = ContributorManager.GetInstance().GetAllAuthors();
@@ -141,6 +141,11 @@ namespace Project_Codebase_Overview
                 ExpanderText2.Text = "<";
                 ExpanderText3.Text = "<";
             }
+        }
+
+        private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
+        {
+
         }
     }
 }

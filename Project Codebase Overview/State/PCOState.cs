@@ -15,6 +15,7 @@ namespace Project_Codebase_Overview.State
         private LoadingState LoadingState;
         private TestState TestState;
         private static PCOState Instance;
+        private SettingsState SettingsState;
 
         public Repository TempGitRepo;
         public int mergeCounter;
@@ -33,6 +34,11 @@ namespace Project_Codebase_Overview.State
             ExplorerState = new ExplorerState();
             LoadingState = new LoadingState();
             TestState = new TestState();
+            SettingsState = new SettingsState();
+        }
+        public SettingsState GetSettingsState()
+        {
+            return SettingsState;
         }
 
         public ExplorerState GetExplorerState()

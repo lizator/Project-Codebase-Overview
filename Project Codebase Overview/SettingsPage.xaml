@@ -7,7 +7,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors">
 
     <!-- Author list item view template-->
     <Page.Resources>
@@ -26,9 +27,10 @@
     
     <Grid ColumnDefinitions="*, 16">
         <!-- SettingsPanel -->
-        <Grid Grid.Column="0" ColumnDefinitions="*, 135" x:Name="SettingsPanelGrid" Padding="10" >
+        <Grid Grid.Column="0" ColumnDefinitions="*, 135" x:Name="SettingsPanelGrid" Padding="10" RowSpacing="5">
             
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
@@ -48,8 +50,19 @@
             <TextBlock  Grid.Row="0" Grid.Column="0" Text="Teams" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
             <Button Grid.Row="0" Grid.Column="1"  Click="ManageClicked"  VerticalAlignment="Center" HorizontalAlignment="Right">Manage</Button>
             
+            <!--team/users mode-->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Mode" VerticalAlignment="Center"/>
+            <editors:SfSegmentedControl Grid.Row="1" Grid.Column="1"
+                                        SelectedIndex="0"
+                                        SelectionAnimationType="Slide"
+                                        SelectionChanged="OwnerModeChanged"
+                                        >
+                <x:String>Teams</x:String>
+                <x:String>Users</x:String>
+            </editors:SfSegmentedControl>
+
             <!-- author list -->
-            <ListView Grid.Row="1"  Grid.Column="0" Grid.ColumnSpan="2"
+            <ListView Grid.Row="2"  Grid.Column="0" Grid.ColumnSpan="2"
                     ItemsSource="{x:Bind OwnersList}"
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
@@ -68,18 +81,18 @@
             </ListView>
 
             <!-- Explorer Settings -->
-            <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
+            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
 
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="Data selection"  VerticalAlignment="Center" />
-            <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{x:Bind DataSelectionOptions}" SelectedIndex="0"  VerticalAlignment="Center" HorizontalAlignment="Right"/> <!-- diplaymemberpath and selectedmemberpath when objectified!-->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Data selection"  VerticalAlignment="Center" />
+            <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{x:Bind DataSelectionOptions}" SelectedIndex="0"  VerticalAlignment="Center" HorizontalAlignment="Right"/> <!-- diplaymemberpath and selectedmemberpath when objectified!-->
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
-            <CheckBox Grid.Row="4" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
+            <CheckBox Grid.Row="5" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
                     Checked="DecayChecked" Unchecked="DecayUnchecked"/>
             
                 <!-- Visibility dependent-->
-                <TextBlock Grid.Row="5" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
-                <Grid Grid.Row="5" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
+                <Grid Grid.Row="6" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
                     <NumberBox Grid.Column="0" x:Name="DecayTimerNumberBox" ValueChanged="DecayTimerNumberChanged" Width="35"  VerticalAlignment="Center"/>
                     <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" SelectionChanged="DecayTimerSelectionChanged" Width="100"  VerticalAlignment="Center" SelectedIndex="0">
                         <x:String>Days</x:String>
@@ -89,22 +102,22 @@
                     </ComboBox>
                 </Grid>
 
-                <TextBlock Grid.Row="6" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
-                <Grid x:Name="DropOffNumberBox" Grid.Row="6" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                <TextBlock Grid.Row="7" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
+                <Grid x:Name="DropOffNumberBox" Grid.Row="7" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
                     <NumberBox  Grid.Column="0" ValueChanged="DecayDropOffChanged"  Visibility="Visible" Width="35" HorizontalAlignment="Right"  VerticalAlignment="Center"/>
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>
 
-            <TextBlock Grid.Row="7" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
-            <CheckBox Grid.Row="7" Grid.Column="1"  x:Name="ShowFilesCheckBox" Content="Enabled" IsChecked="True" Width="100"
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
+            <CheckBox Grid.Row="8" Grid.Column="1"  x:Name="ShowFilesCheckBox" Content="Enabled" IsChecked="True" Width="100"
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
             
             <!-- Import/Export -->
-            <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
-            <Button Grid.Row="9" Grid.Column="0">Export CodeOwners file</Button>
-            <Button Grid.Row="10" Grid.Column="0">Save</Button>
-            <Button Grid.Row="11" Grid.Column="0">Load</Button>
-            <Button Grid.Row="12" Grid.Column="0">Open new repository</Button>
+            <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
+            <Button Grid.Row="10" Grid.Column="0">Export CodeOwners file</Button>
+            <Button Grid.Row="11" Grid.Column="0">Save</Button>
+            <Button Grid.Row="12" Grid.Column="0">Load</Button>
+            <Button Grid.Row="13" Grid.Column="0">Open new repository</Button>
             
         </Grid>
         
