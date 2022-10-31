@@ -32,6 +32,7 @@ using Syncfusion.UI.Xaml.Charts;
 using Path = Microsoft.UI.Xaml.Shapes.Path;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.VoiceCommands;
+using Syncfusion.UI.Xaml.Editors;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -53,7 +54,10 @@ namespace Project_Codebase_Overview
 
             viewModel = (ExplorerViewModel)this.DataContext;
 
-            viewModel.SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetRoot());
+            var root = PCOState.GetInstance().GetExplorerState().GetRoot();
+
+            viewModel.SetExplorerItems(root);
+            viewModel.SelectedGraphItem = root;
 
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
@@ -178,6 +182,7 @@ namespace Project_Codebase_Overview
             Debug.WriteLine("Changed selected owner");
             item.GraphModel.SelectedOwner = (IOwner)e.AddedItems[0];
             item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
+            item.SelectedOwnerName = null;
         }
 
         private void GraphExplorerSwitch(object sender, RoutedEventArgs e)
