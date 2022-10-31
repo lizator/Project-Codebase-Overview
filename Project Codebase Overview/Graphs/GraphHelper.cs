@@ -33,9 +33,10 @@ namespace Project_Codebase_Overview.Graphs
         private static readonly int GRAPH_SMALL_CHECK_STARTING_POINT = 60;
         private static readonly int GRAPH_SMALL_CHECK_MIN_SIZE = 5;
 
-        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<Author, uint> distributions, uint linesTotal, Author creator = null)
+        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<IOwner, uint> authorDistributions, uint linesTotal, Author creator = null, bool isTeamDistribution = false)
         {
             //Creator is only given for files
+            Dictionary<IOwner, uint> distributions = isTeamDistribution ? ConvertToTeamDistributions(authorDistributions) : authorDistributions;
 
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
@@ -74,7 +75,7 @@ namespace Project_Codebase_Overview.Graphs
                     block.Name = dist.Key.Name;
                     block.Percentage = blockSize;
 
-                    block.IsCreator = creator != null && dist.Key.Email == creator.Email;
+                    block.IsCreator = creator != null && dist.Key.ContainsEmail(creator.Email);
 
                     if (block.IsCreator)
                     {
@@ -97,6 +98,11 @@ namespace Project_Codebase_Overview.Graphs
             }
 
             return blockList;
+        }
+
+        private static Dictionary<IOwner, uint> ConvertToTeamDistributions(Dictionary<IOwner, uint> authorDistributions)
+        {
+            return null;
         }
 
         public static SfCircularChart GetPieChartFromExplorerItem(ExplorerItem item)

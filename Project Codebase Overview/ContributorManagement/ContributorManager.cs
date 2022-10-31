@@ -45,6 +45,10 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             if (FileCreators.TryGetValue(path, out Author creator))
             {
+                if (creator.OverAuthor != null)
+                {
+                    return creator.OverAuthor;
+                }
                 return creator;
             }
             return null;
@@ -62,6 +66,10 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             if (this.Authors.TryGetValue(email, out Author author))
             {
+                if (author.OverAuthor != null)
+                {
+                    return author.OverAuthor;
+                }
                 return author;
             }
             return null;
@@ -80,7 +88,7 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         public List<Author> GetAllAuthors()
         {
-            return Authors.Values.ToList();
+            return Authors.Values.Where(author => author.OverAuthor == null).ToList();
         }
     }
 }
