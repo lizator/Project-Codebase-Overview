@@ -229,6 +229,12 @@ namespace Project_Codebase_Overview
 
         private async void OpenManagementPage(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
+            ContributorManager.GetInstance().InitializeAuthor("alice@gmail.com", "Alice Awesome");
+            ContributorManager.GetInstance().InitializeAuthor("Anders@gmail.com", "Anders Anderson");
+            ContributorManager.GetInstance().InitializeAuthor("Betty@gmail.com", "Betty Beauty");
+            ContributorManager.GetInstance().InitializeAuthor("Bob@gmail.com", "Bob the Builder");
+
             NavigateToManagementPage();
         }
 
