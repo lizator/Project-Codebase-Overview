@@ -13,6 +13,13 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public Color Color { get; set; }
         public List<Author> Members { get; set; }
 
+        public PCOTeam(string name, Color color, List<Author> members)
+        {
+            Name = name;
+            Color = color;
+            Members = members;
+        }
+
         public PCOTeam()
         {
             Members = new List<Author>();

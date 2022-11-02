@@ -48,9 +48,43 @@
                     <AppBarButton Icon="Globe"  Label="Import"/>
                 </CommandBar>
             </Pivot.RightHeader>
-            <PivotItem Header="Team management" HorizontalContentAlignment="Center">
-                <TextBlock Text="Team management goes here" />
+            
+            <!--Team Management page-->
+            <PivotItem Header="Team management" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <GridView ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid   RowDefinitions="auto, auto, auto, auto" RowSpacing="15" BorderBrush="DarkGray" BorderThickness="2" Width="250" Background="White" CornerRadius="10" Padding="5,5,5,5">
+                                <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                                <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10">
+                                    <TextBlock Text="Color:" Grid.Column="0"/>
+                                    <Rectangle Grid.Column="1" RadiusX="4" RadiusY="4" Width="40" VerticalAlignment="Stretch" Stroke="Black">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="{Binding Color}"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Grid>
+                                <ItemsRepeater Grid.Row="2" ItemsSource="{Binding Members}" Height="300" 
+                                               ScrollViewer.HorizontalScrollMode="Disabled"
+                                               ScrollViewer.VerticalScrollMode="Disabled">
+                                    <ItemsRepeater.Layout>
+                                        <StackLayout Spacing="0" Orientation="Vertical"/>
+                                    </ItemsRepeater.Layout>
+                                    <ItemsRepeater.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="0" Padding="0"/>
+                                        </DataTemplate>
+                                    </ItemsRepeater.ItemTemplate>
+                                </ItemsRepeater>
+                                
+                                <TextBlock Grid.Row="3" Text="+14 more" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
             </PivotItem>
+            
+            <!--User Management page-->
             <PivotItem Header="User management" HorizontalAlignment="Center">
                 <TextBlock Text="User management goes here" />
             </PivotItem>
