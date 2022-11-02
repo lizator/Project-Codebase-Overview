@@ -13,10 +13,12 @@ namespace Project_Codebase_Overview.ContributorManagement
     {
         Dictionary<string, Author> Authors;
         Dictionary<string, Author> FileCreators; //Dict <filepath, creator> 
+        PCOTeam SelectedTeam;
+        
         private static ContributorManager Instance = null;
 
         public static void ResetInstance()
-        {
+        { //TODO, make into a state and put in PCOState
             Instance = null;
             PCOColorPicker.ResetInstance();
         }
@@ -89,6 +91,16 @@ namespace Project_Codebase_Overview.ContributorManagement
         public List<Author> GetAllAuthors()
         {
             return Authors.Values.Where(author => author.OverAuthor == null).ToList();
+        }
+
+        public void SetSelectedTeam(PCOTeam team)
+        {
+            SelectedTeam = team;
+        }
+        
+        public PCOTeam GetSelectedTeam()
+        {
+            return SelectedTeam;
         }
     }
 }

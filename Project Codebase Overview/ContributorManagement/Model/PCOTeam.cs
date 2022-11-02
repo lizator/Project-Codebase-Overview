@@ -13,6 +13,11 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public Color Color { get; set; }
         public List<Author> Members { get; set; }
 
+        public PCOTeam()
+        {
+            Members = new List<Author>();
+        }
+
         public bool ContainsEmail(string email)
         {
             return Members.Where(x => x.ContainsEmail(email)).Any();
@@ -22,7 +27,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             if (member.OverAuthor != null)
             {
-                throw new Exception("Cannot add subauthor to a team");
+                throw new Exception("Cannot add subauthor to a Team");
             }
 
             if (member.Team != null)

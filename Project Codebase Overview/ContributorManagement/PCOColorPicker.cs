@@ -24,6 +24,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         };
 
         private int AuthorCounter = 0;
+        private int TeamCounter = 0;
 
         private static PCOColorPicker Instance;
         public static void ResetInstance()
@@ -56,6 +57,17 @@ namespace Project_Codebase_Overview.ContributorManagement
             }
             var col = HardcodedColors[AuthorCounter];
             AuthorCounter++;
+            return col;
+        }
+
+        public Color AssignTeamColor()
+        {
+            if (TeamCounter >= HardcodedColors.Count)
+            {
+                return Color.FromArgb(255, 0, 0, 0); //Return black as default
+            }
+            var col = HardcodedColors[TeamCounter];
+            TeamCounter++;
             return col;
         }
 

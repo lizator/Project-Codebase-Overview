@@ -44,7 +44,8 @@
         <Pivot Grid.Row="1">
             <Pivot.RightHeader>
                 <CommandBar ClosedDisplayMode="Compact">
-                    <AppBarButton Icon="Add" Label="Add team"/>
+                    <AppBarButton Icon="Add" Label="Add team" Click="AddTeamClick"/>
+                    <AppBarButton Icon="Globe"  Label="Import"/>
                 </CommandBar>
             </Pivot.RightHeader>
             <PivotItem Header="Team management" HorizontalContentAlignment="Center">

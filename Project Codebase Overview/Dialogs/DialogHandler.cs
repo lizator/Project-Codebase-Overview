@@ -12,6 +12,8 @@ using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.Graphs;
 using Project_Codebase_Overview.Graphs.Model;
 using System.Diagnostics;
+using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.ContributorManagement;
 
 namespace Project_Codebase_Overview.Dialogs
 {
@@ -47,6 +49,31 @@ namespace Project_Codebase_Overview.Dialogs
 
             dialog.Content = GraphHelper.GetPieChartFromExplorerItem(item);
 
+            var result = await dialog.ShowAsync();
+            return result;
+        }
+
+        public static async Task<ContentDialogResult> ShowAddEditTeamDialog(XamlRoot xamlRoot, PCOTeam team = null)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = xamlRoot;
+            if (team == null)
+            {
+                // new team
+                dialog.Title = "New Team";
+            } else
+            {
+                // edit team
+                dialog.Title = "Edit Team";
+            }
+
+            ContributorManager.GetInstance().SetSelectedTeam(team);
+
+            var frame = new Frame();
+            frame.Navigate(typeof(AddEditTeamDialogPage));
+            dialog.Content = frame;
+            
+            
             var result = await dialog.ShowAsync();
             return result;
         }

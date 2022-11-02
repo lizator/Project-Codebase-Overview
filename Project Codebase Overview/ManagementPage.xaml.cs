@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,6 +38,11 @@ namespace Project_Codebase_Overview
         private void BackClick(object sender, RoutedEventArgs e)
         {
             ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
+        }
+
+        private async void AddTeamClick(object sender, RoutedEventArgs e)
+        {
+            await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot);
         }
     }
 }
