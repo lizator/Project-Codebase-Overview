@@ -6,7 +6,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:teamsModel="using:Project_Codebase_Overview.ContributorManagement.Model">
     <Page.Resources>
         <Style x:Key="ToolButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
@@ -51,12 +52,21 @@
             
             <!--Team Management page-->
             <PivotItem Header="Team management" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                <GridView ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                <GridView ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" >
                     <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid   RowDefinitions="auto, auto, auto, auto" RowSpacing="15" BorderBrush="DarkGray" BorderThickness="2" Width="250" Background="White" CornerRadius="10" Padding="5,5,5,5">
+                        <DataTemplate >
+                            <Grid   RowDefinitions="auto, auto, auto, auto"  
+                                    BorderBrush="DarkGray" 
+                                    BorderThickness="2" 
+                                    Width="240" 
+                                    Background="White"
+                                    CornerRadius="10" 
+                                    Padding="5,5,5,5" 
+                                    Loaded="Grid_Loaded"
+                                    VerticalAlignment="Stretch">
                                 <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                                <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10">
+                         
+                                <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10" Margin="0,15,0,0">
                                     <TextBlock Text="Color:" Grid.Column="0"/>
                                     <Rectangle Grid.Column="1" RadiusX="4" RadiusY="4" Width="40" VerticalAlignment="Stretch" Stroke="Black">
                                         <Rectangle.Fill>
@@ -64,23 +74,15 @@
                                         </Rectangle.Fill>
                                     </Rectangle>
                                 </Grid>
-                                <ItemsRepeater Grid.Row="2" ItemsSource="{Binding Members}" Height="300" 
-                                               ScrollViewer.HorizontalScrollMode="Disabled"
-                                               ScrollViewer.VerticalScrollMode="Disabled">
-                                    <ItemsRepeater.Layout>
-                                        <StackLayout Spacing="0" Orientation="Vertical"/>
-                                    </ItemsRepeater.Layout>
-                                    <ItemsRepeater.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" Margin="0" Padding="0"/>
-                                        </DataTemplate>
-                                    </ItemsRepeater.ItemTemplate>
-                                </ItemsRepeater>
-                                
-                                <TextBlock Grid.Row="3" Text="+14 more" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
+
+                                <TextBlock Name="MemberList" Grid.Row="2"   Margin="0,15,0,0" TextAlignment="Center"/>
+
+                                <TextBlock Name="MoreTextBlock" Grid.Row="3"  Text="+14 more" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,1,0,0"></TextBlock>
                             </Grid>
                         </DataTemplate>
+                       
                     </GridView.ItemTemplate>
+                    
                 </GridView>
             </PivotItem>
             
