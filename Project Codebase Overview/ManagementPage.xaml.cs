@@ -82,7 +82,6 @@ namespace Project_Codebase_Overview
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             //team item loaded in grid - update the "+X more members" textblock 
-            var ko = "mooh";
             var grid = sender as Grid;
             var team = grid.DataContext as PCOTeam;
 
