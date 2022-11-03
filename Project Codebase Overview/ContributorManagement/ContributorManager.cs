@@ -1,4 +1,5 @@
-﻿using Project_Codebase_Overview.ContributorManagement.Model;
+﻿using Microsoft.UI.Xaml.Controls;
+using Project_Codebase_Overview.ContributorManagement.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,8 +14,11 @@ namespace Project_Codebase_Overview.ContributorManagement
     {
         Dictionary<string, Author> Authors;
         Dictionary<string, Author> FileCreators; //Dict <filepath, creator> 
+        Dictionary<string, PCOTeam> Teams; //Dict <Team.Name, Team> 
         PCOTeam SelectedTeam;
-        
+        ContentDialog CurrentTeamDialog;
+        bool TeamUpdated = false;
+
         private static ContributorManager Instance = null;
 
         public static void ResetInstance()
@@ -27,6 +31,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             Authors = new Dictionary<string, Author>();
             FileCreators = new Dictionary<string, Author>();
+            Teams = new Dictionary<string, PCOTeam>();
         }
 
         public static ContributorManager GetInstance()
@@ -101,6 +106,49 @@ namespace Project_Codebase_Overview.ContributorManagement
         public PCOTeam GetSelectedTeam()
         {
             return SelectedTeam;
+        }
+
+        public void SetCurrentTeamDialog(ContentDialog dialog)
+        {
+            CurrentTeamDialog = dialog;
+        }
+
+        public ContentDialog GetCurrentTeamDialog()
+        {
+            return CurrentTeamDialog;
+        }
+
+        public void SetTeamUpdated(bool update)
+        {
+            TeamUpdated = update;
+        }
+
+        public bool GetTeamUpdated()
+        {
+            return TeamUpdated;
+        }
+
+        public bool CheckTeamNameAvailable(string name)
+        {
+            if (Teams.TryGetValue(name, out var team))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void AddTeam(PCOTeam team)
+        {
+            if (!CheckTeamNameAvailable(team.Name))
+            {
+                throw new Exception("Team with the same name already exists");
+            }
+            Teams.Add(team.Name, team);
+        }
+
+        public void DeleteTeam(PCOTeam team)
+        {
+
         }
     }
 }

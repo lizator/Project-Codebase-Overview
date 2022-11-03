@@ -57,17 +57,22 @@ namespace Project_Codebase_Overview.Dialogs
         {
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = xamlRoot;
+
+            var manager = ContributorManager.GetInstance();
             if (team == null)
             {
                 // new team
                 dialog.Title = "New Team";
+                manager.SetSelectedTeam(null);
             } else
             {
                 // edit team
                 dialog.Title = "Edit Team";
+                manager.SetSelectedTeam(team);
             }
 
-            ContributorManager.GetInstance().SetSelectedTeam(team);
+
+            manager.SetCurrentTeamDialog(dialog);
 
             var frame = new Frame();
             frame.Navigate(typeof(AddEditTeamDialogPage));

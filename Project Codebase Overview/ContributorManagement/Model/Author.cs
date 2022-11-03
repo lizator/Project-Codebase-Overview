@@ -66,5 +66,14 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.OverAuthor.SubAuthors.Remove(this);
             this.OverAuthor = null;
         }
+
+        public void ConnectToTeam(PCOTeam team)
+        {
+            team.ConnectMember(this);
+        }
+        public void DisconnectFromTeam()
+        {
+            Team.RemoveMember(this);
+        }
     }
 }

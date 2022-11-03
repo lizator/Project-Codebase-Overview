@@ -33,6 +33,8 @@ namespace Project_Codebase_Overview.Dialogs
         private Dictionary<string, bool> IsAuthorInTeam;
         private Dictionary<string, Author> AuthorList;
 
+        private bool IsTeamNew = false;
+
         private ObservableCollection<Author> _unselectedAuthorList;
         public ObservableCollection<Author> UnselectedAuthorList
         {
@@ -55,6 +57,7 @@ namespace Project_Codebase_Overview.Dialogs
             Team = ContributorManager.GetInstance().GetSelectedTeam();
             if (Team == null)
             {
+                IsTeamNew = true;
                 Team = new PCOTeam();
                 Team.Color = PCOColorPicker.GetInstance().AssignAuthorColor();
             }
@@ -125,11 +128,36 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
-
+            var manager = ContributorManager.GetInstance();
+            manager.SetTeamUpdated(false);
+            manager.SetSelectedTeam(null);
+            manager.SetCurrentTeamDialog(null);
+            manager.GetCurrentTeamDialog().Hide();
         }
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
+            Team.Name = NameBox.Text;
+            Team.EmptyMembers();
+            foreach(var pair in IsAuthorInTeam)
+            {
+                if (pair.Value)
+                {
+                    Team.ConnectMember(AuthorList[pair.Key]);
+                }
+            }
+
+            var manager = ContributorManager.GetInstance();
+
+            if (IsTeamNew)
+            {
+                manager.AddTeam(Team);
+            }
+
+            manager.SetTeamUpdated(true);
+            manager.SetSelectedTeam(null);
+            manager.GetCurrentTeamDialog().Hide();
+            manager.SetCurrentTeamDialog(null);
 
         }
     }

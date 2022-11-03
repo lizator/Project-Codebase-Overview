@@ -39,10 +39,18 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         }
 
+        public void EmptyMembers()
+        {
+            this.Members.Clear();
+        }
+
         public void RemoveMember(Author member)
         {
-            this.Members.Remove(member);
-            member.Team = null;
+            if (this.Members.Contains(member))
+            {
+                member.Team = null;
+                this.Members.Remove(member);
+            }
         }
 
     }
