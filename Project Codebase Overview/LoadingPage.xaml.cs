@@ -51,6 +51,7 @@ namespace Project_Codebase_Overview
             else if (e.PropertyName.Equals("TotalFilesToLoad"))
             {
                 FilesLoadedLine.Visibility = Visibility.Visible;
+                ScanningTextBlock.Visibility = Visibility.Collapsed;
             }
         }
     }
