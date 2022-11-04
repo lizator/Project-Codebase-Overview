@@ -48,7 +48,7 @@
                 </gauge:LinearAxis>
             </gauge:SfLinearGauge.Axis>
         </gauge:SfLinearGauge>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel x:Name="FilesLoadedLine" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
             <TextBlock Text="{Binding FilesLoaded}" />
             <TextBlock Text=" of&#160;&#xfeff;"/>
             <TextBlock Text="{Binding TotalFilesToLoad}"/>
