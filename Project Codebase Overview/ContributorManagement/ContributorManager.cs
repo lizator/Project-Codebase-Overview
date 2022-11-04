@@ -98,6 +98,11 @@ namespace Project_Codebase_Overview.ContributorManagement
             return Authors.Values.Where(author => author.OverAuthor == null).ToList();
         }
 
+        public List<PCOTeam> GetAllTeams()
+        {
+            return Teams.Values.ToList();
+        }
+
         public void SetSelectedTeam(PCOTeam team)
         {
             SelectedTeam = team;

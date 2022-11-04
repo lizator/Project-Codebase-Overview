@@ -160,6 +160,7 @@ namespace Project_Codebase_Overview.Dialogs
                     Team.ConnectMember(AuthorList[pair.Key]);
                 }
             }
+            Team.Color = LocalObservables.Brush.Color;
 
             var manager = ContributorManager.GetInstance();
 
@@ -167,6 +168,7 @@ namespace Project_Codebase_Overview.Dialogs
             {
                 manager.AddTeam(Team);
             }
+
 
             manager.SetTeamUpdated(true);
             manager.SetSelectedTeam(null);

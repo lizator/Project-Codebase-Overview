@@ -36,27 +36,21 @@ namespace Project_Codebase_Overview
         public ManagementPage()
         {
             this.InitializeComponent();
-
-            List<Author> owners = new List<Author>();
-
-            //Teams dummy data for visuals
-            var memberList = ContributorManager.GetInstance().GetAllAuthors();
-            var member = memberList.First();
-
-            for(int i=0; i<14; i++)
-            {
-                owners.Add(member);
-            }
        
-
             Teams = new ObservableCollection<PCOTeam>();
-            Teams.Add(new PCOTeam("Team Field Planning", PCOColorPicker.HardcodedColors[0], owners.GetRange(0,1)));
-            Teams.Add(new PCOTeam("Team Field On Site", PCOColorPicker.HardcodedColors[1], owners.GetRange(0,6)));
-            Teams.Add(new PCOTeam("Team FM", PCOColorPicker.HardcodedColors[2], owners.GetRange(0,7 )));
-            Teams.Add(new PCOTeam("Team Insight", PCOColorPicker.HardcodedColors[3], owners.GetRange(0, 8)));
-            Teams.Add(new PCOTeam("Team Box Web", PCOColorPicker.HardcodedColors[4], owners.GetRange(0, 9)));
-            Teams.Add(new PCOTeam("Team Box IO", PCOColorPicker.HardcodedColors[5], owners.GetRange(0, 10)));
+
+            UpdateTeams();
             
+        }
+
+        private void UpdateTeams()
+        {
+            Teams.Clear();
+            var manager = ContributorManager.GetInstance();
+            foreach (var team in manager.GetAllTeams())
+            {
+                Teams.Add(team);
+            }
         }
 
         private void ImageFailed(object sender, ExceptionRoutedEventArgs e)
@@ -73,11 +67,24 @@ namespace Project_Codebase_Overview
         {
             var team = e.ClickedItem as PCOTeam;
             await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot, team);
+
+            CheckTeamChangeAndStartUpdate();
         }
 
         private async void AddTeamClick(object sender, RoutedEventArgs e)
         {
             await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot);
+
+            CheckTeamChangeAndStartUpdate();
+        }
+        private void CheckTeamChangeAndStartUpdate()
+        {
+            var manager = ContributorManager.GetInstance();
+            if (manager.GetTeamUpdated())
+            {
+                manager.SetTeamUpdated(false);
+                UpdateTeams();
+            }
         }
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
