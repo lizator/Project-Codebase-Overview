@@ -69,9 +69,10 @@ namespace Project_Codebase_Overview
             ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
         }
 
-        private void TeamClicked(object sender, ItemClickEventArgs e)
+        private async void TeamClicked(object sender, ItemClickEventArgs e)
         {
-
+            var team = e.ClickedItem as PCOTeam;
+            await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot, team);
         }
 
         private async void AddTeamClick(object sender, RoutedEventArgs e)
