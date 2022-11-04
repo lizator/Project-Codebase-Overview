@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Data;
@@ -12,11 +13,14 @@ using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Color = Windows.UI.Color;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -32,6 +36,13 @@ namespace Project_Codebase_Overview.Dialogs
         private PCOTeam Team;
         private Dictionary<string, bool> IsAuthorInTeam;
         private Dictionary<string, Author> AuthorList;
+        private class Observables: ObservableObject
+        {
+            private SolidColorBrush _brush;
+            public SolidColorBrush Brush { get => _brush; set => SetProperty(ref _brush, value); }
+        }
+        private Observables LocalObservables;
+        
 
         private bool IsTeamNew = false;
 
@@ -52,6 +63,7 @@ namespace Project_Codebase_Overview.Dialogs
         public AddEditTeamDialogPage()
         {
             this.InitializeComponent();
+            LocalObservables = new Observables();
             IsAuthorInTeam = new Dictionary<string, bool>();
             AuthorList = new Dictionary<string, Author>();
             Team = ContributorManager.GetInstance().GetSelectedTeam();
@@ -61,6 +73,8 @@ namespace Project_Codebase_Overview.Dialogs
                 Team = new PCOTeam();
                 Team.Color = PCOColorPicker.GetInstance().AssignAuthorColor();
             }
+
+            LocalObservables.Brush = new SolidColorBrush(Team.Color);
 
             foreach (var author in ContributorManager.GetInstance().GetAllAuthors())
             {
@@ -131,15 +145,15 @@ namespace Project_Codebase_Overview.Dialogs
             var manager = ContributorManager.GetInstance();
             manager.SetTeamUpdated(false);
             manager.SetSelectedTeam(null);
-            manager.SetCurrentTeamDialog(null);
             manager.GetCurrentTeamDialog().Hide();
+            manager.SetCurrentTeamDialog(null);
         }
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
             Team.Name = NameBox.Text;
             Team.EmptyMembers();
-            foreach(var pair in IsAuthorInTeam)
+            foreach (var pair in IsAuthorInTeam)
             {
                 if (pair.Value)
                 {
@@ -159,6 +173,11 @@ namespace Project_Codebase_Overview.Dialogs
             manager.GetCurrentTeamDialog().Hide();
             manager.SetCurrentTeamDialog(null);
 
+        }
+
+        private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)
+        {
+            LocalObservables.Brush = (SolidColorBrush)e.NewBrush;
         }
     }
 }
