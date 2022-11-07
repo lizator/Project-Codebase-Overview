@@ -135,7 +135,7 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         public bool CheckTeamNameAvailable(string name)
         {
-            if (Teams.TryGetValue(name, out var team))
+            if (Teams.Keys.Where(key => key.ToLower().Equals(name.ToLower())).Any())
             {
                 return false;
             }

@@ -21,7 +21,13 @@
         <Grid Grid.Row="0" ColumnDefinitions="3*, 2*" Padding="2,2,2,10">
             <Grid Grid.Column="0" ColumnDefinitions="auto, *" Padding="0,0,6,0">
                 <TextBlock Text="Name:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="NameBox" Grid.Column="1" />
+                <TextBox x:Name="NameBox" Grid.Column="1">
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout>
+                            <TextBlock Text="{x:Bind LocalObservables.NameFlyoutMsg, Mode=OneWay}"  />
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
+                </TextBox>
             </Grid>
             <Grid Grid.Column="1" ColumnDefinitions="auto, *">
                 <TextBlock Text="Search:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>

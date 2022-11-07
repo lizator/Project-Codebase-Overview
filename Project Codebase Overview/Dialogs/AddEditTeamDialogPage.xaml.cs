@@ -46,6 +46,9 @@ namespace Project_Codebase_Overview.Dialogs
         {
             private SolidColorBrush _brush;
             public SolidColorBrush Brush { get => _brush; set => SetProperty(ref _brush, value); }
+
+            private string _nameFlyoutMsg;
+            public string NameFlyoutMsg { get => _nameFlyoutMsg; set => SetProperty(ref _nameFlyoutMsg, value); }
         }
         private Observables LocalObservables;
         
@@ -146,11 +149,11 @@ namespace Project_Codebase_Overview.Dialogs
             AuthorList.Where(pair =>
                 !IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
                 (!isSearching || (
-                    pair.Value.Name.ToLower().Contains(searchString.ToLower()) || 
-                    pair.Value.Email.ToLower().Contains(searchString.ToLower()) || 
+                    pair.Value.Name.ToLower().Contains(searchString.ToLower()) ||
+                    pair.Value.Email.ToLower().Contains(searchString.ToLower()) ||
                     (
-                        pair.Value.Team == null ? 
-                            NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) : 
+                        pair.Value.Team == null ?
+                            NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) :
                             pair.Value.Team.Name.ToLower().Contains(searchString.ToLower())
                     )
                 ))
@@ -160,7 +163,7 @@ namespace Project_Codebase_Overview.Dialogs
             var query = UnselectedAuthorList.GroupBy(item => (item.Team == null ? NO_TEAM_HEADER_TEXT : item.Team.Name))
                 .OrderBy(item => (item.Key.Equals(NO_TEAM_HEADER_TEXT)) ? 0 : 1)
                 .ThenBy(item => item.Key)
-                .Select(item => new GroupInfoList(item) { Key = item.Key});
+                .Select(item => new GroupInfoList(item) { Key = item.Key });
 
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
@@ -171,27 +174,7 @@ namespace Project_Codebase_Overview.Dialogs
             )
             .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
 
-            
         }
-
-        public ObservableCollection<GroupInfoList> GetAuthorsGroupedAsync()
-        {
-            // Grab Contact objects from pre-existing list (list is returned from function GetContactsAsync())
-            var query = from item in UnselectedAuthorList
-
-                            // Group the items returned from the query, sort and select the ones you want to keep
-                        group item by (item.Team == null ? "No team" : item.Team.Name) into g
-                        orderby g.Key
-
-                        // GroupInfoList is a simple custom class that has an IEnumerable type attribute, and
-                        // a key attribute. The IGrouping-typed variable g now holds the Contact objects,
-                        // and these objects will be used to create a new GroupInfoList object.
-                        select new GroupInfoList(g) { Key = g.Key };
-
-            return new ObservableCollection<GroupInfoList>(query);
-        }
-
-
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -209,6 +192,22 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
+            var manager = ContributorManager.GetInstance();
+
+            if (NameBox.Text.Length == 0)
+            {
+                LocalObservables.NameFlyoutMsg = "Your team need a name.";
+                ShowNameFlyout();
+                return;
+            }
+
+            if (!NameBox.Text.Equals(Team.Name) && !manager.CheckTeamNameAvailable(NameBox.Text))
+            {
+                LocalObservables.NameFlyoutMsg = "Your team can't be named the same as another team.";
+                ShowNameFlyout();
+                return;
+            }
+
             Team.Name = NameBox.Text;
             Team.EmptyMembers();
             foreach (var pair in IsAuthorInTeam)
@@ -220,7 +219,6 @@ namespace Project_Codebase_Overview.Dialogs
             }
             Team.Color = LocalObservables.Brush.Color;
 
-            var manager = ContributorManager.GetInstance();
 
             if (IsTeamNew)
             {
@@ -233,6 +231,11 @@ namespace Project_Codebase_Overview.Dialogs
             manager.GetCurrentTeamDialog().Hide();
             manager.SetCurrentTeamDialog(null);
 
+        }
+
+        private void ShowNameFlyout()
+        {
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)NameBox);
         }
 
         private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)
