@@ -6,10 +6,12 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.UI.Xaml.Shapes;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,6 +19,8 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
@@ -36,6 +40,8 @@ namespace Project_Codebase_Overview.Dialogs
         private PCOTeam Team;
         private Dictionary<string, bool> IsAuthorInTeam;
         private Dictionary<string, Author> AuthorList;
+
+        private static string NO_TEAM_HEADER_TEXT = "No team";
         private class Observables: ObservableObject
         {
             private SolidColorBrush _brush;
@@ -86,8 +92,22 @@ namespace Project_Codebase_Overview.Dialogs
 
             UnselectedAuthorList = new ObservableCollection<Author>();
             SelectedAuthorList = new ObservableCollection<Author>();
+            UnselectedAuthors.Source = new ObservableCollection<GroupInfoList>();
 
-            UpdateAuthorLists();
+            addLateLoad();
+        }
+
+        private async Task<object> addLateLoad()
+        {
+
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                Thread.Sleep(20);
+                dispatcherQueue.TryEnqueue(() =>
+                    UpdateAuthorLists());
+            });
+            return null;
         }
 
         private void AddClicked(object sender, RoutedEventArgs e)
@@ -99,8 +119,8 @@ namespace Project_Codebase_Overview.Dialogs
                     var author = item as Author;
                     IsAuthorInTeam[author.Email] = true;
                 }
-                UpdateAuthorLists(SearchBox.Text);
             }
+            UpdateAuthorLists(SearchBox.Text);
         }
 
         private void RemoveClicked(object sender, RoutedEventArgs e)
@@ -119,13 +139,30 @@ namespace Project_Codebase_Overview.Dialogs
         private void UpdateAuthorLists(string searchString = "")
         {
             var isSearching = searchString.Length > 0;
+
+            ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Clear();
+
             UnselectedAuthorList.Clear();
             AuthorList.Where(pair =>
                 !IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
-                (!isSearching || (pair.Value.Name.ToLower().Contains(searchString.ToLower()) || pair.Value.Email.ToLower().Contains(searchString.ToLower())))
+                (!isSearching || (
+                    pair.Value.Name.ToLower().Contains(searchString.ToLower()) || 
+                    pair.Value.Email.ToLower().Contains(searchString.ToLower()) || 
+                    (
+                        pair.Value.Team == null ? 
+                            NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) : 
+                            pair.Value.Team.Name.ToLower().Contains(searchString.ToLower())
+                    )
+                ))
             )
             .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => UnselectedAuthorList.Add(author));
 
+            var query = UnselectedAuthorList.GroupBy(item => (item.Team == null ? NO_TEAM_HEADER_TEXT : item.Team.Name))
+                .OrderBy(item => (item.Key.Equals(NO_TEAM_HEADER_TEXT)) ? 0 : 1)
+                .ThenBy(item => item.Key)
+                .Select(item => new GroupInfoList(item) { Key = item.Key});
+
+            query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
             SelectedAuthorList.Clear();
             AuthorList.Where(pair =>
@@ -133,7 +170,28 @@ namespace Project_Codebase_Overview.Dialogs
                 (!isSearching || (pair.Value.Name.ToLower().Contains(searchString.ToLower()) || pair.Value.Email.ToLower().Contains(searchString.ToLower())))
             )
             .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
+
+            
         }
+
+        public ObservableCollection<GroupInfoList> GetAuthorsGroupedAsync()
+        {
+            // Grab Contact objects from pre-existing list (list is returned from function GetContactsAsync())
+            var query = from item in UnselectedAuthorList
+
+                            // Group the items returned from the query, sort and select the ones you want to keep
+                        group item by (item.Team == null ? "No team" : item.Team.Name) into g
+                        orderby g.Key
+
+                        // GroupInfoList is a simple custom class that has an IEnumerable type attribute, and
+                        // a key attribute. The IGrouping-typed variable g now holds the Contact objects,
+                        // and these objects will be used to create a new GroupInfoList object.
+                        select new GroupInfoList(g) { Key = g.Key };
+
+            return new ObservableCollection<GroupInfoList>(query);
+        }
+
+
 
         private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -181,5 +239,12 @@ namespace Project_Codebase_Overview.Dialogs
         {
             LocalObservables.Brush = (SolidColorBrush)e.NewBrush;
         }
+    }
+    public class GroupInfoList : List<object>
+    {
+        public GroupInfoList(IEnumerable<object> items) : base(items)
+        {
+        }
+        public object Key { get; set; }
     }
 }
