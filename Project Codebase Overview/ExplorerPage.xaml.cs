@@ -63,6 +63,52 @@ namespace Project_Codebase_Overview
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
             PCOState.GetInstance().ChangeHistory.PropertyChanged += ChangeHistory_PropertyChanged;
+
+            viewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
+
+        }
+
+        private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("NavigateUpAvailable"))
+            {
+                if (((NavigationButtonValues)sender).NavigateUpAvailable)
+                {
+                    UpButton.IsEnabled = true;
+                    UpImage.Opacity = 1;
+                }
+                else
+                {
+                    UpButton.IsEnabled = false;
+                    UpImage.Opacity = 0.3;
+                }
+            }
+            if (e.PropertyName.Equals("NavigateBackAvailable"))
+            {
+                if (((NavigationButtonValues)sender).NavigateBackAvailable)
+                {
+                    BackButton.IsEnabled = true;
+                    BackImage.Opacity = 1;
+                }
+                else
+                {
+                    BackButton.IsEnabled = false;
+                    BackImage.Opacity = 0.3;
+                }
+            }
+            if (e.PropertyName.Equals("NavigateForwardAvailable"))
+            {
+                if (((NavigationButtonValues)sender).NavigateForwardAvailable)
+                {
+                    ForwardButton.IsEnabled = true;
+                    ForwardImage.Opacity = 1;
+                }
+                else
+                {
+                    ForwardButton.IsEnabled = false;
+                    ForwardImage.Opacity = 0.3;
+                }
+            }
         }
 
         private void ChangeHistory_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

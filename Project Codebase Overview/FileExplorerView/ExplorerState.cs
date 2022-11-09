@@ -158,6 +158,38 @@ namespace Project_Codebase_Overview.FileExplorerView
             ResetHistory(folder);
         }
 
-
+        public bool IsNavigateUpAvailable()
+        {
+            if (FolderHistory[CurrentRootIndex].Equals(RootFolder))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool IsNavigateBackAvailable()
+        {
+            if (CurrentRootIndex > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool IsNavigateForwardAvailable()
+        {
+            if (FolderHistory.Count() > CurrentRootIndex + 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

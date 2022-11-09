@@ -107,16 +107,16 @@
                 <Line X1="0" X2="0" Y1="0" Y2="50" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center"></Line>
             </Grid>
 
-            <Button Click="BackClick" Grid.Column="3" Style="{StaticResource ToolButton}">
-                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+            <Button x:Name="BackButton" IsEnabled="False" Click="BackClick" Grid.Column="3" Style="{StaticResource ToolButton}">
+                <Image Name="BackImage" Opacity="0.3" ImageFailed="ImageFailed" Style="{StaticResource ToolImage}" 
                    Source="Assets/ArrowLeft.png"/>
             </Button>
-            <Button Click="ForwardClick" Grid.Column="4" Style="{StaticResource ToolButton}">
-                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+            <Button x:Name="ForwardButton" IsEnabled="False" Click="ForwardClick" Grid.Column="4" Style="{StaticResource ToolButton}">
+                <Image x:Name="ForwardImage" Opacity="0.3" ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowRight.png" />
             </Button>
-            <Button Click="UpClick" Grid.Column="5" Style="{StaticResource ToolButton}" Margin="40,0,0,0">
-                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}" 
+            <Button x:Name="UpButton" IsEnabled="False" Click="UpClick" Grid.Column="5" Style="{StaticResource ToolButton}" Margin="30,0,0,0">
+                <Image x:Name="UpImage" Opacity="0.3" ImageFailed="ImageFailed" Style="{StaticResource ToolImage}" 
                    Source="Assets/ArrowUp.png"/>
             </Button>
             <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="6" CornerRadius="0"  HorizontalContentAlignment="Left">
