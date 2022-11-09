@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project_Codebase_Overview.ChangeHistory
+namespace Project_Codebase_Overview.ChangeHistoryFolder
 {
-    internal interface IChangeObject
+    public interface IChangeObject
     {
         void UndoChange();
         void RedoChange();

@@ -33,6 +33,7 @@ using Path = Microsoft.UI.Xaml.Shapes.Path;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.VoiceCommands;
 using Syncfusion.UI.Xaml.Editors;
+using Project_Codebase_Overview.ChangeHistoryFolder;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -61,6 +62,37 @@ namespace Project_Codebase_Overview
 
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
+            PCOState.GetInstance().ChangeHistory.PropertyChanged += ChangeHistory_PropertyChanged;
+        }
+
+        private void ChangeHistory_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.Equals("RedoAvailable"))
+            {
+                if (((ChangeHistory)sender).RedoAvailable)
+                {
+                    RedoButton.IsEnabled = true;
+                    RedoImage.Opacity = 1;
+                }
+                else
+                {
+                    RedoButton.IsEnabled = false;
+                    RedoImage.Opacity = 0.3;
+                }
+            }
+            else if (e.PropertyName.Equals("UndoAvailable"))
+            {
+                if (((ChangeHistory)sender).UndoAvailable)
+                {
+                    UndoButton.IsEnabled = true;
+                    UndoImage.Opacity = 1;
+                }
+                else
+                {
+                    UndoButton.IsEnabled = false;
+                    UndoImage.Opacity = 0.3;
+                }
+            }
         }
 
         private void sfTreeGrid_SelectionChanged(object sender, Syncfusion.UI.Xaml.Grids.GridSelectionChangedEventArgs e)
@@ -172,18 +204,30 @@ namespace Project_Codebase_Overview
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
         {
             var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
+            var previousOwner = item.GraphModel.SelectedOwner;
             if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
             {
                 ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
-                item.GraphModel.SelectedOwner = null;
-                item.SelectedOwnerColor = null;
-                item.SelectedOwnerName = null;
+                if(previousOwner != null && !previousOwner.Name.Equals("Unselected"))
+                {
+                    item.GraphModel.SelectedOwner = null;
+                    item.SelectedOwnerColor = null;
+                    item.SelectedOwnerName = null;
+                    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, null, item, (SfComboBox) sender));
+                }
+                
                 return;
             }
             Debug.WriteLine("Changed selected owner");
-            item.GraphModel.SelectedOwner = (IOwner)e.AddedItems[0];
-            item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
-            item.SelectedOwnerName = null;
+            var newOwner = (IOwner)e.AddedItems[0];
+            if (!newOwner.Equals(previousOwner))
+            {
+                item.GraphModel.SelectedOwner = newOwner;
+                item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
+                item.SelectedOwnerName = null;
+                PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, newOwner, item, (SfComboBox)sender));
+            }
+            
         }
 
         private void GraphExplorerSwitch(object sender, RoutedEventArgs e)
@@ -249,6 +293,21 @@ namespace Project_Codebase_Overview
                     flyout.ShowAt((FrameworkElement)sender, ptElement);
                 }
             }
+
+        }
+
+        private void UndoClick(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ChangeHistory.Undo();
+        }
+
+        private void RedoClick(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ChangeHistory.Redo();
+        }
+
+        private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
+        {
 
         }
     }

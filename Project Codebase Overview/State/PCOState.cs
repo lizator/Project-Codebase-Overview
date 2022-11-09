@@ -1,4 +1,5 @@
 ﻿using LibGit2Sharp;
+using Project_Codebase_Overview.ChangeHistoryFolder;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.FileExplorerView;
 using System;
@@ -11,6 +12,8 @@ namespace Project_Codebase_Overview.State
 {
     public class PCOState
     {
+        public ChangeHistory ChangeHistory = new ChangeHistory();
+
         private ExplorerState ExplorerState;
         private LoadingState LoadingState;
         private TestState TestState;

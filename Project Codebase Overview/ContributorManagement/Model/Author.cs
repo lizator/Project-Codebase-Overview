@@ -23,7 +23,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         private Author _overAuthor;
         public Author OverAuthor { get => _overAuthor; set => SetProperty(ref _overAuthor, value); }
         public ObservableCollection<Author> SubAuthors { get; set; }
-        public PCOTeam Team { get; set; }
+        public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
+        private PCOTeam _team;
         public int SubAuthorCount { get => SubAuthors.Count; }
 
         public Author(string email, string name)

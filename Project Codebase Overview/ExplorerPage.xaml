@@ -28,6 +28,23 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Margin" Value="0"/>
         </Style>
+        <Style x:Key="UndoButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style x:Key="UndoImage" TargetType="Image">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="20"/>
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+        
         <DataTemplate x:Key="SunburstTooltipTemplate">
             <StackPanel  Background="{StaticResource FlyoutBackgroundThemeBrush}" CornerRadius="4" Padding="2,2,2,2" BorderBrush="DarkGray" BorderThickness="1" Visibility="{Binding Item.Visibility}" >
                 <TextBlock Text="{Binding Item.Name}" Foreground="Black"/>
@@ -68,36 +85,49 @@
         </Grid.RowDefinitions>
 
         <!-- FileExplorer tools -->
-        <Grid Grid.Row="0" BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Grid.Row="0"  BorderThickness="0,0,0,1" BorderBrush="Black" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
+                <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
+            <Button x:Name="UndoButton" Click="UndoClick" Grid.Column="0" Style="{StaticResource UndoButton}">
+                <Image x:Name="UndoImage"  ImageFailed="ImageFailed" Source="Assets/Undo.png" Style="{StaticResource UndoImage}" Opacity="0.3"/>
+            </Button>
+            <Button x:Name="RedoButton" Click="RedoClick" Grid.Column="1" Style="{StaticResource UndoButton}" IsEnabled="false">
+                <Image x:Name="RedoImage" ImageFailed="ImageFailed" Source="Assets/Redo.png" Style="{StaticResource UndoImage}" Opacity="0.3"/>
+            </Button>
+            <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40">
+                <Line X1="0" X2="0" Y1="0" Y2="50" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" HorizontalAlignment="Center"></Line>
+            </Grid>
 
-            <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
+            <Button Click="BackClick" Grid.Column="3" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowLeft.png"/>
             </Button>
-            <Button Click="ForwardClick" Grid.Column="1" Style="{StaticResource ToolButton}">
+            <Button Click="ForwardClick" Grid.Column="4" Style="{StaticResource ToolButton}">
                 <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
                    Source="Assets/ArrowRight.png" />
             </Button>
-            <Button Click="UpClick" Grid.Column="2" Style="{StaticResource ToolButton}" Margin="40,0,0,0">
-                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+            <Button Click="UpClick" Grid.Column="5" Style="{StaticResource ToolButton}" Margin="40,0,0,0">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}" 
                    Source="Assets/ArrowUp.png"/>
             </Button>
-            <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="3" CornerRadius="0"  HorizontalContentAlignment="Left">
+            <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="6" CornerRadius="0"  HorizontalContentAlignment="Left">
                 <TextBlock HorizontalAlignment="Left" 
                        VerticalAlignment="Center"
                        Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
             </Button>
-            <Button x:Name="ViewSwitch" Click="GraphExplorerSwitch" Grid.Column="4">
+            <Button x:Name="ViewSwitch" Click="GraphExplorerSwitch" Grid.Column="7">
                 Graph overview
             </Button>
+            
 
         </Grid>
 
@@ -125,6 +155,7 @@
                                                         IsTextSearchEnabled="True"
                                                         IsEditable="True"
                                                         IsFilteringEnabled="True"
+                                                        Text="{Binding SelectedOwnerName}"
                                                         PlaceholderText="{Binding SelectedOwnerName}"
                                                         ItemTemplate="{StaticResource OwnerItemTemplate}"
                                                         >
