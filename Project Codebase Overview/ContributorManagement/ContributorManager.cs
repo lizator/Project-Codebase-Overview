@@ -153,7 +153,10 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         public void DeleteTeam(PCOTeam team)
         {
-
+            if (Teams.TryGetValue(team.Name, out var pCOTeam)) {
+                team.EmptyMembers();
+                Teams.Remove(team.Name);
+            }
         }
     }
 }

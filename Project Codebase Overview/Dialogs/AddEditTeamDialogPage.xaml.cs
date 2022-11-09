@@ -49,6 +49,10 @@ namespace Project_Codebase_Overview.Dialogs
 
             private string _nameFlyoutMsg;
             public string NameFlyoutMsg { get => _nameFlyoutMsg; set => SetProperty(ref _nameFlyoutMsg, value); }
+            private Visibility _deleteVisibility = Visibility.Collapsed;
+            public Visibility DeleteVisibility { get => _deleteVisibility; set => SetProperty(ref _deleteVisibility, value); }
+            private string _confirmDeleteMsg;
+            public string ConfirmDeleteMsg { get => _confirmDeleteMsg; set => SetProperty(ref _confirmDeleteMsg, value); }
         }
         private Observables LocalObservables;
         
@@ -81,6 +85,10 @@ namespace Project_Codebase_Overview.Dialogs
                 IsTeamNew = true;
                 Team = new PCOTeam();
                 Team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
+            } else
+            {
+                LocalObservables.DeleteVisibility = Visibility.Visible;
+                LocalObservables.ConfirmDeleteMsg = "Confirm deleting team \"" + Team.Name + "\"";
             }
 
             LocalObservables.Brush = new SolidColorBrush(Team.Color);
@@ -106,7 +114,7 @@ namespace Project_Codebase_Overview.Dialogs
             var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
             await System.Threading.Tasks.Task.Run(() =>
             {
-                Thread.Sleep(20);
+                Thread.Sleep(50);
                 dispatcherQueue.TryEnqueue(() =>
                     UpdateAuthorLists());
             });
@@ -223,10 +231,10 @@ namespace Project_Codebase_Overview.Dialogs
             if (IsTeamNew)
             {
                 manager.AddTeam(Team);
+                manager.SetTeamUpdated(true);
             }
 
 
-            manager.SetTeamUpdated(true);
             manager.SetSelectedTeam(null);
             manager.GetCurrentTeamDialog().Hide();
             manager.SetCurrentTeamDialog(null);
@@ -241,6 +249,28 @@ namespace Project_Codebase_Overview.Dialogs
         private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)
         {
             LocalObservables.Brush = (SolidColorBrush)e.NewBrush;
+        }
+
+        private void DeleteConfirm_Checked(object sender, RoutedEventArgs e)
+        {
+            ConfirmDeleteBtn.IsEnabled = true;
+        }
+
+        private void DeleteConfirm_Unchecked(object sender, RoutedEventArgs e)
+        {
+            ConfirmDeleteBtn.IsEnabled = false;
+        }
+
+        private void DeleteTeam(object sender, RoutedEventArgs e)
+        {
+            var manager = ContributorManager.GetInstance();
+
+            manager.DeleteTeam(Team);
+
+            manager.SetTeamUpdated(true);
+            manager.SetSelectedTeam(null);
+            manager.GetCurrentTeamDialog().Hide();
+            manager.SetCurrentTeamDialog(null);
         }
     }
     public class GroupInfoList : List<object>

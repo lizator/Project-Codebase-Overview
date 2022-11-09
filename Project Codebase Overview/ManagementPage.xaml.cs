@@ -86,6 +86,8 @@ namespace Project_Codebase_Overview
         {
             var team = e.ClickedItem as PCOTeam;
             await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot, team);
+
+            CheckTeamChangeAndStartUpdate();
         }
 
         private async void AddTeamClick(object sender, RoutedEventArgs e)
