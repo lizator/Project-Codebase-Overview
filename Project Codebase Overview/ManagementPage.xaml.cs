@@ -33,6 +33,7 @@ namespace Project_Codebase_Overview
     public sealed partial class ManagementPage : Page
     {
         private ObservableCollection<PCOTeam> Teams;
+        private ObservableCollection<Author> Users;
         public ManagementPage()
         {
             this.InitializeComponent();
@@ -40,7 +41,25 @@ namespace Project_Codebase_Overview
             Teams = new ObservableCollection<PCOTeam>();
 
             UpdateTeams();
-            
+
+            //DUMMY
+            SetDummyUsers();
+        }
+        
+        private void SetDummyUsers()
+        {
+            Users = new ObservableCollection<Author>();
+            PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0], null);
+            var authorList = ContributorManager.GetInstance().GetAllAuthors();
+            var parentAuth = authorList.First();
+
+            foreach(var author in authorList)
+            {
+                author.Team = team;
+                Users.Add(author);
+                parentAuth.SubAuthors.Add(author);
+            }
+            PCOColorPicker.GetInstance();
         }
 
         private void UpdateTeams()

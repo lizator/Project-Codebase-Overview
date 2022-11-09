@@ -18,6 +18,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public Author OverAuthor { get; set; }
         public List<Author> SubAuthors { get; set; }
         public PCOTeam Team { get; set; }
+        public int SubAuthorCount { get => SubAuthors.Count; }
 
         public Author(string email, string name)
         {

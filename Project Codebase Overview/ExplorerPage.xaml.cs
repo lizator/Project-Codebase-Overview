@@ -177,6 +177,7 @@ namespace Project_Codebase_Overview
                 ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
                 item.GraphModel.SelectedOwner = null;
                 item.SelectedOwnerColor = null;
+                item.SelectedOwnerName = null;
                 return;
             }
             Debug.WriteLine("Changed selected owner");

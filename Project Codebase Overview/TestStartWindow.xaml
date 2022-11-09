@@ -32,7 +32,18 @@
                 <Button Content="Red-" Click="test1"/>
                 <Button Content="update new" Click="test3"/>
             </StackPanel>
-            
+
+            <ListView ItemsSource="{x:Bind Colors}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <SolidColorBrush Color="{Binding}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
             
 
 

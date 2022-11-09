@@ -31,6 +31,7 @@ using Syncfusion.UI.Xaml.Gauges;
 using Windows.UI;
 using Project_Codebase_Overview.ContributorManagement;
 using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -42,9 +43,17 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class TestStartWindow : Window
     {
+        public ObservableCollection<Color> Colors;
+
         public TestStartWindow()
         {
             this.InitializeComponent();
+            Colors = new ObservableCollection<Color>();
+            var colors = PCOColorPicker.GetInstance().ColorPalette;
+            foreach (var color in colors)
+            {
+                Colors.Add(color);
+            }
         }
 
         public class TestObservableClass : ObservableObject
@@ -54,7 +63,7 @@ namespace Project_Codebase_Overview
 
             public TestObservableClass()
             {
-                test();
+                test(); 
             }
 
             public void test()
