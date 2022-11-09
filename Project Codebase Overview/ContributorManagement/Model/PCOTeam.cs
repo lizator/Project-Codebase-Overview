@@ -38,6 +38,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public PCOTeam()
         {
             Members = new ObservableCollection<Author>();
+            UpdateMemberString();
         }
 
         public bool ContainsEmail(string email)
@@ -105,6 +106,13 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             {
                 stringBuilder.AppendLine(member.Name);
             }
+
+            if (shownItemCount == 0)
+            {
+                stringBuilder.AppendLine("No members.");
+                shownItemCount = 1;
+            }
+
             int whitespaceCount = maxShownItemsWOMore - shownItemCount;
             for (int i = 0; i < whitespaceCount; i++)
             {
