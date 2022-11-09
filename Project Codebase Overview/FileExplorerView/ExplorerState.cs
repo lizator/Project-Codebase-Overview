@@ -157,5 +157,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             this.RootFolder = folder;
             ResetHistory(folder);
         }
+
+
     }
 }

@@ -143,7 +143,7 @@
                             <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button  Background="Transparent" BorderThickness="0">
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditUserClick">
                                             <Image Source="Assets/Expand.png"></Image>
                                         </Button>
                                     </DataTemplate>
