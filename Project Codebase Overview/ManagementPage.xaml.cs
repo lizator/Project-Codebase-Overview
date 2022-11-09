@@ -106,5 +106,12 @@ namespace Project_Codebase_Overview
             }
         }
 
+        private void EditUserClick(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var user = button.DataContext as Author;
+            PCOTeam team = new PCOTeam("whaat", PCOColorPicker.HardcodedColors[3], null);
+            user.Team = team;
+        }
     }
 }
