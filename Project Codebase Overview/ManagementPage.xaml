@@ -64,7 +64,6 @@
                                     Background="White"
                                     CornerRadius="10" 
                                     Padding="5,5,5,5" 
-                                    Loaded="Grid_Loaded"
                                     VerticalAlignment="Stretch">
                                 <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
                          

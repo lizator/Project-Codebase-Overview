@@ -31,7 +31,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             Name = name;
             Color = color;
-            Members = new ObservableCollection<Author>(members);
+            Members = new ObservableCollection<Author>(members ?? new List<Author>());
             UpdateMemberString();
         }
 

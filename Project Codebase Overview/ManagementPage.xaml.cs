@@ -86,8 +86,6 @@ namespace Project_Codebase_Overview
         {
             var team = e.ClickedItem as PCOTeam;
             await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot, team);
-
-            //CheckTeamChangeAndStartUpdate();
         }
 
         private async void AddTeamClick(object sender, RoutedEventArgs e)
@@ -106,48 +104,5 @@ namespace Project_Codebase_Overview
             }
         }
 
-        private void Grid_Loaded(object sender, RoutedEventArgs e)
-        {
-            return;
-            //team item loaded in grid - update the "+X more members" textblock 
-            var grid = sender as Grid;
-            var team = grid.DataContext as PCOTeam;
-
-            TextBlock textblock = grid.FindChildByName("MoreTextBlock") as TextBlock;
-            TextBlock memberListTextBlock= grid.FindChildByName("MemberList") as TextBlock;
-
-            int shownItemCount;
-            int maxShownItemsWOMore = 8;
-
-            if(team.Members.Count() > maxShownItemsWOMore)
-            {
-                shownItemCount = maxShownItemsWOMore - 1;
-                textblock.Text = "+" + (team.Members.Count() - shownItemCount) + " more";
-                textblock.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                shownItemCount = team.Members.Count();
-                textblock.Visibility = Visibility.Collapsed;
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-            var visibleMembers = team.Members.ToList().GetRange(0, shownItemCount);
-            foreach(var member in visibleMembers)
-            {
-                stringBuilder.AppendLine(member.Name);
-            }
-
-            //whitespace
-            if(shownItemCount == team.Members.Count())
-            {
-                int whitespaceCount = maxShownItemsWOMore - shownItemCount;
-                for(int i = 0; i < whitespaceCount; i++)
-                {
-                    stringBuilder.AppendLine(" ");
-                }
-            }
-            memberListTextBlock.Text = stringBuilder.ToString().Substring(0, stringBuilder.Length - 2);
-
-        }
     }
 }
