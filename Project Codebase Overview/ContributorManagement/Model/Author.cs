@@ -1,5 +1,7 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -8,15 +10,19 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.ContributorManagement.Model
 {
-    public class Author:IOwner
+    public class Author: ObservableObject, IOwner
     {
-        public string Name { get; set; }
-        List<string> Aliases { get; }
-        public string Email { get; set; }
-        public Color Color { get; set; }
+        private string _name;
+        public string Name { get => _name; set => SetProperty(ref _name, value); }
+        private Color _color;
+        public Color Color { get => _color; set => SetProperty(ref _color, value); }
+        private string _email;
+        public string Email { get => _email; set => SetProperty(ref _email, value); }
+        public ObservableCollection<string> Aliases { get; }
 
-        public Author OverAuthor { get; set; }
-        public List<Author> SubAuthors { get; set; }
+        private Author _overAuthor;
+        public Author OverAuthor { get => _overAuthor; set => SetProperty(ref _overAuthor, value); }
+        public ObservableCollection<Author> SubAuthors { get; set; }
         public PCOTeam Team { get; set; }
         public int SubAuthorCount { get => SubAuthors.Count; }
 
@@ -24,8 +30,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             this.Name = name;
             this.Email = email;
-            this.Aliases = new List<string> { name };
-            SubAuthors = new List<Author>();
+            this.Aliases = new ObservableCollection<string> { name };
+            SubAuthors = new ObservableCollection<Author>();
         }
 
         public bool ContainsEmail(string email)
@@ -45,7 +51,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             if(otherAuthor.Team != null)
             {
-                otherAuthor.Team.RemoveMember(otherAuthor);
+                otherAuthor.DisconnectFromTeam();
             }
 
             otherAuthor.OverAuthor = this;

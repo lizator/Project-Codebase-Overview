@@ -1,5 +1,9 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,22 +11,33 @@ using Windows.UI;
 
 namespace Project_Codebase_Overview.ContributorManagement.Model
 {
-    public class PCOTeam : IOwner
+    public class PCOTeam : ObservableObject, IOwner 
     {
-        public string Name { get; set; }
-        public Color Color { get; set; }
-        public List<Author> Members { get; set; }
+        private string _name;
+        public string Name { get => _name; set => SetProperty(ref _name, value); }
+        private Color _color;
+        public Color Color { get => _color; set => SetProperty(ref _color, value); }
+
+        private string _membersString;
+        public string MemberString { get => _membersString; set => SetProperty(ref _membersString, value); }
+        private string _moreString;
+        public string MoreString { get => _moreString; set => SetProperty(ref _moreString, value); }
+        private Visibility _moreVisibility = Visibility.Collapsed;
+        public Visibility MoreVisibility { get => _moreVisibility; set => SetProperty(ref _moreVisibility, value); }
+        
+        public ObservableCollection<Author> Members { get; set; }
 
         public PCOTeam(string name, Color color, List<Author> members)
         {
             Name = name;
             Color = color;
-            Members = members;
+            Members = new ObservableCollection<Author>(members);
+            UpdateMemberString();
         }
 
         public PCOTeam()
         {
-            Members = new List<Author>();
+            Members = new ObservableCollection<Author>();
         }
 
         public bool ContainsEmail(string email)
@@ -44,11 +59,17 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             member.Team = this;
             this.Members.Add(member);
 
+            UpdateMemberString();
+
         }
 
         public void EmptyMembers()
         {
-            this.Members.Clear();
+            while (Members.Count > 0)
+            {
+                var member = Members.First();
+                member.DisconnectFromTeam();
+            }
         }
 
         public void RemoveMember(Author member)
@@ -57,7 +78,40 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             {
                 member.Team = null;
                 this.Members.Remove(member);
+                UpdateMemberString();
             }
+        }
+
+        private void UpdateMemberString()
+        {
+            int shownItemCount;
+            int maxShownItemsWOMore = 8;
+
+            if (Members.Count() > maxShownItemsWOMore)
+            {
+                shownItemCount = maxShownItemsWOMore - 1;
+                MoreString = "+" + (Members.Count() - shownItemCount) + " more";
+                MoreVisibility = Visibility.Visible;
+            }
+            else
+            {
+                shownItemCount = Members.Count();
+                MoreString = "";
+                MoreVisibility = Visibility.Collapsed;
+            }
+            StringBuilder stringBuilder = new StringBuilder();
+            var visibleMembers = Members.ToList().GetRange(0, shownItemCount);
+            foreach (var member in visibleMembers)
+            {
+                stringBuilder.AppendLine(member.Name);
+            }
+            int whitespaceCount = maxShownItemsWOMore - shownItemCount;
+            for (int i = 0; i < whitespaceCount; i++)
+            {
+                stringBuilder.AppendLine(" ");
+            }
+            MemberString = stringBuilder.ToString().Substring(0, stringBuilder.Length - 2);
+            
         }
 
     }

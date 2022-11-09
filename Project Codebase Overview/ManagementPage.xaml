@@ -77,9 +77,9 @@
                                     </Rectangle>
                                 </Grid>
 
-                                <TextBlock Name="MemberList" Grid.Row="2"   Margin="0,15,0,0" TextAlignment="Center"/>
+                                <TextBlock Name="MemberList" Grid.Row="2"  Margin="0,15,0,0" TextAlignment="Center" Text="{Binding MemberString}"/>
 
-                                <TextBlock Name="MoreTextBlock" Grid.Row="3"  Text="+14 more" FontWeight="Bold" HorizontalAlignment="Center" ></TextBlock>
+                                <TextBlock Name="MoreTextBlock" Grid.Row="2" Visibility="{Binding MoreVisibility}"  Text="{Binding MoreString}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" ></TextBlock>
                             </Grid>
                         </DataTemplate>
                        

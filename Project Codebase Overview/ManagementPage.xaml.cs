@@ -87,7 +87,7 @@ namespace Project_Codebase_Overview
             var team = e.ClickedItem as PCOTeam;
             await DialogHandler.ShowAddEditTeamDialog(this.XamlRoot, team);
 
-            CheckTeamChangeAndStartUpdate();
+            //CheckTeamChangeAndStartUpdate();
         }
 
         private async void AddTeamClick(object sender, RoutedEventArgs e)
@@ -108,6 +108,7 @@ namespace Project_Codebase_Overview
 
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
+            return;
             //team item loaded in grid - update the "+X more members" textblock 
             var grid = sender as Grid;
             var team = grid.DataContext as PCOTeam;
@@ -130,7 +131,7 @@ namespace Project_Codebase_Overview
                 textblock.Visibility = Visibility.Collapsed;
             }
             StringBuilder stringBuilder = new StringBuilder();
-            var visibleMembers = team.Members.GetRange(0, shownItemCount);
+            var visibleMembers = team.Members.ToList().GetRange(0, shownItemCount);
             foreach(var member in visibleMembers)
             {
                 stringBuilder.AppendLine(member.Name);

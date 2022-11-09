@@ -80,7 +80,7 @@ namespace Project_Codebase_Overview.Dialogs
             {
                 IsTeamNew = true;
                 Team = new PCOTeam();
-                Team.Color = PCOColorPicker.GetInstance().AssignAuthorColor();
+                Team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
             }
 
             LocalObservables.Brush = new SolidColorBrush(Team.Color);
