@@ -33,10 +33,9 @@ namespace Project_Codebase_Overview.Graphs
         private static readonly int GRAPH_SMALL_CHECK_STARTING_POINT = 60;
         private static readonly int GRAPH_SMALL_CHECK_MIN_SIZE = 5;
 
-        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<IOwner, uint> authorDistributions, uint linesTotal, Author creator = null, bool isTeamDistribution = false)
+        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<IOwner, uint> distributions, uint linesTotal, Author creator = null)
         {
             //Creator is only given for files
-            Dictionary<IOwner, uint> distributions = isTeamDistribution ? ConvertToTeamDistributions(authorDistributions) : authorDistributions;
 
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;

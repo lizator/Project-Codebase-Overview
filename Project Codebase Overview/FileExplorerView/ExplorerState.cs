@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Bson;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Dialogs;
@@ -18,6 +19,8 @@ namespace Project_Codebase_Overview.FileExplorerView
         private List<PCOFolder> FolderHistory = new List<PCOFolder>();
         private int CurrentRootIndex;
         private static readonly int MAX_HISTORY_SIZE = 20;
+        public delegate void NotifyReload();
+        public event NotifyReload NotifyReloadEvent;
 
         public ExplorerState()
         {
@@ -190,6 +193,16 @@ namespace Project_Codebase_Overview.FileExplorerView
             {
                 return false;
             }
+        }
+
+        public void CalculateData()
+        {
+            RootFolder.CalculateData();
+        }
+        public void ReloadExplorer()
+        {
+            CalculateData();
+            NotifyReloadEvent?.Invoke();
         }
     }
 }

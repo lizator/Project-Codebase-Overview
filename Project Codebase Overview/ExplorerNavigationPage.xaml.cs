@@ -29,6 +29,7 @@ namespace Project_Codebase_Overview
         {
             this.InitializeComponent();
             NavigateToExplorerPage();
+            PCOState.GetInstance().GetExplorerState().NotifyReloadEvent += NavigateToExplorerPage;
         }
 
         public async void NavigateToExplorerPage()

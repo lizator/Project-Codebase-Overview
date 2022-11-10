@@ -142,7 +142,10 @@ namespace Project_Codebase_Overview
             {
                 PCOState.GetInstance().GetSettingsState().currentMode = Mode.TEAMS;
             }
+            //Update settingspanel owner list
             UpdateOwnerList();
+            //Reload explorerview
+            PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }
     }
 }

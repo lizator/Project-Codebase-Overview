@@ -45,13 +45,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private ObservableCollection<IOwner> GetOwnerListSorted()
         {
             //create "Unselected" entry
-            var authorList = ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).OrderBy(x => x.Name).ToList();
+            var ownerlist = ContributorManager.GetInstance().GetAllOwners().OrderBy(x => x.Name).ToList();
             if (this.GraphModel.SuggestedOwner != null)
             {
-                authorList.MoveTo(authorList.IndexOf(this.GraphModel.SuggestedOwner), 0);
+                var ownerIndex = ownerlist.IndexOf(this.GraphModel.SuggestedOwner);
+                if(ownerIndex > -1)
+                {
+                    ownerlist.MoveTo(ownerlist.IndexOf(this.GraphModel.SuggestedOwner), 0);
+                }
             }
-            authorList.Add(new Author("Unselected", "Unselected"));
-            return authorList.ToObservableCollection();
+            ownerlist.Add(new Author("Unselected", "Unselected"));
+            return ownerlist.ToObservableCollection();
         }
         protected SfLinearGauge GetBarGraph()
         {
@@ -136,6 +140,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             return relativePath;
         }
-
+        
     }
 }

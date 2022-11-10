@@ -32,6 +32,9 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
+            this.GraphModel = new GraphModel();
+            this.GraphModel.FileName = this.Name;
+
             var groupedCommits = this.commits.GroupBy(x => x.GetAuthor());
 
             foreach (var groupedComm in groupedCommits)
@@ -41,12 +44,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 {
                     owner = groupedComm.First().GetAuthor(); 
                 }
-                this.GraphModel.LineDistribution.Add(groupedComm.First().GetAuthor(), 0);
+                else
+                {
+                    //Mode.TEAMS
+                    owner = groupedComm.First().GetAuthor().Team ?? ContributorManager.GetInstance().GetNoTeam();
+                }
+                this.GraphModel.LineDistribution.TryAdd(owner, 0);
 
                 foreach (var commit in groupedComm)
                 {
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
-                    this.GraphModel.LineDistribution[commit.GetAuthor()] += (uint)commit.GetLines();
+                    this.GraphModel.LineDistribution[owner] += (uint)commit.GetLines();
                 }
             }
             if (this.GraphModel.LinesTotal > 0)

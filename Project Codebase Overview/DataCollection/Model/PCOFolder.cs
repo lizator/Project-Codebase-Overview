@@ -40,6 +40,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
+            this.GraphModel = new GraphModel();
+            this.GraphModel.FileName = Name;
             foreach (var child in Children)
             {
                 child.Value.CalculateData();
