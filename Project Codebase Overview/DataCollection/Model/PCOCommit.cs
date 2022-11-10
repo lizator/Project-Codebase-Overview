@@ -51,7 +51,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
         public Author GetAuthor()
         {
-            return this.author;
+            return this.author.OverAuthor == null ? this.author : this.author.OverAuthor;
         }
 
 

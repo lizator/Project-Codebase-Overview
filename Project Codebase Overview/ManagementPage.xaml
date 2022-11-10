@@ -107,9 +107,9 @@
                             <!-- Name -->
                             <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
                             <!--Sub author count--> 
-                            <treeGrid:TreeGridTextColumn  MappingName="SubAuthorCount" HeaderText="SubAuthorCount"/>
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="SubAuthorCount" Width="150"/>
                             <!-- Team -->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team.Color" Width="225" >
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
@@ -127,8 +127,8 @@
                             </treeGrid:TreeGridTemplateColumn>
                             <!-- Email --> 
                             <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350"/>
-                            <!-- User Color --> 
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100">
+                            <!-- User Color -->
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Ellipse Height="20" Width="20" StrokeThickness="1"  Stroke="Black">
@@ -140,7 +140,7 @@
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
                             <!--Button Column-->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50">
+                            <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button  Background="Transparent" BorderThickness="0" Click="EditUserClick">

@@ -204,7 +204,7 @@ namespace Project_Codebase_Overview.Dialogs
 
             if (NameBox.Text.Length == 0)
             {
-                LocalObservables.NameFlyoutMsg = "Your team need a name.";
+                LocalObservables.NameFlyoutMsg = "Your team must have a name.";
                 ShowNameFlyout();
                 return;
             }
