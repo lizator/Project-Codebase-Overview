@@ -7,5 +7,5 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
-    <Frame x:Name="NavigationFrame"/>
+    <Frame x:Name="NavigationFrame" KeyUp="NavigationFrame_KeyUp" KeyDown="NavigationFrame_KeyDown"/>
 </Window>
