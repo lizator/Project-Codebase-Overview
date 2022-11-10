@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             foreach (var groupedComm in groupedCommits)
             {
+                IOwner  owner;
+                if(PCOState.GetInstance().GetSettingsState().currentMode == Mode.USER)
+                {
+                    owner = groupedComm.First().GetAuthor(); 
+                }
                 this.GraphModel.LineDistribution.Add(groupedComm.First().GetAuthor(), 0);
 
                 foreach (var commit in groupedComm)

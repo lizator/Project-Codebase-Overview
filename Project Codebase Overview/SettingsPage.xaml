@@ -67,14 +67,14 @@
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
                     <!-- TODO: FIX TEMPLATE SHIT!-->
-                    <DataTemplate x:DataType="localOwner:Author">
+                    <DataTemplate>
                         <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
                             <Ellipse Grid.Column="0"  Width="20" Height="20" VerticalAlignment="Center" Stroke="Black" StrokeThickness="1">
                                 <Ellipse.Fill>
-                                    <SolidColorBrush Color="{x:Bind Color}"/>
+                                    <SolidColorBrush Color="{Binding Color}"/>
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <TextBlock Grid.Column="1" Text="{x:Bind Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

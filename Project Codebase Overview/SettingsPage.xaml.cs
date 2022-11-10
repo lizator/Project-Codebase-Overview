@@ -29,7 +29,7 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        ObservableCollection<Author> OwnersList = new ObservableCollection<Author>();
+        ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
         ObservableCollection<string> DataSelectionOptions = new ObservableCollection<string>();
         private bool IsExpanded = true;
 
@@ -52,24 +52,13 @@ namespace Project_Codebase_Overview
             ExpanderClick(null,null);
         }
 
-        private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName.Equals("IsLoading"))
-            {
-                if (!PCOState.GetInstance().GetLoadingState().IsLoading)
-                {
-                    UpdateOwnerList();
-                }
-            }
-        }
-
         private void UpdateOwnerList()
         {
             OwnersList.Clear();
-            var list = ContributorManager.GetInstance().GetAllAuthors();
-            foreach (var author in list)
+            var list = ContributorManager.GetInstance().GetAllOwners();
+            foreach (var owner in list)
             {
-                OwnersList.Add(author);
+                OwnersList.Add(owner);
             }
         }
 
@@ -145,7 +134,15 @@ namespace Project_Codebase_Overview
 
         private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
         {
-
+            if (e.NewValue.Equals("Users"))
+            {
+                PCOState.GetInstance().GetSettingsState().currentMode = Mode.USER;
+            }
+            else if (e.NewValue.Equals("Teams"))
+            {
+                PCOState.GetInstance().GetSettingsState().currentMode = Mode.TEAMS;
+            }
+            UpdateOwnerList();
         }
     }
 }

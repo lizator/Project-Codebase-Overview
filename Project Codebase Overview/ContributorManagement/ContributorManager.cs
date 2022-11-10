@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         Dictionary<string, Author> Authors;
         Dictionary<string, Author> FileCreators; //Dict <filepath, creator> 
         Dictionary<string, PCOTeam> Teams; //Dict <Team.Name, Team> 
+        PCOTeam NoTeam;
         PCOTeam SelectedTeam;
         ContentDialog CurrentTeamDialog;
         Author SelectedAuthor;
@@ -35,6 +37,7 @@ namespace Project_Codebase_Overview.ContributorManagement
             Authors = new Dictionary<string, Author>();
             FileCreators = new Dictionary<string, Author>();
             Teams = new Dictionary<string, PCOTeam>();
+            NoTeam = new PCOTeam("No Team", PCOColorPicker.Black, null);
         }
 
         public static ContributorManager GetInstance()
@@ -45,6 +48,7 @@ namespace Project_Codebase_Overview.ContributorManagement
             }
             return Instance;
         }
+        public PCOTeam GetNoTeam() { return NoTeam; }
 
         public void UpdateCreator(string path, string email)
         {
@@ -104,6 +108,18 @@ namespace Project_Codebase_Overview.ContributorManagement
         public List<PCOTeam> GetAllTeams()
         {
             return Teams.Values.ToList();
+        }
+        public List<IOwner> GetAllOwners()
+        {
+            if(PCOState.GetInstance().GetSettingsState().currentMode == Mode.USER)
+            {
+                return GetAllAuthors().Select(x => (IOwner)x).ToList();
+            }
+            else
+            {
+                //Mode.TEAMS
+                return GetAllTeams().Select(x => (IOwner)x).ToList();
+            }
         }
 
         public void SetSelectedTeam(PCOTeam team)
