@@ -41,7 +41,6 @@ namespace Project_Codebase_Overview
             Teams = new ObservableCollection<PCOTeam>();
             Users = new ObservableCollection<Author>();
 
-            UpdateTeams();
 
             //DUMMY
             if (false)
@@ -101,6 +100,7 @@ namespace Project_Codebase_Overview
             {
                 Users.Add(author);
             }
+            PCOState.GetInstance().GetExplorerState().CalculateData();
         }
 
         private void ImageFailed(object sender, ExceptionRoutedEventArgs e)
@@ -152,7 +152,7 @@ namespace Project_Codebase_Overview
             var author = button.DataContext as Author;
             await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
 
-            UpdateAuthors();
+            CheckAuthorChangeAndStartUpdate();
         }
     }
 }
