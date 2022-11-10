@@ -83,6 +83,26 @@ namespace Project_Codebase_Overview.Dialogs
             return result;
         }
 
+        public static async Task<ContentDialogResult> ShowEditAuthorDialog(XamlRoot xamlRoot, Author author)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = xamlRoot;
+
+            var manager = ContributorManager.GetInstance();  // edit team
+            dialog.Title = "Edit User";
+
+            manager.SetSelectedAuthor(author);
+            manager.SetCurrentAuthorDialog(dialog);
+
+            var frame = new Frame();
+            frame.Navigate(typeof(EditAuthorDialogPage));
+            dialog.Content = frame;
+            
+            
+            var result = await dialog.ShowAsync();
+            return result;
+        }
+
         private static void LineDistSeries_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             throw new NotImplementedException();

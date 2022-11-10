@@ -39,11 +39,25 @@ namespace Project_Codebase_Overview
             this.InitializeComponent();
        
             Teams = new ObservableCollection<PCOTeam>();
+            Users = new ObservableCollection<Author>();
 
             UpdateTeams();
 
             //DUMMY
-            SetDummyUsers();
+            if (false)
+            {
+                SetDummyUsers();
+            } else
+            {
+                //Not dummy
+                var authorList = ContributorManager.GetInstance().GetAllAuthors();
+
+                foreach (var author in authorList)
+                {
+                    Users.Add(author);
+                }
+            }
+            UpdateTeams();
         }
         
         private void SetDummyUsers()
@@ -55,10 +69,16 @@ namespace Project_Codebase_Overview
 
             foreach(var author in authorList)
             {
-                author.Team = team;
-                Users.Add(author);
-                parentAuth.SubAuthors.Add(author);
+                author.ConnectToTeam(team);
+                if (!parentAuth.ContainsEmail(author.Email))
+                {
+                    parentAuth.ConnectAuthor(author);
+                }
+                if (author.OverAuthor == null) {
+                    Users.Add(author);
+                }
             }
+            ContributorManager.GetInstance().AddTeam(team);
             PCOColorPicker.GetInstance();
         }
 
@@ -69,6 +89,16 @@ namespace Project_Codebase_Overview
             foreach (var team in manager.GetAllTeams())
             {
                 Teams.Add(team);
+            }
+        }
+
+        private void UpdateAuthors()
+        {
+            Users.Clear();
+            var manager = ContributorManager.GetInstance();
+            foreach (var author in manager.GetAllAuthors())
+            {
+                Users.Add(author);
             }
         }
 
@@ -105,13 +135,23 @@ namespace Project_Codebase_Overview
                 UpdateTeams();
             }
         }
+        private void CheckAuthorChangeAndStartUpdate()
+        {
+            var manager = ContributorManager.GetInstance();
+            if (manager.GetAuthorUpdated())
+            {
+                manager.SetAuthorUpdated(false);
+                UpdateAuthors();
+            }
+        }
 
-        private void EditUserClick(object sender, RoutedEventArgs e)
+        private async void EditUserClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
-            var user = button.DataContext as Author;
-            PCOTeam team = new PCOTeam("whaat", PCOColorPicker.HardcodedColors[3], null);
-            user.Team = team;
+            var author = button.DataContext as Author;
+            await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+
+            UpdateAuthors();
         }
     }
 }

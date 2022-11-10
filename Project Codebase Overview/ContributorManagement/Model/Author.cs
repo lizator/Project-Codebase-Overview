@@ -23,9 +23,10 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         private Author _overAuthor;
         public Author OverAuthor { get => _overAuthor; set => SetProperty(ref _overAuthor, value); }
         public ObservableCollection<Author> SubAuthors { get; set; }
-        public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
         private PCOTeam _team;
-        public int SubAuthorCount { get => SubAuthors.Count; }
+        public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
+        private int _subAuthorCount;
+        public int SubAuthorCount { get => _subAuthorCount; set => SetProperty(ref _subAuthorCount, value); }
 
         public Author(string email, string name)
         {
@@ -33,6 +34,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.Email = email;
             this.Aliases = new ObservableCollection<string> { name };
             SubAuthors = new ObservableCollection<Author>();
+            SubAuthorCount = 0;
         }
 
         public bool ContainsEmail(string email)
@@ -54,14 +56,19 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             {
                 otherAuthor.DisconnectFromTeam();
             }
+            if (otherAuthor.OverAuthor != null)
+            {
+                otherAuthor.DisconnectFromOverAuthor();
+            }
 
             otherAuthor.OverAuthor = this;
             this.SubAuthors.Add(otherAuthor);
+            SubAuthorCount++;
 
-            foreach (var subAuthor in otherAuthor.SubAuthors)
+            while (otherAuthor.SubAuthors.Count > 0)
             {
+                var subAuthor = otherAuthor.SubAuthors.First();
                 this.ConnectAuthor(subAuthor);
-                otherAuthor.SubAuthors.Remove(subAuthor);
             }
         }
 
@@ -71,8 +78,19 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             {
                 throw new Exception("Cannot disconnect author. No overauthor is set");
             }
+            this.OverAuthor.SubAuthorCount--;
             this.OverAuthor.SubAuthors.Remove(this);
             this.OverAuthor = null;
+        }
+
+        public void EmptySubAuthors()
+        {
+            while (SubAuthors.Count > 0)
+            {
+                var subAuthor = SubAuthors.First();
+                subAuthor.DisconnectFromOverAuthor();
+            }
+            SubAuthorCount = 0;
         }
 
         public void ConnectToTeam(PCOTeam team)

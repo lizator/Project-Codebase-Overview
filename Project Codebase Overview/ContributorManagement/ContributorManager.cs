@@ -17,7 +17,10 @@ namespace Project_Codebase_Overview.ContributorManagement
         Dictionary<string, PCOTeam> Teams; //Dict <Team.Name, Team> 
         PCOTeam SelectedTeam;
         ContentDialog CurrentTeamDialog;
+        Author SelectedAuthor;
+        ContentDialog CurrentAuthorDialog;
         bool TeamUpdated = false;
+        bool AuthorUpdated = false;
 
         private static ContributorManager Instance = null;
 
@@ -95,7 +98,7 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         public List<Author> GetAllAuthors()
         {
-            return Authors.Values.Where(author => author.OverAuthor == null).ToList();
+            return Authors.Values.Where(author => author.OverAuthor == null).OrderBy(author => author.Name).ToList();
         }
 
         public List<PCOTeam> GetAllTeams()
@@ -157,6 +160,36 @@ namespace Project_Codebase_Overview.ContributorManagement
                 team.EmptyMembers();
                 Teams.Remove(team.Name);
             }
+        }
+
+        public void SetSelectedAuthor(Author author)
+        {
+            SelectedAuthor = author;
+        }
+
+        public Author GetSelectedAuthor()
+        {
+            return SelectedAuthor;
+        }
+
+        public void SetAuthorUpdated(bool update)
+        {
+            AuthorUpdated = update;
+        }
+
+        public bool GetAuthorUpdated()
+        {
+            return AuthorUpdated;
+        }
+
+        public void SetCurrentAuthorDialog(ContentDialog dialog)
+        {
+            CurrentAuthorDialog = dialog;
+        }
+
+        public ContentDialog GetCurrentAuthorDialog()
+        {
+            return CurrentAuthorDialog;
         }
     }
 }
