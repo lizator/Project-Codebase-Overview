@@ -57,8 +57,8 @@
                                         SelectionAnimationType="Slide"
                                         SelectionChanged="OwnerModeChanged"
                                         >
-                <x:String>Teams</x:String>
                 <x:String>Users</x:String>
+                <x:String>Teams</x:String>
             </editors:SfSegmentedControl>
 
             <!-- author list -->

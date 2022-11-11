@@ -14,8 +14,11 @@ namespace Project_Codebase_Overview.State
     public class SettingsState
     {
         
-        public Mode currentMode;
-
+        public Mode CurrentMode;
+        public SettingsState()
+        {
+            CurrentMode = Mode.USER;
+        }
         
     }
 }

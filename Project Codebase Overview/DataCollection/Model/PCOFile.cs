@@ -40,7 +40,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             foreach (var groupedComm in groupedCommits)
             {
                 IOwner  owner;
-                if(PCOState.GetInstance().GetSettingsState().currentMode == Mode.USER)
+                if(PCOState.GetInstance().GetSettingsState().CurrentMode == Mode.USER)
                 {
                     owner = groupedComm.First().GetAuthor(); 
                 }
