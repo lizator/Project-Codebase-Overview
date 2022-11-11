@@ -17,8 +17,10 @@ namespace Project_Codebase_Overview.State
         private ExplorerState ExplorerState;
         private LoadingState LoadingState;
         private TestState TestState;
-        private static PCOState Instance;
         private SettingsState SettingsState;
+        private ContributorState ContributorState;
+
+        private static PCOState Instance;
 
         public Repository TempGitRepo;
         public int mergeCounter;
@@ -38,6 +40,7 @@ namespace Project_Codebase_Overview.State
             LoadingState = new LoadingState();
             TestState = new TestState();
             SettingsState = new SettingsState();
+            ContributorState = new ContributorState();
         }
         public SettingsState GetSettingsState()
         {
@@ -59,12 +62,19 @@ namespace Project_Codebase_Overview.State
             return TestState;
         }
 
+        public ContributorState GetContributorState()
+        {
+            return ContributorState;
+        }
+
         public void ClearState()
         {
             ExplorerState = new ExplorerState();
             LoadingState = new LoadingState();
             TestState = new TestState();
-            ContributorManager.ResetInstance();
+            SettingsState = new SettingsState();
+            ContributorState = new ContributorState();
+            PCOColorPicker.ResetInstance();
         }
     }
 }

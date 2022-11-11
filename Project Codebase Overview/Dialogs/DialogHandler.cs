@@ -14,6 +14,7 @@ using Project_Codebase_Overview.Graphs.Model;
 using System.Diagnostics;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.State;
 
 namespace Project_Codebase_Overview.Dialogs
 {
@@ -58,7 +59,7 @@ namespace Project_Codebase_Overview.Dialogs
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = xamlRoot;
 
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             if (team == null)
             {
                 // new team
@@ -88,7 +89,7 @@ namespace Project_Codebase_Overview.Dialogs
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = xamlRoot;
 
-            var manager = ContributorManager.GetInstance();  // edit team
+            var manager = PCOState.GetInstance().GetContributorState();
             dialog.Title = "Edit User";
 
             manager.SetSelectedAuthor(author);

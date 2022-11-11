@@ -56,7 +56,7 @@ namespace Project_Codebase_Overview
         private void UpdateOwnerList()
         {
             OwnersList.Clear();
-            var list = ContributorManager.GetInstance().GetAllOwners();
+            var list = PCOState.GetInstance().GetContributorState().GetAllOwners();
             foreach (var owner in list)
             {
                 OwnersList.Add(owner);

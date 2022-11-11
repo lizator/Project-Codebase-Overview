@@ -47,7 +47,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 else
                 {
                     //Mode.TEAMS
-                    owner = groupedComm.First().GetAuthor().Team ?? ContributorManager.GetInstance().GetNoTeam();
+                    owner = groupedComm.First().GetAuthor().Team ?? PCOState.GetInstance().GetContributorState().GetNoTeam();
                 }
                 this.GraphModel.LineDistribution.TryAdd(owner, 0);
 

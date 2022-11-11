@@ -184,7 +184,7 @@ namespace Project_Codebase_Overview.DataCollection
 
             CultureInfo provider = CultureInfo.InvariantCulture;
 
-            var contributorManager = ContributorManager.GetInstance();
+            var contributorState = PCOState.GetInstance().GetContributorState();
 
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
@@ -202,7 +202,7 @@ namespace Project_Codebase_Overview.DataCollection
                     if (!commits.ContainsKey(key))
                     {
                         DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                        commits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email)?.Name ?? email, date));
+                        commits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
                     }
                      commits[key].AddLine(PCOCommit.LineType.NORMAL);
                     
@@ -224,7 +224,7 @@ namespace Project_Codebase_Overview.DataCollection
         // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
             return;
-            var contributorManager = ContributorManager.GetInstance();
+            var contributorState = PCOState.GetInstance().GetContributorState();
 
             var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --diff-filter=A -- \"" + filePath + "\"");
 
@@ -247,7 +247,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
 
-                    file.Creator = contributorManager.GetAuthor(email);
+                    file.Creator = contributorState.GetAuthor(email);
                 }
             };
 
@@ -258,7 +258,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         private async void initializeAuthors()
         {
-            var contributorManager = ContributorManager.GetInstance();
+            var contributorState = PCOState.GetInstance().GetContributorState();
 
             var processInfo = new ProcessStartInfo("cmd.exe", "/c git log");
 
@@ -281,7 +281,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
 
-                    contributorManager.InitializeAuthor(email, name);
+                    contributorState.InitializeAuthor(email, name);
                 }
             };
 
@@ -292,7 +292,7 @@ namespace Project_Codebase_Overview.DataCollection
 
         private async void initializeAuthorsAndCreators(List<string> filepaths)
         {
-            var contributorManager = ContributorManager.GetInstance();
+            var contributorState = PCOState.GetInstance().GetContributorState();
 
             var currentEmail = "";
             var maxFilepathLength = 0;
@@ -323,7 +323,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[3].Value;
                     currentEmail = match.Groups[2].Value;
 
-                    contributorManager.InitializeAuthor(currentEmail, name);
+                    contributorState.InitializeAuthor(currentEmail, name);
                 } else if (line.Trim().Length > 0)
                 {
                     var split = line.Split('|');
@@ -341,7 +341,7 @@ namespace Project_Codebase_Overview.DataCollection
                             currPath = currPath.Replace(str, newSubString);
                         }
 
-                        contributorManager.UpdateCreator(currPath, currentEmail);
+                        contributorState.UpdateCreator(currPath, currentEmail);
                     }
                 }
             };
@@ -602,7 +602,7 @@ namespace Project_Codebase_Overview.DataCollection
 
                 CultureInfo provider = CultureInfo.InvariantCulture;
 
-                var contributorManager = ContributorManager.GetInstance();
+                var contributorState = PCOState.GetInstance().GetContributorState();
 
                 //this.Process.ErrorDataReceived += (sender, e) => { Debug.WriteLine("Error line from cmd: " + e.Data); };
 
@@ -615,7 +615,7 @@ namespace Project_Codebase_Overview.DataCollection
                         if (this.CurrentIndex != -1)
                         {
                             this.Files[this.CurrentIndex].commits = this.CurrentCommits.Values.ToList();
-                            this.Files[this.CurrentIndex].Creator = contributorManager.GetCreatorFromPath(this.CurrentPath);
+                            this.Files[this.CurrentIndex].Creator = contributorState.GetCreatorFromPath(this.CurrentPath);
                             if (this.Files[this.CurrentIndex].Creator == null)
                             {
                                 Debug.WriteLine("Could not find creator by currentPath: \"" + this.CurrentPath + "\"");
@@ -641,7 +641,7 @@ namespace Project_Codebase_Overview.DataCollection
                             if (!CurrentCommits.ContainsKey(key))
                             {
                                 DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                                CurrentCommits.Add(key, new PCOCommit(email, contributorManager.GetAuthor(email)?.Name ?? email, date));
+                                CurrentCommits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
                             }
                             CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 

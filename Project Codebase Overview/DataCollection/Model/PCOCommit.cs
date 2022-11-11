@@ -1,5 +1,6 @@
 ﻿using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.codeLines = 0;
             this.commentLines = 0;
             this.whiteSpaceLines = 0;
-            this.author = ContributorManager.GetInstance().GetAuthor(email);
+            this.author = PCOState.GetInstance().GetContributorState().GetAuthor(email);
             this.commitDate = commitDate;
         }
 

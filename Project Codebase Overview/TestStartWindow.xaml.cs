@@ -238,19 +238,20 @@ namespace Project_Codebase_Overview
 
         private async void OpenManagementPage(object sender, RoutedEventArgs e)
         {
+            return;
             PCOState.GetInstance().ClearState();
-            ContributorManager.GetInstance().InitializeAuthor("alice@gmail.com", "Alice Awesome");
-            ContributorManager.GetInstance().InitializeAuthor("Anders@gmail.com", "Anders Anderson");
-            ContributorManager.GetInstance().InitializeAuthor("Betty@gmail.com", "Betty Beauty");
-            ContributorManager.GetInstance().InitializeAuthor("Bob@gmail.com", "Bob the Builder");
-            ContributorManager.GetInstance().InitializeAuthor("alice2@gmail.com", "2Alice Awesome");
-            ContributorManager.GetInstance().InitializeAuthor("Anders2@gmail.com", "2Anders Anderson");
-            ContributorManager.GetInstance().InitializeAuthor("Betty2@gmail.com", "2Betty Beauty");
-            ContributorManager.GetInstance().InitializeAuthor("Bob2@gmail.com", "2Bob the Builder");
-            ContributorManager.GetInstance().InitializeAuthor("alice3@gmail.com", "3Alice Awesome");
-            ContributorManager.GetInstance().InitializeAuthor("Anders3@gmail.com", "3Anders Anderson");
-            ContributorManager.GetInstance().InitializeAuthor("Betty3@gmail.com", "3Betty Beauty");
-            ContributorManager.GetInstance().InitializeAuthor("Bob3@gmail.com", "3Bob the Builder");
+            //ContributorManager.GetInstance().InitializeAuthor("alice@gmail.com", "Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders@gmail.com", "Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty@gmail.com", "Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob@gmail.com", "Bob the Builder");
+            //ContributorManager.GetInstance().InitializeAuthor("alice2@gmail.com", "2Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders2@gmail.com", "2Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty2@gmail.com", "2Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob2@gmail.com", "2Bob the Builder");
+            //ContributorManager.GetInstance().InitializeAuthor("alice3@gmail.com", "3Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders3@gmail.com", "3Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty3@gmail.com", "3Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob3@gmail.com", "3Bob the Builder");
 
             NavigateToManagementPage();
         }

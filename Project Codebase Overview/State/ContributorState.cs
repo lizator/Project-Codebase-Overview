@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.ContributorManagement
 {
-    internal class ContributorManager
+    public class ContributorState
     {
         Dictionary<string, Author> Authors;
         Dictionary<string, Author> FileCreators; //Dict <filepath, creator> 
@@ -24,15 +24,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         bool TeamUpdated = false;
         bool AuthorUpdated = false;
 
-        private static ContributorManager Instance = null;
-
-        public static void ResetInstance()
-        { //TODO, make into a state and put in PCOState
-            Instance = null;
-            PCOColorPicker.ResetInstance();
-        }
-
-        private ContributorManager()
+        public ContributorState()
         {
             Authors = new Dictionary<string, Author>();
             FileCreators = new Dictionary<string, Author>();
@@ -40,14 +32,6 @@ namespace Project_Codebase_Overview.ContributorManagement
             NoTeam = new PCOTeam("No Team", PCOColorPicker.Black, null);
         }
 
-        public static ContributorManager GetInstance()
-        {
-            if(Instance == null)
-            {
-                Instance = new ContributorManager();
-            }
-            return Instance;
-        }
         public PCOTeam GetNoTeam() { return NoTeam; }
 
         public void UpdateCreator(string path, string email)

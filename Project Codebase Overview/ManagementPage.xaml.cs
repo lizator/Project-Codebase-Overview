@@ -49,7 +49,7 @@ namespace Project_Codebase_Overview
             } else
             {
                 //Not dummy
-                var authorList = ContributorManager.GetInstance().GetAllAuthors();
+                var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
 
                 foreach (var author in authorList)
                 {
@@ -63,7 +63,7 @@ namespace Project_Codebase_Overview
         {
             Users = new ObservableCollection<Author>();
             PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0], null);
-            var authorList = ContributorManager.GetInstance().GetAllAuthors();
+            var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
             var parentAuth = authorList.First();
 
             foreach(var author in authorList)
@@ -77,14 +77,14 @@ namespace Project_Codebase_Overview
                     Users.Add(author);
                 }
             }
-            ContributorManager.GetInstance().AddTeam(team);
+            PCOState.GetInstance().GetContributorState().AddTeam(team);
             PCOColorPicker.GetInstance();
         }
 
         private void UpdateTeams()
         {
             Teams.Clear();
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             foreach (var team in manager.GetAllTeams())
             {
                 Teams.Add(team);
@@ -105,7 +105,7 @@ namespace Project_Codebase_Overview
         private void UpdateAuthors()
         {
             Users.Clear();
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             foreach (var author in manager.GetAllAuthors())
             {
                 Users.Add(author);
@@ -139,7 +139,7 @@ namespace Project_Codebase_Overview
         }
         private void CheckTeamChangeAndStartUpdate()
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             if (manager.GetTeamUpdated())
             {
                 manager.SetTeamUpdated(false);
@@ -148,7 +148,7 @@ namespace Project_Codebase_Overview
         }
         private void CheckAuthorChangeAndStartUpdate()
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             if (manager.GetAuthorUpdated())
             {
                 manager.SetAuthorUpdated(false);

@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Project_Codebase_Overview.State;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -45,7 +46,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private ObservableCollection<IOwner> GetOwnerListSorted()
         {
             //create "Unselected" entry
-            var ownerlist = ContributorManager.GetInstance().GetAllOwners().OrderBy(x => x.Name).ToList();
+            var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwners().OrderBy(x => x.Name).ToList();
             if (this.GraphModel.SuggestedOwner != null)
             {
                 var ownerIndex = ownerlist.IndexOf(this.GraphModel.SuggestedOwner);

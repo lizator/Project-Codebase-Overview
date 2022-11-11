@@ -79,7 +79,7 @@ namespace Project_Codebase_Overview.Dialogs
             LocalObservables = new Observables();
             IsAuthorInTeam = new Dictionary<string, bool>();
             AuthorList = new Dictionary<string, Author>();
-            Team = ContributorManager.GetInstance().GetSelectedTeam();
+            Team = PCOState.GetInstance().GetContributorState().GetSelectedTeam();
             if (Team == null)
             {
                 IsTeamNew = true;
@@ -93,7 +93,7 @@ namespace Project_Codebase_Overview.Dialogs
 
             LocalObservables.Brush = new SolidColorBrush(Team.Color);
 
-            foreach (var author in ContributorManager.GetInstance().GetAllAuthors())
+            foreach (var author in PCOState.GetInstance().GetContributorState().GetAllAuthors())
             {
                 IsAuthorInTeam.Add(author.Email, Team.ContainsEmail(author.Email));
                 AuthorList.Add(author.Email, author);
@@ -191,7 +191,7 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             manager.SetTeamUpdated(false);
             manager.SetSelectedTeam(null);
             manager.GetCurrentTeamDialog().Hide();
@@ -200,7 +200,7 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
 
             if (NameBox.Text.Length == 0)
             {
@@ -263,7 +263,7 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void DeleteTeam(object sender, RoutedEventArgs e)
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
 
             manager.DeleteTeam(Team);
 

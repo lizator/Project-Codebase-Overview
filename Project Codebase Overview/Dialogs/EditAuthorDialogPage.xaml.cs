@@ -18,6 +18,7 @@ using Project_Codebase_Overview.ContributorManagement.Model;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Reflection.Emit;
 using Microsoft.VisualBasic;
+using Project_Codebase_Overview.State;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -62,7 +63,7 @@ namespace Project_Codebase_Overview.Dialogs
 
             NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black, null);
             
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             CurrentAuthor = manager.GetSelectedAuthor();
 
             NameBox.Text = CurrentAuthor.Name;
@@ -129,7 +130,7 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
             manager.SetAuthorUpdated(false);
             manager.SetSelectedAuthor(null);
             manager.GetCurrentAuthorDialog().Hide();
@@ -138,7 +139,7 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void SaveClick(object sender, RoutedEventArgs e)
         {
-            var manager = ContributorManager.GetInstance();
+            var manager = PCOState.GetInstance().GetContributorState();
 
             if (NameBox.Text.Length == 0)
             {
