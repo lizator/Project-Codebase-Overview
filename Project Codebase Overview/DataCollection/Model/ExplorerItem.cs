@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using Project_Codebase_Overview.State;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -29,7 +30,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
-        public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; }
+        public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.GraphModel.SelectedOwner?.Name ?? "Unselected"); }
+        private string selectedOwnerName;
         public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
         private SolidColorBrush selectedOwnerColor;
         public string LinesTotalString { get; }
@@ -44,10 +46,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private ObservableCollection<IOwner> GetOwnerListSorted()
         {
             //create "Unselected" entry
-            var authorList = ContributorManager.GetInstance().GetAllAuthors().ConvertAll(x => (IOwner)x).OrderBy(x => x.Name).ToList();
-            authorList.MoveTo(authorList.IndexOf(this.GraphModel.SuggestedOwner), 0);
-            authorList.Add(new Author("Unselected", "Unselected"));
-            return authorList.ToObservableCollection();
+            var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwners().OrderBy(x => x.Name).ToList();
+            if (this.GraphModel.SuggestedOwner != null)
+            {
+                var ownerIndex = ownerlist.IndexOf(this.GraphModel.SuggestedOwner);
+                if(ownerIndex > -1)
+                {
+                    ownerlist.MoveTo(ownerlist.IndexOf(this.GraphModel.SuggestedOwner), 0);
+                }
+            }
+            ownerlist.Add(new Author("Unselected", "Unselected"));
+            return ownerlist.ToObservableCollection();
         }
         protected SfLinearGauge GetBarGraph()
         {
@@ -109,5 +118,29 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         protected SfLinearGauge _bargraph { get; set; }
 
+        public void GenerateBarGraph()
+        {
+            this.GetBarGraph();
+        }
+
+        public string GetRelativePath()
+        {
+            PCOFolder tempFolder = this.Parent;
+            string relativePath = "";
+            if (this is PCOFolder folder)
+            {
+                tempFolder = folder;
+            } else
+            {
+                relativePath = this.Name;
+            }
+            while (tempFolder?.Parent != null)
+            {
+                relativePath = tempFolder.Name + "\\" + relativePath;
+                tempFolder = tempFolder.Parent;
+            }
+            return relativePath;
+        }
+        
     }
 }

@@ -29,9 +29,10 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        ObservableCollection<Author> OwnersList = new ObservableCollection<Author>();
+        ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
         ObservableCollection<string> DataSelectionOptions = new ObservableCollection<string>();
         private bool IsExpanded = true;
+        private bool InitialOpenDone = false;
 
 
         public SettingsPage()
@@ -47,30 +48,24 @@ namespace Project_Codebase_Overview
 
             DecayCheckBox.IsChecked = true;
 
-            PCOState.GetInstance().GetLoadingState().PropertyChanged += LoadingStatePropertyChanged;
+            UpdateOwnerList();
 
             ExpanderClick(null,null);
         }
 
-        private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void UpdateOwnerList()
         {
-            if (e.PropertyName.Equals("IsLoading"))
+            OwnersList.Clear();
+            var list = PCOState.GetInstance().GetContributorState().GetAllOwners();
+            foreach (var owner in list)
             {
-                if (!PCOState.GetInstance().GetLoadingState().IsLoading)
-                {
-                    UpdateOwnerList(null, null);
-                }
+                OwnersList.Add(owner);
             }
         }
 
-        private void UpdateOwnerList(object sender, RoutedEventArgs e)
+        private void ManageClicked(object sender, RoutedEventArgs e)
         {
-            OwnersList.Clear();
-            var list = ContributorManager.GetInstance().GetAllAuthors();
-            foreach (var author in list)
-            {
-                OwnersList.Add(author);
-            }
+            ((Application.Current as App)?.MainWindow as MainWindow).NavigateToManagementPage();
         }
 
         private void DecayChecked(object sender, RoutedEventArgs e)
@@ -136,6 +131,27 @@ namespace Project_Codebase_Overview
                 ExpanderText2.Text = "<";
                 ExpanderText3.Text = "<";
             }
+        }
+
+        private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
+        {
+            if (!this.InitialOpenDone)
+            {
+                this.InitialOpenDone = true;
+                return;
+            }
+            if (e.NewValue.Equals("Users"))
+            {
+                PCOState.GetInstance().GetSettingsState().CurrentMode = Mode.USER;
+            }
+            else if (e.NewValue.Equals("Teams"))
+            {
+                PCOState.GetInstance().GetSettingsState().CurrentMode = Mode.TEAMS;
+            }
+            //Update settingspanel owner list
+            UpdateOwnerList();
+            //Reload explorerview
+            PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }
     }
 }

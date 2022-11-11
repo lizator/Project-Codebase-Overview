@@ -23,6 +23,15 @@ using Windows.Storage.Pickers;
 using LibGit2Sharp;
 using Windows.ApplicationModel.VoiceCommands;
 using System.Diagnostics;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.Graphs.Model;
+using Project_Codebase_Overview.Graphs;
+using Syncfusion.UI.Xaml.Gauges;
+using Windows.UI;
+using Project_Codebase_Overview.ContributorManagement;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Collections.ObjectModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,9 +43,143 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class TestStartWindow : Window
     {
+        public ObservableCollection<Color> Colors;
+
         public TestStartWindow()
         {
             this.InitializeComponent();
+            Colors = new ObservableCollection<Color>();
+            var colors = PCOColorPicker.GetInstance().ColorPalette;
+            foreach (var color in colors)
+            {
+                Colors.Add(color);
+            }
+        }
+
+        public class TestObservableClass : ObservableObject
+        {
+
+            public bool plusTest = false;
+
+            public TestObservableClass()
+            {
+                test(); 
+            }
+
+            public void test()
+            {
+                SfLinearGauge sfLinearGauge = new SfLinearGauge();
+                sfLinearGauge.Axis.Minimum = 0;
+                sfLinearGauge.Axis.Maximum = 91;
+                sfLinearGauge.Axis.ShowLabels = false;
+                sfLinearGauge.Axis.ShowTicks = false;
+                sfLinearGauge.Axis.AxisLineStrokeThickness = 25;
+                sfLinearGauge.Axis.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+                sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+                sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+                sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+
+                var blocks = new List<GraphBlock>();
+                var sizes = new List<int> { 30, 30, 30 };
+                if (plusTest) sizes = new List<int> { 50, 20, 20 };
+                var curr = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    var block = new GraphBlock();
+                    block.StartValue = curr;
+                    curr += sizes[i];
+                    block.EndValue = curr;
+                    block.Color = PCOColorPicker.HardcodedColors[i];
+                    blocks.Add(block);
+                }
+
+
+                foreach (var block in blocks)
+                {
+                    LinearGaugeRange gaugeRange = new LinearGaugeRange();
+                    gaugeRange.StartValue = block.StartValue + 0.5;
+                    gaugeRange.EndValue = block.EndValue + 0.5;
+                    gaugeRange.StartWidth = 22;
+                    gaugeRange.EndWidth = 22;
+                    gaugeRange.RangePosition = GaugeElementPosition.Cross;
+
+                    gaugeRange.Background = new SolidColorBrush(block.Color);
+
+                    sfLinearGauge.Axis.Ranges.Add(gaugeRange);
+                }
+                this.BarGraph = sfLinearGauge;
+            }
+            public SfLinearGauge BarGraph { get => _barGraph; set => SetProperty(ref _barGraph, value); }
+
+            public SfLinearGauge _barGraph;
+        }
+
+
+        public TestObservableClass TestObj = new TestObservableClass();
+        public TestObservableClass TestObj2;
+
+        private async void test3(object sender, RoutedEventArgs e)
+        {
+            
+            TestObj2 = new TestObservableClass();
+
+            testGauge.Content = TestObj2._barGraph;
+
+        }
+
+        private async void test(object sender, RoutedEventArgs e)
+        {
+            SfLinearGauge sfLinearGauge = new SfLinearGauge();
+            sfLinearGauge.Axis.Minimum = 0;
+            sfLinearGauge.Axis.Maximum = 91;
+            sfLinearGauge.Axis.ShowLabels = false;
+            sfLinearGauge.Axis.ShowTicks = false;
+            sfLinearGauge.Axis.AxisLineStrokeThickness = 25;
+            sfLinearGauge.Axis.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.VerticalContentAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+            sfLinearGauge.Axis.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+            sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
+
+            var blocks = new List<GraphBlock>();
+
+            var sizes = new List<int> { 30, 30, 30};
+            //if (plusTest) sizes = new List<int> { 50, 20, 20 };
+            var curr = 0;
+            for (int i = 0; i < 3; i++)
+            {
+                var block = new GraphBlock();
+                block.StartValue = curr;
+                curr += sizes[i];
+                block.EndValue = curr;
+                block.Color = PCOColorPicker.HardcodedColors[i];
+            }
+
+
+            foreach (var block in blocks)
+            {
+                LinearGaugeRange gaugeRange = new LinearGaugeRange();
+                gaugeRange.StartValue = block.StartValue + 0.5;
+                gaugeRange.EndValue = block.EndValue + 0.5;
+                gaugeRange.StartWidth = 22;
+                gaugeRange.EndWidth = 22;
+                gaugeRange.RangePosition = GaugeElementPosition.Cross;
+
+                gaugeRange.Background = new SolidColorBrush(block.Color);
+
+                sfLinearGauge.Axis.Ranges.Add(gaugeRange);
+            }
+            TestObj.BarGraph = sfLinearGauge;
+        }
+
+        public void test1(object sender, RoutedEventArgs e) 
+        {
+            TestObj.plusTest = false;
+            TestObj.test();
+        }
+        public void test2(object sender, RoutedEventArgs e) 
+        {
+            TestObj.plusTest = true;
+            TestObj.test();
         }
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)
@@ -75,6 +218,12 @@ namespace Project_Codebase_Overview
             window.Activate();
             window.NavigateToLoadingPage();
         }
+        private void NavigateToManagementPage()
+        {
+            MainWindow window = new MainWindow();
+            window.Activate();
+            window.NavigateToManagementPage();
+        }
 
         private async void OpenPCOMaster(object sender, RoutedEventArgs e)
         {
@@ -85,6 +234,26 @@ namespace Project_Codebase_Overview
             state.GetExplorerState().SetRootPath(path);
 
             NavigateToLoadingPage();
+        }
+
+        private async void OpenManagementPage(object sender, RoutedEventArgs e)
+        {
+            return;
+            PCOState.GetInstance().ClearState();
+            //ContributorManager.GetInstance().InitializeAuthor("alice@gmail.com", "Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders@gmail.com", "Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty@gmail.com", "Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob@gmail.com", "Bob the Builder");
+            //ContributorManager.GetInstance().InitializeAuthor("alice2@gmail.com", "2Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders2@gmail.com", "2Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty2@gmail.com", "2Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob2@gmail.com", "2Bob the Builder");
+            //ContributorManager.GetInstance().InitializeAuthor("alice3@gmail.com", "3Alice Awesome");
+            //ContributorManager.GetInstance().InitializeAuthor("Anders3@gmail.com", "3Anders Anderson");
+            //ContributorManager.GetInstance().InitializeAuthor("Betty3@gmail.com", "3Betty Beauty");
+            //ContributorManager.GetInstance().InitializeAuthor("Bob3@gmail.com", "3Bob the Builder");
+
+            NavigateToManagementPage();
         }
 
         private async void DoDataOptimization2(object sender, RoutedEventArgs e)
@@ -170,7 +339,8 @@ namespace Project_Codebase_Overview
             GitDataCollector collector = new GitDataCollector();
 
             var state = PCOState.GetInstance();
-            var path = "C:\\TestRepos\\monero";
+            //var path = "C:\\TestRepos\\monero";
+            var path = "C:\\TestRepos\\vscode";
             //var path = "C:\\TestRepos\\Project-Codebase-Overview";
 
             state.GetExplorerState().SetRootPath(path);
@@ -179,7 +349,7 @@ namespace Project_Codebase_Overview
 
             Debug.WriteLine("starting test!");
             stopwatch.Start();
-            collector.SimpleCollectAllData(path);
+            //collector.SimpleCollectAllData(path);
             stopwatch.Stop();
             var simple1 = stopwatch.ElapsedMilliseconds;
 

@@ -1,0 +1,166 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.ManagementPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
+    xmlns:teamsModel="using:Project_Codebase_Overview.ContributorManagement.Model"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors">
+    <Page.Resources>
+        <Style x:Key="ToolButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="60"/>
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+        <Style x:Key="ToolImage" TargetType="Image">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+    </Page.Resources>
+    
+    <Grid RowDefinitions="auto, *">
+        <Grid Grid.Row="0" ColumnDefinitions="80, *, 80" Padding="0, 10, 0, 0">
+            <Button Click="BackClick" Grid.Column="0" Style="{StaticResource ToolButton}">
+                <Image ImageFailed="ImageFailed" Style="{StaticResource ToolImage}"
+                   Source="Assets/ArrowLeft.png"/>
+            </Button>
+            <TextBlock Text="Management" 
+                       FontSize="36" 
+                       FontFamily="Rockwell"
+                       Grid.Column="1" 
+                       HorizontalAlignment="Center" 
+                       HorizontalTextAlignment="Center"
+                       VerticalAlignment="Center">
+            </TextBlock>
+        </Grid>
+        <Pivot Grid.Row="1">
+            <Pivot.RightHeader>
+                <CommandBar ClosedDisplayMode="Compact">
+                    <AppBarButton Icon="Add" Label="Add team" Click="AddTeamClick"/>
+                    <AppBarButton Icon="Globe"  Label="Import"/>
+                </CommandBar>
+            </Pivot.RightHeader>
+            
+            <!--User Management page-->
+            <PivotItem Header="User management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <treeGrid:SfTreeGrid x:Name="UserTreeGrid"
+                                ChildPropertyName="SubAuthors"
+                                ItemsSource="{x:Bind Users}"
+                                ShowRowHeader="True"
+                                ColumnWidthMode="Star"
+                                AutoGenerateColumnsMode="None"
+                                AllowResizingColumns="False"
+                                GridLinesVisibility="Horizontal"
+                                SelectionMode="Single"
+                                RowHeaderWidth="0"
+                                NavigationMode="Row"
+                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White">
+
+                    <treeGrid:SfTreeGrid.Columns>
+                        <treeGrid:TreeGridColumns>
+                            <!-- Name -->
+                            <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
+                            <!-- Email -->
+                            <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350"/>
+                            <!-- User Color -->
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100" AllowFiltering="False" AllowSorting="False">
+                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Ellipse Height="20" Width="20" StrokeThickness="1"  Stroke="Black">
+                                            <Ellipse.Fill>
+                                                <SolidColorBrush Color="{Binding Color}"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            </treeGrid:TreeGridTemplateColumn>
+                            <!--Sub author count-->
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="SubAuthorCount" Width="150"/>
+                            <!-- Team -->
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
+                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
+                                              Stroke="Black"
+                                            Grid.Column="0">
+                                                <Ellipse.Fill>
+                                                    <SolidColorBrush Color="{Binding Team.Color}"/>
+                                                </Ellipse.Fill>
+                                            </Ellipse>
+                                            <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Team.Name}" Grid.Column="1"></TextBlock>
+                                        </Grid>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            </treeGrid:TreeGridTemplateColumn>
+                            <!--Button Column-->
+                            <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
+                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditUserClick">
+                                            <Image Source="Assets/Expand.png"></Image>
+                                        </Button>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            </treeGrid:TreeGridTemplateColumn>
+                        </treeGrid:TreeGridColumns>
+                    </treeGrid:SfTreeGrid.Columns>
+                </treeGrid:SfTreeGrid>
+            </PivotItem>
+
+            <!--Team Management page-->
+            <PivotItem Header="Team management" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <GridView x:Name="TeamsGridView" ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" >
+                        <GridView.ItemTemplate>
+                            <DataTemplate >
+                                <Grid   RowDefinitions="auto, auto, auto, auto"  
+                                        BorderBrush="DarkGray" 
+                                        BorderThickness="2" 
+                                        Width="240" 
+                                        Background="White"
+                                        CornerRadius="10" 
+                                        Padding="5,5,5,5" 
+                                        VerticalAlignment="Stretch">
+                                    <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                         
+                                    <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10" Margin="0,15,0,0">
+                                        <TextBlock Text="Color:" Grid.Column="0"/>
+                                        <Rectangle Grid.Column="1" RadiusX="4" RadiusY="4" Width="40" VerticalAlignment="Stretch" Stroke="Black">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding Color}"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </Grid>
+
+                                    <TextBlock Name="MemberList" Grid.Row="2"  Margin="0,15,0,0" TextAlignment="Center" Text="{Binding MemberString}"/>
+
+                                    <TextBlock Name="MoreTextBlock" Grid.Row="2" Visibility="{Binding MoreVisibility}"  Text="{Binding MoreString}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" ></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                       
+                        </GridView.ItemTemplate>
+                    
+                    </GridView>
+                    <StackPanel Orientation="Vertical"  x:Name="NoTeamsMessage" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                        <TextBlock HorizontalAlignment="Center" Text="There are no teams here yet"  FontSize="32" FontWeight="SemiBold"/>
+                        <TextBlock HorizontalAlignment="Center" Text="You can add teams by pressing the plus icon in the top right corner" FontSize="18"/>
+                    </StackPanel>
+                </Grid>
+            </PivotItem>
+            
+            
+        </Pivot>
+    </Grid>
+</Page>

@@ -10,7 +10,7 @@ namespace Project_Codebase_Overview.Settings.Model
     {
         public bool isActive = false;
         public int timeCounter = 0;
-        public DecayTimeUnit timeUnit = DecayTimeUnit.UNDÈFINED;
+        public DecayTimeUnit timeUnit = DecayTimeUnit.UNDEFINED;
         public int dropOffPercentage = 0;
 
         public double CalculateLinesAfterDecay(int lineCount, DateTime commitDate)
@@ -28,7 +28,7 @@ namespace Project_Codebase_Overview.Settings.Model
 
     internal enum DecayTimeUnit
     {
-        UNDÈFINED = 0,
+        UNDEFINED = 0,
         DAY = 1,
         WEEK = 2,
         MONTH = 3,

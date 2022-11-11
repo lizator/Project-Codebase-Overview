@@ -48,6 +48,11 @@ namespace Project_Codebase_Overview
                     ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
                 }
             }
+            else if (e.PropertyName.Equals("TotalFilesToLoad"))
+            {
+                FilesLoadedLine.Visibility = Visibility.Visible;
+                ScanningTextBlock.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

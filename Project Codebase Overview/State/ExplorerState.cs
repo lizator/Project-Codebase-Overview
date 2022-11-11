@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Bson;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Dialogs;
@@ -18,6 +19,8 @@ namespace Project_Codebase_Overview.FileExplorerView
         private List<PCOFolder> FolderHistory = new List<PCOFolder>();
         private int CurrentRootIndex;
         private static readonly int MAX_HISTORY_SIZE = 20;
+        public delegate void NotifyReload();
+        public event NotifyReload NotifyReloadEvent;
 
         public ExplorerState()
         {
@@ -77,6 +80,11 @@ namespace Project_Codebase_Overview.FileExplorerView
             return null;
         }
 
+        public PCOFolder GetCurrentRootFolder()
+        {
+            return FolderHistory[CurrentRootIndex];
+        }
+
         public string GetCurrentRootPath()
         {
             PCOFolder tempFolder = FolderHistory[CurrentRootIndex];
@@ -86,7 +94,7 @@ namespace Project_Codebase_Overview.FileExplorerView
                 path = tempFolder.Name + "\\" + path;
                 tempFolder = tempFolder.Parent;
             }
-            path = RootPath + "\\" + path;
+            path = RootPath + "\\" + FolderHistory[CurrentRootIndex].GetRelativePath();
             return path;
         }
         public string GetRootPath()
@@ -151,6 +159,50 @@ namespace Project_Codebase_Overview.FileExplorerView
         {
             this.RootFolder = folder;
             ResetHistory(folder);
+        }
+
+        public bool IsNavigateUpAvailable()
+        {
+            if (FolderHistory[CurrentRootIndex].Equals(RootFolder))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        public bool IsNavigateBackAvailable()
+        {
+            if (CurrentRootIndex > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool IsNavigateForwardAvailable()
+        {
+            if (FolderHistory.Count() > CurrentRootIndex + 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void CalculateData()
+        {
+            RootFolder.CalculateData();
+        }
+        public void ReloadExplorer()
+        {
+            CalculateData();
+            NotifyReloadEvent?.Invoke();
         }
     }
 }

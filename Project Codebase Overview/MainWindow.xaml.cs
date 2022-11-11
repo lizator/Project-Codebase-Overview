@@ -10,6 +10,7 @@ using Microsoft.UI.Xaml.Navigation;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,10 @@ using Windows.Graphics.Display;
 using Windows.Storage.Pickers;
 using Windows.UI.ViewManagement;
 using Windows.UI.WindowManagement;
+using Windows.UI.Core;
 using AppWindow = Microsoft.UI.Windowing.AppWindow;
+using Windows.System;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -34,26 +38,50 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class MainWindow : Window
     {
+        bool controlKeyDown = false;
         public MainWindow()
         {
             this.InitializeComponent();
+            (Application.Current as App)?.SetMainWindow(this);
+        }
+
+        public async void NavigateToLoadingPage()
+        {
+            this.NavigationFrame.Navigate(typeof(LoadingPage));
         }
 
         public async void NavigateToExplorerPage()
         {
-            (Application.Current as App)?.SetMainWindow(this);
-
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
+            this.NavigationFrame.Navigate(typeof(ExplorerNavigationPage));
         }
-        public async void NavigateToLoadingPage()
+
+        public async void NavigateToManagementPage()
         {
-            (Application.Current as App)?.SetMainWindow(this);
-            
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(LoadingPage));
+            this.NavigationFrame.Navigate(typeof(ManagementPage));
+        }
+
+        private void NavigationFrame_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key == VirtualKey.Control)
+            {
+                controlKeyDown = false;
+            }
+            else if (e.Key == VirtualKey.Z && controlKeyDown && PCOState.GetInstance().ChangeHistory.UndoAvailable)
+            {
+                PCOState.GetInstance().ChangeHistory.Undo();
+            }
+            else if (e.Key == VirtualKey.Y && controlKeyDown && PCOState.GetInstance().ChangeHistory.RedoAvailable)
+            {
+                PCOState.GetInstance().ChangeHistory.Redo();
+            }
+        }
+
+        private void NavigationFrame_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if(e.Key == VirtualKey.Control)
+            {
+                controlKeyDown = true;
+            }
         }
     }
 }

@@ -12,19 +12,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public IOwner SuggestedOwner;
         public IOwner SelectedOwner;
        
-        public Dictionary<Author, uint> LineDistribution;
+        public Dictionary<IOwner, uint> LineDistribution;
         public uint LinesTotal;
         public string FileName;
 
         public GraphModel()
         {
-            this.LineDistribution = new Dictionary<Author, uint>();
+            this.LineDistribution = new Dictionary<IOwner, uint>();
             this.LinesTotal = 0;
             SuggestedOwner = null;
             SelectedOwner = null;
         }
 
-        public void AddLineDistributions(Dictionary<Author, uint> childLineDistributions)
+        public void AddLineDistributions(Dictionary<IOwner, uint> childLineDistributions)
         {
             foreach(var childLineDistribution in childLineDistributions)
             {

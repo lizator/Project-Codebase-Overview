@@ -7,16 +7,46 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <StackPanel  Orientation="Vertical">
-        <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
-        <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
-        <Button BorderThickness="2" x:Name="TestDataOptimization" Click="DoDataOptimization" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: Data optimization - parallel-processes</Button>
-        <Button BorderThickness="2" x:Name="TestDataOptimization2" Click="DoDataOptimization2" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: Data optimization - Parallel chuck sizes</Button>
-        <!--<Button BorderThickness="2" x:Name="TestDummyMerge" Click="OpenDummyDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner with Merge</Button>-->
-        <!--<Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>-->
-        <!--<Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>-->
-        <!--<Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>-->
-        <Button BorderThickness="2" x:Name="TestLoading2" Click="TestLoadingIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test Intended</Button>
-        <!--<Button BorderThickness="2" x:Name="TestLoading" Click="TestLoadingClick" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test</Button>-->
-    </StackPanel>
+    <Grid ColumnDefinitions="400, *">
+        <StackPanel  Orientation="Vertical" Grid.Column="0">
+            <Button BorderThickness="2" x:Name="myButton" Click="UseAsIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Intended use</Button>
+            <Button BorderThickness="2" x:Name="TestPCOMaster" Click="OpenPCOMaster" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use PCO/Master</Button>
+            <Button BorderThickness="2" x:Name="TestDataOptimization" Click="DoDataOptimization" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: Data optimization - parallel-processes</Button>
+            <Button BorderThickness="2" x:Name="TestDataOptimization2" Click="DoDataOptimization2" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: Data optimization - Parallel chuck sizes</Button>
+            <!--<Button BorderThickness="2" x:Name="TestDummyMerge" Click="OpenDummyDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: use DummyDataSummoner with Merge</Button>-->
+            <!--<Button BorderThickness="2" x:Name="TestAlt" Click="RunAltGetData" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData</Button>-->
+            <!--<Button BorderThickness="2" x:Name="TestAltMerge" Click="RunAltGetDataMerge" Margin="8,8,8,8" HorizontalAlignment="Center">TEST: alt GetData Merge</Button>-->
+            <!--<Button BorderThickness="2" x:Name="startTest" Click="start_test" Margin="8,8,8,8" HorizontalAlignment="Center">Start test</Button>-->
+            <Button BorderThickness="2" x:Name="TestLoading2" Click="TestLoadingIntended" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test Intended</Button>
+            <Button BorderThickness="2" x:Name="ManagementPage" Click="OpenManagementPage" Margin="8,8,8,8" HorizontalAlignment="Center">Open simple management page</Button>
+            <!--<Button BorderThickness="2" x:Name="TestLoading" Click="TestLoadingClick" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test</Button>-->
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Column="1" DataContext="TestObj"> <!-- Playground-->
+            <TextBlock Text="Playground" FontSize="48" HorizontalAlignment="Center" HorizontalTextAlignment="Center"/>
+
+            
+            <ContentControl x:Name="testGauge" Content="{x:Bind TestObj._barGraph, Mode=OneWay}" HorizontalAlignment="Center" HorizontalContentAlignment="Center" Padding="8"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Red+" Click="test2"/>
+                <Button Content="Red-" Click="test1"/>
+                <Button Content="update new" Click="test3"/>
+            </StackPanel>
+
+            <ListView ItemsSource="{x:Bind Colors}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Ellipse Width="20" Height="20">
+                            <Ellipse.Fill>
+                                <SolidColorBrush Color="{Binding}"/>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+
+
+        </StackPanel>
+    </Grid>
 </Window>
