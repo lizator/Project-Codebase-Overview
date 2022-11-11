@@ -154,8 +154,8 @@
                     
                     </GridView>
                     <StackPanel Orientation="Vertical"  x:Name="NoTeamsMessage" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
-                        <TextBlock HorizontalAlignment="Center" Text="There are no teams here yet"  FontSize="36" FontWeight="SemiBold"/>
-                        <TextBlock HorizontalAlignment="Center" Text="You can add teams by pressing the plus icon in the top right corner" FontSize="20"/>
+                        <TextBlock HorizontalAlignment="Center" Text="There are no teams here yet"  FontSize="32" FontWeight="SemiBold"/>
+                        <TextBlock HorizontalAlignment="Center" Text="You can add teams by pressing the plus icon in the top right corner" FontSize="18"/>
                     </StackPanel>
                 </Grid>
             </PivotItem>
