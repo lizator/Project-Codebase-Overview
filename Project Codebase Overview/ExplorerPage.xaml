@@ -97,10 +97,10 @@
                 <ColumnDefinition Width="*"></ColumnDefinition>
                 <ColumnDefinition Width="auto"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Button x:Name="UndoButton" Click="UndoClick" Grid.Column="0" Style="{StaticResource UndoButton}">
+            <Button x:Name="UndoButton" Click="UndoClick" Grid.Column="0" Style="{StaticResource UndoButton}" ToolTipService.ToolTip="Undo (Ctrl+Z)">
                 <Image x:Name="UndoImage"  ImageFailed="ImageFailed" Source="Assets/Undo.png" Style="{StaticResource UndoImage}" Opacity="0.3"/>
             </Button>
-            <Button x:Name="RedoButton" Click="RedoClick" Grid.Column="1" Style="{StaticResource UndoButton}" IsEnabled="false">
+            <Button x:Name="RedoButton" Click="RedoClick" Grid.Column="1" Style="{StaticResource UndoButton}" IsEnabled="false" ToolTipService.ToolTip="Redo (Ctrl+Y)">
                 <Image x:Name="RedoImage" ImageFailed="ImageFailed" Source="Assets/Redo.png" Style="{StaticResource UndoImage}" Opacity="0.3"/>
             </Button>
             <Grid Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Center" Width="40">
@@ -134,9 +134,7 @@
         <!--Graph view active-->
         <Grid x:Name="GraphView" Grid.Row="1" ColumnDefinitions="4*, 6*" Visibility="Collapsed" >
             <StackPanel Grid.Column="0" Orientation="Vertical" Padding="10,10,10,10" Spacing="40" BorderThickness="0,0,1,0" BorderBrush="Black">
-                
-                <!--TODO FIX BINDING SO SELECTING OWNER UPDATES EXPLORER VIEW ASWELLL!!!-->
-                
+                                
                 <TextBlock Text="{Binding SelectedGraphItem.Name}" Style="{StaticResource SubheaderTextBlockStyle}" HorizontalAlignment="Center"/>
                  
                 <!--line distribution bar graph-->
@@ -203,7 +201,7 @@
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Team" Width="225">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" Width="225">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <editors:SfComboBox ItemsSource="{Binding Owners}" 
@@ -226,7 +224,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested team" Width="225">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested owner" Width="225">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >

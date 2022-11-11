@@ -89,6 +89,16 @@ namespace Project_Codebase_Overview
             {
                 Teams.Add(team);
             }
+            if(Teams.Count() == 0)
+            {
+                TeamsGridView.Visibility = Visibility.Collapsed;
+                NoTeamsMessage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                TeamsGridView.Visibility = Visibility.Visible;
+                NoTeamsMessage.Visibility = Visibility.Collapsed;
+            }
             PCOState.GetInstance().GetExplorerState().CalculateData();
         }
 

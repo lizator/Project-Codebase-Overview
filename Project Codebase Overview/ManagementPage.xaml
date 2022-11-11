@@ -52,41 +52,6 @@
                 </CommandBar>
             </Pivot.RightHeader>
             
-            <!--Team Management page-->
-            <PivotItem Header="Team management" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
-                <GridView ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" >
-                    <GridView.ItemTemplate>
-                        <DataTemplate >
-                            <Grid   RowDefinitions="auto, auto, auto, auto"  
-                                    BorderBrush="DarkGray" 
-                                    BorderThickness="2" 
-                                    Width="240" 
-                                    Background="White"
-                                    CornerRadius="10" 
-                                    Padding="5,5,5,5" 
-                                    VerticalAlignment="Stretch">
-                                <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
-                         
-                                <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10" Margin="0,15,0,0">
-                                    <TextBlock Text="Color:" Grid.Column="0"/>
-                                    <Rectangle Grid.Column="1" RadiusX="4" RadiusY="4" Width="40" VerticalAlignment="Stretch" Stroke="Black">
-                                        <Rectangle.Fill>
-                                            <SolidColorBrush Color="{Binding Color}"/>
-                                        </Rectangle.Fill>
-                                    </Rectangle>
-                                </Grid>
-
-                                <TextBlock Name="MemberList" Grid.Row="2"  Margin="0,15,0,0" TextAlignment="Center" Text="{Binding MemberString}"/>
-
-                                <TextBlock Name="MoreTextBlock" Grid.Row="2" Visibility="{Binding MoreVisibility}"  Text="{Binding MoreString}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" ></TextBlock>
-                            </Grid>
-                        </DataTemplate>
-                       
-                    </GridView.ItemTemplate>
-                    
-                </GridView>
-            </PivotItem>
-            
             <!--User Management page-->
             <PivotItem Header="User management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
                 <treeGrid:SfTreeGrid x:Name="UserTreeGrid"
@@ -100,7 +65,7 @@
                                 SelectionMode="Single"
                                 RowHeaderWidth="0"
                                 NavigationMode="Row"
-                                Margin="0,0,0,15" HorizontalAlignment="Stretch">
+                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White">
 
                     <treeGrid:SfTreeGrid.Columns>
                         <treeGrid:TreeGridColumns>
@@ -120,7 +85,7 @@
                                     </DataTemplate>
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
-                            <!--Sub author count--> 
+                            <!--Sub author count-->
                             <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="SubAuthorCount" Width="150"/>
                             <!-- Team -->
                             <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
@@ -153,6 +118,49 @@
                     </treeGrid:SfTreeGrid.Columns>
                 </treeGrid:SfTreeGrid>
             </PivotItem>
+
+            <!--Team Management page-->
+            <PivotItem Header="Team management" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <GridView x:Name="TeamsGridView" ItemsSource="{x:Bind Teams}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="TeamClicked" HorizontalAlignment="Stretch" HorizontalContentAlignment="Center" >
+                        <GridView.ItemTemplate>
+                            <DataTemplate >
+                                <Grid   RowDefinitions="auto, auto, auto, auto"  
+                                        BorderBrush="DarkGray" 
+                                        BorderThickness="2" 
+                                        Width="240" 
+                                        Background="White"
+                                        CornerRadius="10" 
+                                        Padding="5,5,5,5" 
+                                        VerticalAlignment="Stretch">
+                                    <TextBlock Grid.Row="0" Text="{Binding Name}" Style="{StaticResource SubtitleTextBlockStyle}" HorizontalAlignment="Center"/>
+                         
+                                    <Grid Grid.Row="1" ColumnDefinitions="auto, auto" HorizontalAlignment="Center" ColumnSpacing="10" Margin="0,15,0,0">
+                                        <TextBlock Text="Color:" Grid.Column="0"/>
+                                        <Rectangle Grid.Column="1" RadiusX="4" RadiusY="4" Width="40" VerticalAlignment="Stretch" Stroke="Black">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding Color}"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                    </Grid>
+
+                                    <TextBlock Name="MemberList" Grid.Row="2"  Margin="0,15,0,0" TextAlignment="Center" Text="{Binding MemberString}"/>
+
+                                    <TextBlock Name="MoreTextBlock" Grid.Row="2" Visibility="{Binding MoreVisibility}"  Text="{Binding MoreString}" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Bottom" ></TextBlock>
+                                </Grid>
+                            </DataTemplate>
+                       
+                        </GridView.ItemTemplate>
+                    
+                    </GridView>
+                    <StackPanel Orientation="Vertical"  x:Name="NoTeamsMessage" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                        <TextBlock HorizontalAlignment="Center" Text="There are no teams here yet"  FontSize="36" FontWeight="SemiBold"/>
+                        <TextBlock HorizontalAlignment="Center" Text="You can add teams by pressing the plus icon in the top right corner" FontSize="20"/>
+                    </StackPanel>
+                </Grid>
+            </PivotItem>
+            
+            
         </Pivot>
     </Grid>
 </Page>
