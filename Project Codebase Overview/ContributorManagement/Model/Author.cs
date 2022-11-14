@@ -76,7 +76,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             if (OverAuthor == null)
             {
-                throw new Exception("Cannot disconnect author. No overauthor is set");
+                throw new Exception("Cannot disconnect Author. No overauthor is set");
             }
             this.OverAuthor.SubAuthorCount--;
             this.OverAuthor.SubAuthors.Remove(this);

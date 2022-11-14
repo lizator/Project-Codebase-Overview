@@ -7,8 +7,10 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.Settings;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
+using Syncfusion.UI.Xaml.Editors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,6 +20,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Globalization.NumberFormatting;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -51,6 +54,8 @@ namespace Project_Codebase_Overview
             UpdateOwnerList();
 
             ExpanderClick(null,null);
+
+            LoadSettingsFromState();
         }
 
         private void UpdateOwnerList()
@@ -63,6 +68,47 @@ namespace Project_Codebase_Overview
             }
         }
 
+        private void LoadSettingsFromState()
+        {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
+            DecayCheckBox.IsChecked = settingsState.IsDecayActive;
+
+            DecayTimerNumberBox.Value = settingsState.DecayDropOffInteval;
+            if (settingsState.DecayTimeUnit != DecayTimeUnit.UNDEFINED)
+            {
+                DecayTimerComboBox.SelectedIndex = ((int)settingsState.DecayTimeUnit)-1;
+            } else
+            {
+                DecayTimerComboBox.SelectedItem = null;
+            }
+            PercentageNumberBox.Value = settingsState.DecayPercentage;
+
+
+        }
+
+        private void CancelSettingsChangeClick(object sender, RoutedEventArgs e)
+        {
+            LoadSettingsFromState();
+        }
+
+        private void SaveSettingsChangeClick(object sender, RoutedEventArgs e)
+        {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
+
+            settingsState.IsDecayActive = DecayCheckBox.IsChecked ?? false;
+
+            settingsState.DecayDropOffInteval = ((int?)DecayTimerNumberBox.Value) ?? 0;
+
+            var selected = DecayTimerComboBox.SelectedItem != null ? DecayTimerComboBox.SelectedIndex + 1 : 0;
+            settingsState.DecayTimeUnit = (DecayTimeUnit) selected;
+
+            settingsState.DecayPercentage = ((int?)PercentageNumberBox.Value) ?? 0;
+
+            LoadSettingsFromState();
+
+            PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+        }
+
         private void ManageClicked(object sender, RoutedEventArgs e)
         {
             ((Application.Current as App)?.MainWindow as MainWindow).NavigateToManagementPage();
@@ -71,21 +117,17 @@ namespace Project_Codebase_Overview
         private void DecayChecked(object sender, RoutedEventArgs e)
         {
             DecayCheckBox.Content = "Enabled";
-            DecayTimerNumberBox.Visibility = Visibility.Visible;
-            DecayTimerComboBox.Visibility = Visibility.Visible;
-            DecayTimerTextBlock.Visibility = Visibility.Visible;
-            DropOffNumberBox.Visibility = Visibility.Visible;
-            DropOffTextBlock.Visibility = Visibility.Visible;
+            DecayTimerNumberBox.IsEnabled = true;
+            DecayTimerComboBox.IsEnabled = true;
+            PercentageNumberBox.IsEnabled = true;
         }
 
         private void DecayUnchecked(object sender, RoutedEventArgs e)
         {
             DecayCheckBox.Content = "Disabled";
-            DecayTimerNumberBox.Visibility = Visibility.Collapsed;
-            DecayTimerComboBox.Visibility = Visibility.Collapsed;
-            DecayTimerTextBlock.Visibility = Visibility.Collapsed;
-            DropOffNumberBox.Visibility = Visibility.Collapsed;
-            DropOffTextBlock.Visibility = Visibility.Collapsed;
+            DecayTimerNumberBox.IsEnabled = false;
+            DecayTimerComboBox.IsEnabled = false;
+            PercentageNumberBox.IsEnabled = false;
         }
 
         private void ShowFilesChecked(object sender, RoutedEventArgs e)
@@ -98,7 +140,7 @@ namespace Project_Codebase_Overview
             ShowFilesCheckBox.Content = "Disabled";
         }
 
-        private void DecayTimerNumberChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        private void DecayTimerNumberChanged(object sender, ValueChangedEventArgs e)
         {
 
         }
@@ -108,7 +150,7 @@ namespace Project_Codebase_Overview
 
         }
 
-        private void DecayDropOffChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        private void DecayDropOffChanged(object sender, ValueChangedEventArgs args)
         {
 
         }
@@ -142,11 +184,11 @@ namespace Project_Codebase_Overview
             }
             if (e.NewValue.Equals("Users"))
             {
-                PCOState.GetInstance().GetSettingsState().CurrentMode = Mode.USER;
+                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.USER;
             }
             else if (e.NewValue.Equals("Teams"))
             {
-                PCOState.GetInstance().GetSettingsState().CurrentMode = Mode.TEAMS;
+                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.TEAMS;
             }
             //Update settingspanel owner list
             UpdateOwnerList();

@@ -27,12 +27,13 @@
     
     <Grid ColumnDefinitions="*, 16">
         <!-- SettingsPanel -->
-        <Grid Grid.Column="0" ColumnDefinitions="*, 135" x:Name="SettingsPanelGrid" Padding="10" RowSpacing="5">
+        <Grid Grid.Column="0" ColumnDefinitions="*, 150" x:Name="SettingsPanelGrid" Padding="10" RowSpacing="5">
             
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -93,8 +94,9 @@
                 <!-- Visibility dependent-->
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
                 <Grid Grid.Row="6" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <NumberBox Grid.Column="0" x:Name="DecayTimerNumberBox" ValueChanged="DecayTimerNumberChanged" Width="35"  VerticalAlignment="Center"/>
-                    <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" SelectionChanged="DecayTimerSelectionChanged" Width="100"  VerticalAlignment="Center" SelectedIndex="0">
+                    <editors:SfNumberBox Grid.Column="0" x:Name="DecayTimerNumberBox" ValueChanged="DecayTimerNumberChanged" Width="50" MinWidth="1"
+                                         Maximum="99" Minimum="0" VerticalAlignment="Center" HorizontalContentAlignment="Right" CustomFormat="0" ShowClearButton="False"/>
+                    <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" SelectionChanged="DecayTimerSelectionChanged" Width="100"  VerticalAlignment="Center" PlaceholderText="Select">
                         <x:String>Days</x:String>
                         <x:String>Weeks</x:String>
                         <x:String>Months</x:String>
@@ -104,20 +106,26 @@
 
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
                 <Grid x:Name="DropOffNumberBox" Grid.Row="7" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <NumberBox  Grid.Column="0" ValueChanged="DecayDropOffChanged"  Visibility="Visible" Width="35" HorizontalAlignment="Right"  VerticalAlignment="Center"/>
+                    <editors:SfNumberBox Grid.Column="0" Maximum="99" Minimum="0" ValueChanged="DecayDropOffChanged" CustomFormat="0" HorizontalContentAlignment="Right"
+                                         Visibility="Visible" Width="35" x:Name="PercentageNumberBox" HorizontalAlignment="Right"  VerticalAlignment="Center" ShowClearButton="False"/>
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>
 
             <TextBlock Grid.Row="8" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
             <CheckBox Grid.Row="8" Grid.Column="1"  x:Name="ShowFilesCheckBox" Content="Enabled" IsChecked="True" Width="100"
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
-            
+
+            <Grid Grid.Row="9" Grid.Column="1">
+                <Button HorizontalAlignment="left" Background="IndianRed" Content="Cancel" Click="CancelSettingsChangeClick"/>
+                <Button HorizontalAlignment="Right" Background="ForestGreen" Content="Save" Click="SaveSettingsChangeClick"/>
+            </Grid>
+
             <!-- Import/Export -->
-            <TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
-            <Button Grid.Row="10" Grid.Column="0">Export CodeOwners file</Button>
-            <Button Grid.Row="11" Grid.Column="0">Save</Button>
-            <Button Grid.Row="12" Grid.Column="0">Load</Button>
-            <Button Grid.Row="13" Grid.Column="0">Open new repository</Button>
+            <TextBlock Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
+            <Button Grid.Row="11" Grid.Column="0">Export CodeOwners file</Button>
+            <Button Grid.Row="12" Grid.Column="0">Save</Button>
+            <Button Grid.Row="13" Grid.Column="0">Load</Button>
+            <Button Grid.Row="14" Grid.Column="0">Open new repository</Button>
             
         </Grid>
         

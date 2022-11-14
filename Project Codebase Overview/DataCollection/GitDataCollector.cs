@@ -640,7 +640,7 @@ namespace Project_Codebase_Overview.DataCollection
                             var datestring = match.Groups[3].Value;
                             if (!CurrentCommits.ContainsKey(key))
                             {
-                                DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
+                                DateTime date = DateTime.ParseExact(datestring, "yyyy-MM-dd", provider);
                                 CurrentCommits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
                             }
                             CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);

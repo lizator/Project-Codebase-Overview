@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.Settings;
 using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
@@ -95,7 +96,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         }
         public List<IOwner> GetAllOwners()
         {
-            if(PCOState.GetInstance().GetSettingsState().CurrentMode == Mode.USER)
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
             {
                 return GetAllAuthors().Select(x => (IOwner)x).ToList();
             }
