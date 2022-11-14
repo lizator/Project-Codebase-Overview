@@ -39,7 +39,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         public bool ContainsEmail(string email)
         {
-            return Email.Equals(email) || SubAuthors.Where(sub => sub.Equals(email)).Any();
+            return Email.Equals(email) || SubAuthors.Where(sub => sub.Email.Equals(email)).Any();
         }
 
         public void AddAlias(string alias)
