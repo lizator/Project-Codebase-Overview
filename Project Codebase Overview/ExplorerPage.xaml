@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
+    xmlns:treeGridFiltering="using:Syncfusion.UI.Xaml.TreeGrid.Filtering"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     xmlns:gauge="using:Syncfusion.UI.Xaml.Gauges"
     x:Name="ExplorerPageName">
@@ -44,7 +45,15 @@
             <Setter Property="Height" Value="20"/>
             <Setter Property="Margin" Value="0"/>
         </Style>
-        
+        <Style x:Key="advancedfilterstyleforOwner" TargetType="treeGridFiltering:TreeGridAdvancedFilterControl" >
+            <Setter Property="CanGenerateUniqueItems" Value="False" />
+        </Style>
+        <Style x:Key="popupstyleforOwner" TargetType="treeGridFiltering:TreeGridFilterControl">
+            <Setter Property="FilterMode" Value="Both" />
+            <Setter Property="AdvancedFilterStyle" Value="{StaticResource advancedfilterstyleforOwner}" />
+        </Style>
+
+
         <DataTemplate x:Key="SunburstTooltipTemplate">
             <StackPanel  Background="{StaticResource FlyoutBackgroundThemeBrush}" CornerRadius="4" Padding="2,2,2,2" BorderBrush="DarkGray" BorderThickness="1" Visibility="{Binding Item.Visibility}" >
                 <TextBlock Text="{Binding Item.Name}" Foreground="Black"/>
@@ -196,12 +205,13 @@
                                 SelectionMode="Single"
                                 RowHeaderWidth="0"
                                 NavigationMode="Row"
+                                FilterLevel="Extended"
                                 Margin="0,0,0,15">
 
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" Width="225">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="225" AllowSorting="False" AllowFiltering="True" FilterPopupStyle="{StaticResource popupstyleforOwner}">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <editors:SfComboBox ItemsSource="{Binding Owners}" 
@@ -224,7 +234,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested owner" Width="225">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested owner" MappingName="SuggestedOwnerName" Width="225" AllowSorting="False" AllowFiltering="True" FilterPopupStyle="{StaticResource popupstyleforOwner}">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" >
@@ -237,7 +247,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn MappingName="BarGraph" HeaderText="Line distribution" Width="300">
+                    <treeGrid:TreeGridTemplateColumn MappingName="BarGraph" HeaderText="Line distribution" Width="300" AllowSorting="False">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
@@ -256,7 +266,7 @@
                         </treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
                     </treeGrid:TreeGridNumericColumn>
                     <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowSorting="False">
                         <!-- expand button column-->
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
