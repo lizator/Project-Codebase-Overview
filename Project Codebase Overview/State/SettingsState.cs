@@ -24,7 +24,7 @@ namespace Project_Codebase_Overview.State
             IsDecayActive = false;
             DecayDropOffInteval = 0;
             DecayPercentage = 0;
-            DecayTimeUnit = DecayTimeUnit.UNDEFINED;
+            DecayTimeUnit = DecayTimeUnit.DAY;
         }
 
         public double CalculateLinesAfterDecay(int lineCount, DateTime commitDate)
