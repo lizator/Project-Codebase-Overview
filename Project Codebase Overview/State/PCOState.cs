@@ -31,6 +31,8 @@ namespace Project_Codebase_Overview.State
 
         public Repository TempGitRepo;
         public int mergeCounter;
+        private string latestCommitSha;
+        
 
         public static PCOState GetInstance()
         {
@@ -84,6 +86,14 @@ namespace Project_Codebase_Overview.State
             PCOColorPicker.ResetInstance();
         }
 
+        public void SetLatestCommitSha(string sha)
+        {
+            latestCommitSha = sha;
+        }
+        public string GetLatestCommitSha()
+        {
+            return latestCommitSha;
+        }
         public async Task SaveStateToFile(StorageFile file)
         {
             var serializableState = SerializerHelper.GetSerializableStateFromPCOState(this);

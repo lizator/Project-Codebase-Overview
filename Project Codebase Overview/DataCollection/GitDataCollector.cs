@@ -499,6 +499,10 @@ namespace Project_Codebase_Overview.DataCollection
                 throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
 
+            //Save latest commit sha to state
+            var latestCommit = GitRepo.Commits.First();
+            PCOState.GetInstance().SetLatestCommitSha(latestCommit.Sha);
+
             //initializeAuthors();
 
             List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
@@ -514,7 +518,7 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
             });
-            
+
 
             // Testing parallel block size start TODO: remove parallelChunkSetter and use PARALLEL_CUNK_SIZE parameter instead
             Stopwatch stopwatch = new Stopwatch();

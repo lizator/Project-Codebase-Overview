@@ -14,10 +14,11 @@ namespace Project_Codebase_Overview.SaveState.Model
         public SerializerExplorerItem RootFolder { get; set; }
         public SerializerSettings Settings { get; set; }
 
+        public string RepositoryRootPath { get; set; }
+        public string LatestCommitSHA { get; set; }
         public SerializerState()
         {
-            Authors = new List<SerializerAuthor>();
-            Teams = new List<SerializerTeam>();
+
         }
     }
 }

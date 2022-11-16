@@ -25,6 +25,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.Globalization.NumberFormatting;
+using Project_Codebase_Overview.Dialogs;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -239,6 +240,7 @@ namespace Project_Codebase_Overview
                 outputText = "Operation cancelled.";
             }
             Debug.WriteLine(outputText);
+            await DialogHandler.ShowOkDialog("Save", outputText, XamlRoot);
         }
 
         private async void LoadClick(object sender, RoutedEventArgs e)
