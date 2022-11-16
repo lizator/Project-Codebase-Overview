@@ -14,12 +14,16 @@ using Syncfusion.UI.Xaml.Editors;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Security.Cryptography.X509Certificates;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
 using Windows.Globalization.NumberFormatting;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -194,6 +198,66 @@ namespace Project_Codebase_Overview
             UpdateOwnerList();
             //Reload explorerview
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+        }
+
+        private async void SaveClick(object sender, RoutedEventArgs e)
+        {
+            
+            FileSavePicker savePicker = new FileSavePicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle((Application.Current as App)?.MainWindow as MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandler);
+
+            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Clear();
+            savePicker.FileTypeChoices.Add("json", new List<string>() { ".json" });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = "Project State - " + DateTime.Now.Date.ToString();
+
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            string outputText = "";
+            if (file != null)
+            {
+                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
+                CachedFileManager.DeferUpdates(file);
+                // write to file
+                await PCOState.GetInstance().SaveStateToFile(file);
+                // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
+                // Completing updates may require Windows to ask for user input.
+                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
+                if (status == FileUpdateStatus.Complete)
+                {
+                    outputText = "File " + file.Name + " was saved.";
+                }
+                else
+                {
+                    outputText = "File " + file.Name + " couldn't be saved.";
+                }
+            }
+            else
+            {
+                outputText = "Operation cancelled.";
+            }
+            Debug.WriteLine(outputText);
+        }
+
+        private async void LoadClick(object sender, RoutedEventArgs e)
+        {
+            //TODO: Save changes before exit!?!
+            
+            PCOState.GetInstance().ClearState();
+
+            var filePicker = new FileOpenPicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle((Application.Current as App)?.MainWindow as MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, windowHandler);
+            filePicker.FileTypeFilter.Add(".json");
+            var file = await filePicker.PickSingleFileAsync();
+
+            if(file == null)
+            {
+                return;
+            }
+            PCOState.GetInstance().LoadFile(file);
         }
     }
 }

@@ -1,12 +1,19 @@
 ﻿using LibGit2Sharp;
+using Newtonsoft.Json;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.FileExplorerView;
+using Project_Codebase_Overview.SaveState;
+using Project_Codebase_Overview.SaveState.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
 
 namespace Project_Codebase_Overview.State
 {
@@ -75,6 +82,31 @@ namespace Project_Codebase_Overview.State
             SettingsState = new SettingsState();
             ContributorState = new ContributorState();
             PCOColorPicker.ResetInstance();
+        }
+
+        public async Task SaveStateToFile(StorageFile file)
+        {
+            var serializableState = SerializerHelper.GetSerializableStateFromPCOState(this);
+
+
+
+            //var jsonString = System.Text.Json.JsonSerializer.Serialize(serializableState);
+            var jsonString = JsonConvert.SerializeObject(serializableState, Formatting.Indented);
+            await FileIO.WriteTextAsync(file, jsonString);
+        }
+
+        public void LoadFile(StorageFile file)
+        {
+            var path =  file.Path;
+            var jsonString = File.ReadAllText(path);
+            PCOState loadedState = JsonConvert.DeserializeObject<PCOState>(jsonString);
+
+            
+            this.ExplorerState = loadedState.ExplorerState;
+            this.LoadingState = loadedState.LoadingState;
+            this.TestState = loadedState.TestState;
+            this.SettingsState = loadedState.SettingsState;
+            this.ContributorState = loadedState.ContributorState;
         }
     }
 }
