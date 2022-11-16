@@ -13,12 +13,14 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public IOwner SelectedOwner;
        
         public Dictionary<IOwner, uint> LineDistribution;
+        public uint LinesAfterDecay;
         public uint LinesTotal;
         public string FileName;
 
         public GraphModel()
         {
             this.LineDistribution = new Dictionary<IOwner, uint>();
+            this.LinesAfterDecay = 0;
             this.LinesTotal = 0;
             SuggestedOwner = null;
             SelectedOwner = null;
@@ -37,20 +39,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.LineDistribution.Add(childLineDistribution.Key, childLineDistribution.Value);
                 }
             }
-        }
-
-        //For UI purposes
-        public Dictionary<Author, uint> GetAuthorDistribution()
-        {
-
-            throw new NotImplementedException();
-        }
-        //For UI purposes
-        public Dictionary<IOwner, double> GetTeamDistribution()
-        {
-            //Count line distribution according to team setup
-            
-            throw new NotImplementedException();
         }
 
         internal void UpdateSuggestedOwner()

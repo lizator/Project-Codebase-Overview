@@ -244,7 +244,18 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTextColumn MappingName="LinesTotal" HeaderText="Lines" ColumnWidthMode="SizeToCells"/>
+                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###" ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="auto,auto,auto">
+                                    <TextBlock Grid.Row="0" Text="Decay" FontSize="14" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="The amount of lines left after commited lines decayed " HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Text="over time. View the settings panel to change it." HorizontalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
+                    </treeGrid:TreeGridNumericColumn>
+                    <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50">
                         <!-- expand button column-->
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>

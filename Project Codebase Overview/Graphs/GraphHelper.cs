@@ -33,9 +33,11 @@ namespace Project_Codebase_Overview.Graphs
         private static readonly int GRAPH_SMALL_CHECK_STARTING_POINT = 60;
         private static readonly int GRAPH_SMALL_CHECK_MIN_SIZE = 5;
 
-        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<IOwner, uint> distributions, uint linesTotal, Author creator = null)
+        public static List<GraphBlock> GetGraphBlocksFromDistribution(GraphModel graphModel, Author creator = null)
         {
             //Creator is only given for files
+            var distributions = graphModel.LineDistribution;
+            var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
 
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
@@ -106,7 +108,7 @@ namespace Project_Codebase_Overview.Graphs
 
         public static SfCircularChart GetPieChartFromExplorerItem(ExplorerItem item)
         {
-            List<GraphBlock> blocks = GraphHelper.GetGraphBlocksFromDistribution(item.GraphModel.LineDistribution, item.GraphModel.LinesTotal, null);
+            List<GraphBlock> blocks = GraphHelper.GetGraphBlocksFromDistribution(item.GraphModel, null);
 
             //piechart for linedistribution between contributors
             SfCircularChart lineDistChart = new SfCircularChart();

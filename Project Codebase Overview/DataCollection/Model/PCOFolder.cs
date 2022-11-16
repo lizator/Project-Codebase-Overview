@@ -47,6 +47,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 child.Value.CalculateData();
                 this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
                 this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
+                this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
             }
             this.GraphModel.UpdateSuggestedOwner();
             this.GenerateBarGraph();
@@ -64,7 +65,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
         public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
-        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
 
         private List<ExplorerItem> GetSortedChildren()
         {

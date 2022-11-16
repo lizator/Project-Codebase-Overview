@@ -66,6 +66,11 @@ namespace Project_Codebase_Overview
 
             viewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
 
+            if (!PCOState.GetInstance().GetSettingsState().IsDecayActive)
+            {
+                rootTreeGrid.Columns.RemoveAt(4); //Remove decay column
+            } 
+
         }
 
         private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

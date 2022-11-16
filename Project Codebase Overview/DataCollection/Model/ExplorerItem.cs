@@ -16,12 +16,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Project_Codebase_Overview.State;
+using System.Globalization;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
     public abstract class ExplorerItem : ObservableObject, IComparable
     {
         public string Name { get; set; }
+        public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
+        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
         public abstract void CalculateData();
         public abstract int CompareTo(object obj);
 
@@ -34,7 +37,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private string selectedOwnerName;
         public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
         private SolidColorBrush selectedOwnerColor;
-        public string LinesTotalString { get; }
 
         public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
 
@@ -76,11 +78,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
             {
                 if (this.GetType() == typeof(PCOFile))
                 {
-                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal, ((PCOFile)this).Creator);
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel, ((PCOFile)this).Creator);
                 }
                 else
                 {
-                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal);
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel);
                 }
             } else
             {

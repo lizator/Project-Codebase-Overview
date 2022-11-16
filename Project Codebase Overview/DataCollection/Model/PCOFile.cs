@@ -19,7 +19,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
     {
 
         public List<PCOCommit> commits;
-        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString("N0", CultureInfo.InvariantCulture); }
         public Author Creator { get; set; }
 
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
@@ -55,9 +54,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 foreach (var commit in groupedComm)
                 {
-                    var commitLines = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
-                    this.GraphModel.LinesTotal += commitLines;
-                    this.GraphModel.LineDistribution[owner] += commitLines;
+                    var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
+                    this.GraphModel.LinesAfterDecay += linesAfterDecay;
+                    this.GraphModel.LinesTotal += (uint)commit.GetLines();
+                    this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
                 }
             }
             if (this.GraphModel.LinesTotal > 0)
