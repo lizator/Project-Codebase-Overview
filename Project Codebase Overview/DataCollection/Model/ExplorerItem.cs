@@ -72,13 +72,21 @@ namespace Project_Codebase_Overview.DataCollection.Model
             sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255,0,0,0));
 
             var blocks = new List<GraphBlock>();
-            if (this.GetType() == typeof(PCOFile))
+            if (this.GraphModel.LinesTotal > 0)
             {
-                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal, ((PCOFile)this).Creator);
+                if (this.GetType() == typeof(PCOFile))
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal, ((PCOFile)this).Creator);
+                }
+                else
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal);
+                }
             } else
             {
-                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal);
+                this.GraphModel.SuggestedOwner = null;
             }
+
 
 
             foreach (var block in blocks)
