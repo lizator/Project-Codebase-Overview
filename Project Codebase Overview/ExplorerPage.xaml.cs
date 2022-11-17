@@ -45,33 +45,35 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class ExplorerPage : Page
     {
-        ExplorerViewModel viewModel;
+        ExplorerViewModel ViewModel;
+
 
         bool GraphViewActive = false;
         public ExplorerPage()
         {
-
             this.InitializeComponent();
 
-            viewModel = (ExplorerViewModel)this.DataContext;
+            ViewModel = (ExplorerViewModel)this.DataContext;
 
             var root = PCOState.GetInstance().GetExplorerState().GetRoot();
 
-            viewModel.SetExplorerItems(root);
-            viewModel.SelectedGraphItem = root;
+            ViewModel.SetExplorerItems(root);
+            ViewModel.SelectedGraphItem = root;
 
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
             PCOState.GetInstance().ChangeHistory.PropertyChanged += ChangeHistory_PropertyChanged;
 
-            viewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
+            ViewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
 
             if (!PCOState.GetInstance().GetSettingsState().IsDecayActive)
             {
                 rootTreeGrid.Columns.RemoveAt(4); //Remove decay column
-            } 
+            }
 
+            ViewModel.UpdateBreadcrumbBar();
         }
+        
 
         private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -180,21 +182,21 @@ namespace Project_Codebase_Overview
         private void BackClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Back clicked");
-            viewModel.NavigateBack();
+            ViewModel.NavigateBack();
             UpdateGraphViewIfActive();
         }
 
         private void ForwardClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Forward clicked");
-            viewModel.NavigateForward();
+            ViewModel.NavigateForward();
             UpdateGraphViewIfActive();
         }
 
         private void UpClick(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("Up clicked");
-            viewModel.NavigateUp();
+            ViewModel.NavigateUp();
             UpdateGraphViewIfActive();
         }
 
@@ -205,7 +207,7 @@ namespace Project_Codebase_Overview
             if (selectedItem.GetType() == typeof(PCOFolder))
             {
                 Debug.WriteLine("this is folder");
-                viewModel.NavigateNewRoot((PCOFolder)selectedItem);
+                ViewModel.NavigateNewRoot((PCOFolder)selectedItem);
             }
             else
             {
@@ -242,7 +244,7 @@ namespace Project_Codebase_Overview
                 string rootpath = PCOState.GetInstance().GetExplorerState().GetRootPath();
                 if (selectedFolder.Path.StartsWith(rootpath))
                 {
-                    viewModel.NavigateToPath(selectedFolder.Path);
+                    ViewModel.NavigateToPath(selectedFolder.Path);
                 }
             }
             catch (Exception ex)
@@ -315,7 +317,7 @@ namespace Project_Codebase_Overview
 
                 if (clickedItem.ExplorerItem == null) return;
                 
-                viewModel.SelectedGraphItem = clickedItem.ExplorerItem;
+                ViewModel.SelectedGraphItem = clickedItem.ExplorerItem;
 
                 if (e.GetCurrentPoint((UIElement)sender).Properties.IsRightButtonPressed)
                 {
@@ -328,7 +330,7 @@ namespace Project_Codebase_Overview
                     {
                         if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
                         {
-                            viewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
+                            ViewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
                             GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
                         }
                         else
