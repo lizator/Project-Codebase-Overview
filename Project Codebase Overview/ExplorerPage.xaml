@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Project_Codebase_Overview.FileExplorerView"
+    xmlns:local1="using:Project_Codebase_Overview.DataCollection.Model"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:treeGrid="using:Syncfusion.UI.Xaml.TreeGrid"
@@ -128,11 +129,7 @@
                 <Image x:Name="UpImage" Opacity="0.3" ImageFailed="ImageFailed" Style="{StaticResource ToolImage}" 
                    Source="Assets/ArrowUp.png"/>
             </Button>
-            <Button Click="PathClick"  Background="Transparent" BorderThickness="1" BorderBrush="DarkGray" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="6" CornerRadius="0"  HorizontalContentAlignment="Left">
-                <TextBlock HorizontalAlignment="Left" 
-                       VerticalAlignment="Center"
-                       Text="{Binding CurrentRootPath, Mode=OneWay}" TextTrimming="CharacterEllipsis"></TextBlock>
-            </Button>
+            <ContentControl x:Name="PathBreadCrumbBar" Grid.Column="6" VerticalAlignment="Center" Margin="10,0,10,0" Content="{Binding PathBreadcrumbBar}"/>
             <Button x:Name="ViewSwitch" Click="GraphExplorerSwitch" Grid.Column="7">
                 Graph overview
             </Button>

@@ -1,4 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using LibGit2Sharp;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Markup;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.State;
@@ -7,9 +12,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Project_Codebase_Overview.FileExplorerView
 {
@@ -28,11 +36,15 @@ namespace Project_Codebase_Overview.FileExplorerView
 
         public NavigationButtonValues navButtonValues = new NavigationButtonValues();
         
-        
         public ExplorerViewModel()
         {
 
         }
+
+        private BreadcrumbBar _pathBreadcrumbBar;
+        public BreadcrumbBar PathBreadcrumbBar { get => _pathBreadcrumbBar; set => SetProperty(ref _pathBreadcrumbBar, value); }
+
+        public ObservableCollection<PCOFolder> BreadcrumbBarFolderList = new ObservableCollection<PCOFolder>();
 
         private ObservableCollection<ExplorerItem> _explorerItems;
         private string currentRootPath;
@@ -64,18 +76,21 @@ namespace Project_Codebase_Overview.FileExplorerView
             PCOState.GetInstance().GetExplorerState().AddFolderHistory(newFolder);
             SetExplorerItems(newFolder);
             CheckNavigationOptions();
+            UpdateBreadcrumbBar();
         }
 
         public void NavigateBack()
         {
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetBackHistoryFolder());
             CheckNavigationOptions();
+            UpdateBreadcrumbBar();
         }
 
         public void NavigateForward()
         {
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetForwardHistoryFolder());
             CheckNavigationOptions();
+            UpdateBreadcrumbBar();
         }
 
         public void NavigateUp()
@@ -85,6 +100,7 @@ namespace Project_Codebase_Overview.FileExplorerView
                 NavigateNewRoot(viewRootFolder.Parent);
             }
             CheckNavigationOptions();
+            UpdateBreadcrumbBar();
         }
 
         internal void NavigateToPath(string path)
@@ -98,6 +114,34 @@ namespace Project_Codebase_Overview.FileExplorerView
             navButtonValues.NavigateBackAvailable = PCOState.GetInstance().GetExplorerState().IsNavigateBackAvailable();
             navButtonValues.NavigateForwardAvailable = PCOState.GetInstance().GetExplorerState().IsNavigateForwardAvailable();
         }
+
+        public void UpdateBreadcrumbBar()
+        {
+            BreadcrumbBarFolderList.Clear();
+            var currentFolder = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder();
+            var stack = new Stack<PCOFolder>();
+            do
+            {
+                stack.Push(currentFolder);
+                currentFolder = currentFolder.Parent;
+            } while (currentFolder != null);
+            while (stack.Count > 0)
+            {
+                BreadcrumbBarFolderList.Add(stack.Pop());
+            }
+
+            var bar = new BreadcrumbBar();
+            bar.ItemsSource = BreadcrumbBarFolderList.Select(x => x.Name).ToArray();
+            bar.ItemClicked += PathBreadcrumbBar_ItemClicked;
+            PathBreadcrumbBar = bar;
+
+        }
+
+        private void PathBreadcrumbBar_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+        {
+            NavigateNewRoot(BreadcrumbBarFolderList[args.Index]);
+        }
+
     }
     public class NavigationButtonValues : ObservableObject
     {
