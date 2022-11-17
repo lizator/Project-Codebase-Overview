@@ -54,6 +54,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 foreach (var commit in groupedComm)
                 {
+                    if (!PCOState.GetInstance().GetSettingsState().IsDateWithinCutOff(commit.GetDate()))
+                    {
+                        continue;
+                    }
                     var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
                     this.GraphModel.LinesAfterDecay += linesAfterDecay;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();

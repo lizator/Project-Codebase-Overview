@@ -12,20 +12,60 @@ namespace Project_Codebase_Overview.State
     {
         
         public PCOExplorerMode CurrentMode;
-        public bool IsDecayActive = false;
-        public bool IsFilesVisibile = true;
+        public bool IsDecayActive;
+        public bool IsFilesVisibile;
         
         public int DecayDropOffInteval;
         public int DecayPercentage;
         public DecayTimeUnit DecayTimeUnit;
 
+        public CutOffSelectionUnit CutOffSelectionUnit;
+
         public SettingsState()
         {
             CurrentMode = PCOExplorerMode.USER;
             IsDecayActive = false;
+            IsFilesVisibile = true;
             DecayDropOffInteval = 0;
             DecayPercentage = 0;
             DecayTimeUnit = DecayTimeUnit.DAY;
+            CutOffSelectionUnit = CutOffSelectionUnit.ALL_TIME;
+        }
+
+        public bool IsDateWithinCutOff(DateTime commitDate)
+        {
+            if (CutOffSelectionUnit == CutOffSelectionUnit.ALL_TIME)
+            {
+                return true;
+            }
+
+            var currDate = DateTime.Now;
+
+            var diff = (int)(currDate - commitDate).TotalDays;
+
+            int cutOffInDays;
+            switch (CutOffSelectionUnit)
+            {
+                case CutOffSelectionUnit.SIX_MONTHS:
+                    cutOffInDays = 6*30;
+                    break;
+                case CutOffSelectionUnit.ONE_YEAR:
+                    cutOffInDays = 365;
+                    break;
+                case CutOffSelectionUnit.TWO_YEARS:
+                    cutOffInDays = 2*365;
+                    break;
+                case CutOffSelectionUnit.THREE_YEARS:
+                    cutOffInDays = 3*365;
+                    break;
+                case CutOffSelectionUnit.FIVE_YEARS:
+                    cutOffInDays = 5*365;
+                    break;
+                default:
+                    throw new Exception("CutOffSelection not chosen");
+            }
+
+            return diff <= cutOffInDays;
         }
 
         public double CalculateLinesAfterDecay(int lineCount, DateTime commitDate)

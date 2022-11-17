@@ -38,7 +38,6 @@ namespace Project_Codebase_Overview
     public sealed partial class SettingsPage : Page
     {
         ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
-        ObservableCollection<string> DataSelectionOptions = new ObservableCollection<string>();
         private bool IsExpanded = true;
         private bool InitialOpenDone = false;
 
@@ -47,12 +46,6 @@ namespace Project_Codebase_Overview
         {
             this.InitializeComponent();
 
-            DataSelectionOptions.Add("All time");
-            DataSelectionOptions.Add("6 months");
-            DataSelectionOptions.Add("1 year");
-            DataSelectionOptions.Add("2 years");
-            DataSelectionOptions.Add("3 years");
-            DataSelectionOptions.Add("5 years");
 
             DecayCheckBox.IsChecked = true;
 
@@ -76,6 +69,9 @@ namespace Project_Codebase_Overview
         private void LoadSettingsFromState()
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
+
+            CutOffSelectionComboBox.SelectedIndex = ((int)settingsState.CutOffSelectionUnit)-1;
+
             DecayCheckBox.IsChecked = settingsState.IsDecayActive;
 
             DecayTimerNumberBox.Value = settingsState.DecayDropOffInteval;
@@ -101,11 +97,14 @@ namespace Project_Codebase_Overview
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
 
+            var selectedCutOff = CutOffSelectionComboBox.SelectedItem != null ? CutOffSelectionComboBox.SelectedIndex + 1 : 1;
+            settingsState.CutOffSelectionUnit = (CutOffSelectionUnit)selectedCutOff;
+
             settingsState.IsDecayActive = DecayCheckBox.IsChecked ?? false;
 
             settingsState.DecayDropOffInteval = ((int?)DecayTimerNumberBox.Value) ?? 0;
 
-            var selected = DecayTimerComboBox.SelectedItem != null ? DecayTimerComboBox.SelectedIndex + 1 : 0;
+            var selected = DecayTimerComboBox.SelectedItem != null ? DecayTimerComboBox.SelectedIndex + 1 : 1;
             settingsState.DecayTimeUnit = (DecayTimeUnit) selected;
 
             settingsState.DecayPercentage = ((int?)PercentageNumberBox.Value) ?? 0;

@@ -84,8 +84,15 @@
             <!-- Explorer Settings -->
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
 
-            <TextBlock Grid.Row="4" Grid.Column="0" Text="Data selection"  VerticalAlignment="Center" />
-            <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{x:Bind DataSelectionOptions}" SelectedIndex="0"  VerticalAlignment="Center" HorizontalAlignment="Right"/> <!-- diplaymemberpath and selectedmemberpath when objectified!-->
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Cut Off selection"  VerticalAlignment="Center" />
+            <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="4" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <x:String>All time</x:String>
+                <x:String>6 months</x:String>
+                <x:String>1 year</x:String>
+                <x:String>2 years</x:String>
+                <x:String>3 years</x:String>
+                <x:String>5 years</x:String>
+            </ComboBox>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
             <CheckBox Grid.Row="5" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
