@@ -94,9 +94,9 @@
                 <!-- Visibility dependent-->
                 <TextBlock Grid.Row="6" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
                 <Grid Grid.Row="6" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <editors:SfNumberBox Grid.Column="0" x:Name="DecayTimerNumberBox" ValueChanged="DecayTimerNumberChanged" Width="50" MinWidth="1"
+                    <editors:SfNumberBox Grid.Column="0" x:Name="DecayTimerNumberBox"  Width="50" MinWidth="1"
                                          Maximum="99" Minimum="0" VerticalAlignment="Center" HorizontalContentAlignment="Right" CustomFormat="0" ShowClearButton="False"/>
-                    <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" SelectionChanged="DecayTimerSelectionChanged" Width="100"  VerticalAlignment="Center" PlaceholderText="Select">
+                    <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" Width="100"  VerticalAlignment="Center" PlaceholderText="Select">
                         <x:String>Days</x:String>
                         <x:String>Weeks</x:String>
                         <x:String>Months</x:String>
@@ -106,7 +106,7 @@
 
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
                 <Grid x:Name="DropOffNumberBox" Grid.Row="7" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
-                    <editors:SfNumberBox Grid.Column="0" Maximum="99" Minimum="0" ValueChanged="DecayDropOffChanged" CustomFormat="0" HorizontalContentAlignment="Right"
+                    <editors:SfNumberBox Grid.Column="0" Maximum="99" Minimum="0" CustomFormat="0" HorizontalContentAlignment="Right"
                                          Visibility="Visible" Width="35" x:Name="PercentageNumberBox" HorizontalAlignment="Right"  VerticalAlignment="Center" ShowClearButton="False"/>
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>

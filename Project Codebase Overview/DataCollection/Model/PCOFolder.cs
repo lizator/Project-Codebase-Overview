@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
@@ -17,6 +18,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     public class PCOFolder : ExplorerItem, INotifyCollectionChanged
     {
         public Dictionary<string, ExplorerItem> Children { get; } // <childname, childobject>
+        public Dictionary<string, ExplorerItem> ViewChildren { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -25,6 +27,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.Name = name;
             this.Parent = parent;
             this.Children = new Dictionary<string, ExplorerItem>();
+            this.ViewChildren = new Dictionary<string, ExplorerItem>();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = name;
         }
@@ -40,6 +43,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
+            this.ViewChildren.Clear();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = Name;
             foreach (var child in Children)
@@ -48,6 +52,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
                 this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
                 this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
+                if (PCOState.GetInstance().GetSettingsState().IsFilesVisibile || child.Value.GetType() == typeof(PCOFolder))
+                {
+                    ViewChildren.Add(child.Key, child.Value);
+                }
             }
             this.GraphModel.UpdateSuggestedOwner();
             this.GenerateBarGraph();
@@ -69,6 +77,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private List<ExplorerItem> GetSortedChildren()
         {
             var x = this.Children.Values.ToArray();
+            Array.Sort(x);
+            return x.ToList();
+        }
+
+        public List<ExplorerItem> SortedViewChildren { get => GetSortedViewChildren(); }
+
+        private List<ExplorerItem> GetSortedViewChildren()
+        {
+            var x = this.ViewChildren.Values.ToArray();
             Array.Sort(x);
             return x.ToList();
         }

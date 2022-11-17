@@ -12,7 +12,8 @@ namespace Project_Codebase_Overview.State
     {
         
         public PCOExplorerMode CurrentMode;
-        public bool IsDecayActive;
+        public bool IsDecayActive = false;
+        public bool IsFilesVisibile = true;
         
         public int DecayDropOffInteval;
         public int DecayPercentage;

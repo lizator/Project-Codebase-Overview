@@ -51,7 +51,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
             this.ExplorerItems.Clear();
             var explorerItems = new List<ExplorerItem>();
-            foreach (var item in root.SortedChildren)
+            foreach (var item in root.SortedViewChildren)
             {
                 this.ExplorerItems.Add(item);
             }

@@ -194,7 +194,7 @@
 
         <!--Explorer view active-->
         <treeGrid:SfTreeGrid x:Name="rootTreeGrid"
-                                ChildPropertyName="SortedChildren"
+                                ChildPropertyName="SortedViewChildren"
                                 ItemsSource="{Binding ExplorerItems, Mode=OneWay}"
                                 ShowRowHeader="True"
                                 Grid.Row="1"

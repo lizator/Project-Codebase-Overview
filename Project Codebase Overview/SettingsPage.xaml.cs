@@ -88,6 +88,7 @@ namespace Project_Codebase_Overview
             }
             PercentageNumberBox.Value = settingsState.DecayPercentage;
 
+            ShowFilesCheckBox.IsChecked = settingsState.IsFilesVisibile;
 
         }
 
@@ -108,6 +109,8 @@ namespace Project_Codebase_Overview
             settingsState.DecayTimeUnit = (DecayTimeUnit) selected;
 
             settingsState.DecayPercentage = ((int?)PercentageNumberBox.Value) ?? 0;
+
+            settingsState.IsFilesVisibile = ShowFilesCheckBox.IsChecked ?? true;
 
             LoadSettingsFromState();
 
@@ -143,21 +146,6 @@ namespace Project_Codebase_Overview
         private void ShowFilesUnchecked(object sender, RoutedEventArgs e)
         {
             ShowFilesCheckBox.Content = "Disabled";
-        }
-
-        private void DecayTimerNumberChanged(object sender, ValueChangedEventArgs e)
-        {
-
-        }
-
-        private void DecayTimerSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void DecayDropOffChanged(object sender, ValueChangedEventArgs args)
-        {
-
         }
 
         private void ExpanderClick(object sender, PointerRoutedEventArgs e)
