@@ -27,6 +27,7 @@ using Windows.UI.Core;
 using AppWindow = Microsoft.UI.Windowing.AppWindow;
 using Windows.System;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Threading.Tasks;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -82,6 +83,14 @@ namespace Project_Codebase_Overview
             {
                 controlKeyDown = true;
             }
+        }
+
+        public async void ShowToast(string text)
+        {
+            ToastHolder.Subtitle = text;
+            ToastHolder.IsOpen = true;
+            await Task.Delay(2000);
+            ToastHolder.IsOpen = false;
         }
     }
 }

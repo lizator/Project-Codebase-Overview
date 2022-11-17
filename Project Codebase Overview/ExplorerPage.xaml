@@ -82,7 +82,7 @@
         <local:ExplorerViewModel/>
     </Page.DataContext>
 
-
+    
 
     <Grid HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>

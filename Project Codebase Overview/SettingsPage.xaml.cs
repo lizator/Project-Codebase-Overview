@@ -215,19 +215,19 @@ namespace Project_Codebase_Overview
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
                 if (status == FileUpdateStatus.Complete)
                 {
-                    outputText = "File " + file.Name + " was saved.";
+                    outputText = "Saved file: " + file.Name;
                 }
                 else
                 {
-                    outputText = "File " + file.Name + " couldn't be saved.";
+                    outputText = "An error occurred While saving file: " + file.Name;
                 }
             }
             else
             {
-                outputText = "Operation cancelled.";
+                outputText = "Save cancelled.";
             }
             Debug.WriteLine(outputText);
-            await DialogHandler.ShowOkDialog("Save", outputText, XamlRoot);
+            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast(outputText);
         }
 
         private async void LoadClick(object sender, RoutedEventArgs e)
@@ -247,6 +247,8 @@ namespace Project_Codebase_Overview
                 return;
             }
             PCOState.GetInstance().LoadFile(file);
+
+            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast("Loaded file: " + file.Name);
         }
     }
 }
