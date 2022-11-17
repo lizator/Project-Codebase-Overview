@@ -61,7 +61,7 @@ namespace Project_Codebase_Overview.Dialogs
             Teams = new ObservableCollection<PCOTeam>();
             LocalObservables = new Observables();
 
-            NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black, null);
+            NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black);
             
             var manager = PCOState.GetInstance().GetContributorState();
             CurrentAuthor = manager.GetSelectedAuthor();

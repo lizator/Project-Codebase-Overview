@@ -11,7 +11,7 @@ namespace Project_Codebase_Overview.SaveState.Model
     {
         public List<SerializerAuthor> Authors { get; set; }
         public List<SerializerTeam> Teams { get; set; }
-        public SerializerExplorerItem RootFolder { get; set; }
+        public SerializerFolder RootFolder { get; set; }
         public SerializerSettings Settings { get; set; }
 
         public string RepositoryRootPath { get; set; }

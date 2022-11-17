@@ -9,6 +9,7 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
 namespace Project_Codebase_Overview.ContributorManagement
 {
@@ -30,7 +31,7 @@ namespace Project_Codebase_Overview.ContributorManagement
             Authors = new Dictionary<string, Author>();
             FileCreators = new Dictionary<string, Author>();
             Teams = new Dictionary<string, PCOTeam>();
-            NoTeam = new PCOTeam("No Team", PCOColorPicker.Black, null);
+            NoTeam = new PCOTeam("No Team", PCOColorPicker.Black);
         }
 
         public PCOTeam GetNoTeam() { return NoTeam; }
@@ -53,11 +54,11 @@ namespace Project_Codebase_Overview.ContributorManagement
             return null;
         }
 
-        private void AddAuthor(string email, string name)
+        private void AddAuthor(string email, string name, Color? color)
         {
             Author author = new Author(email, name);
             var colorPicker = PCOColorPicker.GetInstance();
-            author.Color = colorPicker.AssignAuthorColor();
+            author.Color = color ?? colorPicker.AssignAuthorColor();
             this.Authors.Add(email, author);
         }
 
@@ -74,14 +75,14 @@ namespace Project_Codebase_Overview.ContributorManagement
             return null;
         }
 
-        public void InitializeAuthor(string email, string name)
+        public void InitializeAuthor(string email, string name, Color? color)
         {
             if (this.Authors.ContainsKey(email))
             {
                 this.Authors[email].AddAlias(name);
             } else
             {
-                this.AddAuthor(email, name);
+                this.AddAuthor(email, name, color);
             }
         }
 

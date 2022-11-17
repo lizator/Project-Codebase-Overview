@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project_Codebase_Overview.SaveState.Model
 {
-    public class SerializerExplorerItem
+    public abstract class SerializerExplorerItem
     {
         public string Name { get; set; }
         public string SelectedAuthorEmail { get; set; }

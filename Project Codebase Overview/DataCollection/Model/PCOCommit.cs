@@ -17,7 +17,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private Author Author;
         private DateTime CommitDate;
 
-        public PCOCommit(string email, string name, DateTime commitDate)
+        public PCOCommit(string email, DateTime commitDate)
         {
             this.codeLines = 0;
             this.commentLines = 0;

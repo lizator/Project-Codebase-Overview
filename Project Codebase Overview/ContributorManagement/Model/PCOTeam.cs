@@ -27,11 +27,11 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         
         public ObservableCollection<Author> Members { get; set; }
 
-        public PCOTeam(string name, Color color, List<Author> members)
+        public PCOTeam(string name, Color color)
         {
             Name = name;
             Color = color;
-            Members = new ObservableCollection<Author>(members ?? new List<Author>());
+            Members = new ObservableCollection<Author>();
             UpdateMemberString();
         }
 

@@ -17,7 +17,7 @@ namespace Project_Codebase_Overview.FileExplorerView
         private PCOFolder RootFolder;
         private string RootPath;
         private List<PCOFolder> FolderHistory = new List<PCOFolder>();
-        private int CurrentRootIndex;
+        private int CurrentRootIndex = 0;
         private static readonly int MAX_HISTORY_SIZE = 20;
         public delegate void NotifyReload();
         public event NotifyReload NotifyReloadEvent;
@@ -26,6 +26,18 @@ namespace Project_Codebase_Overview.FileExplorerView
         {
 
         }
+
+        public void ResetState(PCOFolder newRoot, string newRootPath)
+        {
+            this.RootPath = newRootPath;
+            this.RootFolder = newRoot;
+            ResetHistory(newRoot);
+            ReloadExplorer();
+            
+            //TODO: make som git collector stuff to get new changes made since last save!
+
+        }
+
         public void AddFolderHistory(PCOFolder addedFolder)
         {
             //remove forwardhistory

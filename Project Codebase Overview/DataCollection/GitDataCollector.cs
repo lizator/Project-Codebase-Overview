@@ -202,7 +202,7 @@ namespace Project_Codebase_Overview.DataCollection
                     if (!commits.ContainsKey(key))
                     {
                         DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                        commits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
+                        commits.Add(key, new PCOCommit(email, date));
                     }
                      commits[key].AddLine(PCOCommit.LineType.NORMAL);
                     
@@ -281,7 +281,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[1].Value;
                     var email = match.Groups[2].Value;
 
-                    contributorState.InitializeAuthor(email, name);
+                    contributorState.InitializeAuthor(email, name, null);
                 }
             };
 
@@ -323,7 +323,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[3].Value;
                     currentEmail = match.Groups[2].Value;
 
-                    contributorState.InitializeAuthor(currentEmail, name);
+                    contributorState.InitializeAuthor(currentEmail, name, null);
                 } else if (line.Trim().Length > 0)
                 {
                     var split = line.Split('|');
@@ -387,13 +387,14 @@ namespace Project_Codebase_Overview.DataCollection
         }
         public static void AddFileCommitsAlt(PCOFile file, string filePath)
         {
+            //Depricated...
             var blameHunkGroups = PCOState.GetInstance().TempGitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
 
             foreach (var group in blameHunkGroups)
             {
                 int commitLineCount = group.Sum(hunk => hunk.LineCount);
                 var finalSignature = group.First().FinalSignature;
-                var commit = new PCOCommit(finalSignature.Email, finalSignature.Name, finalSignature.When.Date);
+                var commit = new PCOCommit(finalSignature.Email, finalSignature.When.Date);
                 commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
                 file.commits.Add(commit);
             }
@@ -645,7 +646,7 @@ namespace Project_Codebase_Overview.DataCollection
                             if (!CurrentCommits.ContainsKey(key))
                             {
                                 DateTime date = DateTime.ParseExact(datestring, "yyyy-MM-dd", provider);
-                                CurrentCommits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
+                                CurrentCommits.Add(key, new PCOCommit(email, date));
                             }
                             CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 

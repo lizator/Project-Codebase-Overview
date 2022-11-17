@@ -1,6 +1,8 @@
-﻿using Project_Codebase_Overview.ContributorManagement;
+﻿using Microsoft.UI.Xaml.Controls;
+using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
+using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState.Model;
 using Project_Codebase_Overview.State;
 using System;
@@ -45,6 +47,7 @@ namespace Project_Codebase_Overview.SaveState
                 serialAuthor.Name = pCOAuthor.Name;
                 serialAuthor.Email = pCOAuthor.Email;
                 serialAuthor.Color= pCOAuthor.Color;
+                serialAuthor.Aliases = pCOAuthor.Aliases.ToList(); 
 
                 serialAuthor.SubAuthors = new List<SerializerAuthor>();
                 foreach(var pCOSubAuthor in pCOAuthor.SubAuthors)
@@ -53,6 +56,7 @@ namespace Project_Codebase_Overview.SaveState
                     serialSubAuthor.Name = pCOSubAuthor.Name;
                     serialSubAuthor.Email = pCOSubAuthor.Email;
                     serialSubAuthor.Color = pCOSubAuthor.Color;
+                    serialSubAuthor.Aliases = pCOSubAuthor.Aliases.ToList();
 
                     serialAuthor.SubAuthors.Add(serialSubAuthor);
                 }
@@ -103,22 +107,21 @@ namespace Project_Codebase_Overview.SaveState
             {
                 if(child.GetType() == typeof(PCOFolder))
                 {
-                    serialFolder.Children.Add(GetSerializerRoot(child as PCOFolder));
+                    serialFolder.SubFolders.Add(GetSerializerRoot(child as PCOFolder));
                 }
                 else
                 {
-                    serialFolder.Children.Add(GetSerializerFile(child as PCOFile));
+                    serialFolder.SubFiles.Add(GetSerializerFile(child as PCOFile));
                 }
             }
             
             return serialFolder;
-
         }
         private static SerializerFile GetSerializerFile(PCOFile pCOFile)
         {
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
-            serialFile.CreatorEmail = pCOFile.Creator.Name;
+            serialFile.CreatorEmail = pCOFile.Creator.Email;
             
             foreach(var commit in pCOFile.commits)
             {
@@ -130,6 +133,113 @@ namespace Project_Codebase_Overview.SaveState
             }
 
             return serialFile;
+        }
+
+        public static void SetPCOStateFromInitializerState(SerializerState serializerState)
+        {
+            PCOState.GetInstance().ClearState();
+
+            SetPCOAuthors(serializerState);
+            SetPCOTeams(serializerState);
+            SetPCOSettings(serializerState.Settings);
+
+            PCOState.GetInstance().GetExplorerState().ResetState( GetPCORoot(serializerState.RootFolder, null), serializerState.RepositoryRootPath);
+            
+        }
+
+        private static void SetPCOAuthors(SerializerState serializerState)
+        {
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            foreach(var serialAuthor in serializerState.Authors)
+            {
+                //create and get author
+                contributorState.InitializeAuthor(serialAuthor.Email, serialAuthor.Name, serialAuthor.Color);
+                var pcoAuthor = contributorState.GetAuthor(serialAuthor.Email);
+                //Add aliases
+                foreach(var alias in serialAuthor.Aliases)
+                {
+                    pcoAuthor.AddAlias(alias);
+                }
+                //add and connect subauthors
+                foreach(var serialSubAuthor in serialAuthor.SubAuthors)
+                {
+                    contributorState.InitializeAuthor(serialSubAuthor.Email, serialSubAuthor.Name, serialSubAuthor.Color);
+                    var subAuthor = contributorState.GetAuthor(serialSubAuthor.Email);
+                    pcoAuthor.ConnectAuthor(subAuthor);
+                }
+            }
+        }
+
+        private static void SetPCOTeams(SerializerState serializerState)
+        {
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            foreach(var serialTeam in serializerState.Teams)
+            {
+                PCOTeam pcoTeam = new PCOTeam(serialTeam.Name, serialTeam.Color);
+                
+                foreach(var memberEmail in serialTeam.MemberEmails)
+                {
+                    pcoTeam.ConnectMember(contributorState.GetAuthor(memberEmail));
+                }
+                contributorState.AddTeam(pcoTeam);
+            }
+        }
+
+        private static void SetPCOSettings(SerializerSettings serialSettings)
+        {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
+            settingsState.IsDecayActive = serialSettings.IsDecayActive;
+            settingsState.DecayTimeUnit = serialSettings.DecayTimeUnit;
+            settingsState.DecayDropOffInteval = serialSettings.DecayDropOffInteval;
+            settingsState.DecayPercentage = serialSettings.DecayPercentage;
+        }
+
+        private static PCOFolder GetPCORoot(SerializerFolder serialFolder, PCOFolder parent)
+        {
+            
+            //create the folder
+            PCOFolder pCOFolder = new PCOFolder(serialFolder.Name, parent);
+            //set owner
+            if (serialFolder.SelectedAuthorEmail != null)
+            {
+                pCOFolder.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+            }
+            else if(serialFolder.SelectedTeamName != null)
+            {
+                pCOFolder.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+            }
+            //add subfolders to the folder
+            foreach (var subFolder in serialFolder.SubFolders)
+            {
+                pCOFolder.AddChild(GetPCORoot(subFolder, pCOFolder));
+            }
+            
+            //add subfiles to the folder
+            foreach(var subFile in serialFolder.SubFiles)
+            {
+                PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
+
+                pCOFile.Creator = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail);
+                if (serialFolder.SelectedAuthorEmail != null)
+                {
+                    pCOFile.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                }
+                else if (serialFolder.SelectedTeamName != null)
+                {
+                    pCOFile.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                }
+                foreach (var serialCommit in subFile.Commits)
+                {
+                    PCOCommit pCOCommit = new PCOCommit(serialCommit.AuthorEmail, serialCommit.Date);
+                    pCOCommit.AddLine(PCOCommit.LineType.NORMAL, serialCommit.LineCount);
+                    pCOFile.commits.Add(pCOCommit);
+                }
+                pCOFolder.AddChild(pCOFile);
+            }
+            
+            return pCOFolder;
         }
     }
 }

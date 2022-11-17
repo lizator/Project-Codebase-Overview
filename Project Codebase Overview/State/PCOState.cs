@@ -78,7 +78,7 @@ namespace Project_Codebase_Overview.State
 
         public void ClearState()
         {
-            ExplorerState = new ExplorerState();
+            //TODO: make a reset state for all the other shit (aldready done for explorerState
             LoadingState = new LoadingState();
             TestState = new TestState();
             SettingsState = new SettingsState();
@@ -109,14 +109,10 @@ namespace Project_Codebase_Overview.State
         {
             var path =  file.Path;
             var jsonString = File.ReadAllText(path);
-            PCOState loadedState = JsonConvert.DeserializeObject<PCOState>(jsonString);
+            SerializerState serializerState = JsonConvert.DeserializeObject<SerializerState>(jsonString);
 
-            
-            this.ExplorerState = loadedState.ExplorerState;
-            this.LoadingState = loadedState.LoadingState;
-            this.TestState = loadedState.TestState;
-            this.SettingsState = loadedState.SettingsState;
-            this.ContributorState = loadedState.ContributorState;
+            SerializerHelper.SetPCOStateFromInitializerState(serializerState);
+  
         }
     }
 }

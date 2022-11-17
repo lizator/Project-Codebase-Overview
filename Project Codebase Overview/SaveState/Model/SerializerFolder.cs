@@ -8,10 +8,13 @@ namespace Project_Codebase_Overview.SaveState.Model
 {
     public class SerializerFolder : SerializerExplorerItem
     {
-        public List<SerializerExplorerItem> Children { get; set; }
+        public List<SerializerFile> SubFiles { get; set; }
+
+        public List<SerializerFolder> SubFolders { get; set; }  
         public SerializerFolder()
         {
-            Children = new List<SerializerExplorerItem>();
+            SubFiles = new List<SerializerFile>();
+            SubFolders = new List<SerializerFolder>();
         }
     }
 }
