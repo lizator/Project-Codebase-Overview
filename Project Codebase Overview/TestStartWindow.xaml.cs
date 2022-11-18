@@ -235,6 +235,41 @@ namespace Project_Codebase_Overview
 
             NavigateToLoadingPage();
         }
+        private async void FolderTestClick(object sender, RoutedEventArgs e)
+        {
+            var root = new PCOFolder("root", null);
+            var in1 = new PCOFolder("in1", root);
+            var in2 = new PCOFolder("in2", in1);
+            var file = new PCOFile("file.txt", in2);
+            in2.AddChild(file);
+            in1.AddChild(in2);
+            root.AddChild(in1);
+            if (root.IsPathInitialized("in1/in2/file.txt"))
+            {
+                Debug.WriteLine("works");
+            } else
+            {
+                Debug.WriteLine("Does not");
+            }
+
+            if (!root.IsPathInitialized("in1/in2/file2.txt"))
+            {
+                Debug.WriteLine("works");
+            }
+            else
+            {
+                Debug.WriteLine("Does not");
+            }
+
+            if (!root.IsPathInitialized("in1/in3/file.txt"))
+            {
+                Debug.WriteLine("works");
+            }
+            else
+            {
+                Debug.WriteLine("Does not");
+            }
+        }
 
         private async void OpenManagementPage(object sender, RoutedEventArgs e)
         {

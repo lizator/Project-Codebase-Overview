@@ -131,5 +131,23 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             }
         }
+
+        public bool IsPathInitialized(string path)
+        {
+            var split = path.Split('/');
+            if (split.Length == 1)
+            {
+                return this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFile);
+            } else
+            {
+                if (this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFolder))
+                {
+                    var folder = (PCOFolder)this.Children[split[0]];
+                    var newPath = path.Substring(path.IndexOf('/') + 1);
+                    return folder.IsPathInitialized(newPath);
+                }
+                return false;
+            }
+        }
     }
 }
