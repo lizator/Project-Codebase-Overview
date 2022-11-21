@@ -88,7 +88,7 @@ namespace Project_Codebase_Overview.SaveState
             SerializerFolder serialFolder = new SerializerFolder();
             serialFolder.Name = pCOFolder.Name;
 
-            var selectedOwner = pCOFolder.GraphModel.SelectedOwner;
+            var selectedOwner = pCOFolder.SelectedOwner;
             if(selectedOwner != null)
             {
 
@@ -210,11 +210,11 @@ namespace Project_Codebase_Overview.SaveState
             //set owner
             if (serialFolder.SelectedAuthorEmail != null)
             {
-                pCOFolder.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
             }
             else if(serialFolder.SelectedTeamName != null)
             {
-                pCOFolder.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
             }
             //add subfolders to the folder
             foreach (var subFolder in serialFolder.SubFolders)
@@ -230,11 +230,11 @@ namespace Project_Codebase_Overview.SaveState
                 pCOFile.Creator = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail);
                 if (serialFolder.SelectedAuthorEmail != null)
                 {
-                    pCOFile.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
                 }
                 else if (serialFolder.SelectedTeamName != null)
                 {
-                    pCOFile.GraphModel.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
                 }
                 foreach (var serialCommit in subFile.Commits)
                 {

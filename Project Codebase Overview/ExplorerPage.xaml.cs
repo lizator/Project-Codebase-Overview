@@ -257,13 +257,13 @@ namespace Project_Codebase_Overview
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
         {
             var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
-            var previousOwner = item.GraphModel.SelectedOwner;
+            var previousOwner = item.SelectedOwner;
             if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
             {
                 ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
                 if(previousOwner != null && !previousOwner.Name.Equals("Unselected"))
                 {
-                    item.GraphModel.SelectedOwner = null;
+                    item.SelectedOwner = null;
                     item.SelectedOwnerColor = null;
                     item.SelectedOwnerName = null;
                     PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, null, item, (SfComboBox) sender));
@@ -275,7 +275,7 @@ namespace Project_Codebase_Overview
             var newOwner = (IOwner)e.AddedItems[0];
             if (!newOwner.Equals(previousOwner))
             {
-                item.GraphModel.SelectedOwner = newOwner;
+                item.SelectedOwner = newOwner;
                 item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
                 item.SelectedOwnerName = null;
                 PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, newOwner, item, (SfComboBox)sender));

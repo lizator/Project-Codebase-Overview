@@ -33,13 +33,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
-        public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.GraphModel.SelectedOwner?.Name ?? "Unselected"); }
+        public string SelectedOwnerName { get => this.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.SelectedOwner?.Name ?? "Unselected"); }
         private string selectedOwnerName;
-        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
+        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
         private SolidColorBrush selectedOwnerColor;
 
         public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
 
+        public IOwner SelectedOwner { get => _selectedOwner; set => SetProperty(ref _selectedOwner, value); }
+        private IOwner _selectedOwner;
         public SfLinearGauge BarGraph
         {
             get => GetBarGraph();

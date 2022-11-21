@@ -33,10 +33,10 @@ namespace Project_Codebase_Overview.DataCollection
                     IOwner selectedOwner = null; 
                     if (folderA.ContainsChild(item))
                     {
-                        selectedOwner = folderA.Children[item.Name].GraphModel.SelectedOwner;
+                        selectedOwner = folderA.Children[item.Name].SelectedOwner;
                         folderA.RemoveChild(item);
                     }
-                    item.GraphModel.SelectedOwner = selectedOwner;
+                    item.SelectedOwner = selectedOwner;
                     item.Parent = folderA;
                     folderA.AddChild(item);
                 } else

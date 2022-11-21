@@ -10,8 +10,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     public class GraphModel
     {
         public IOwner SuggestedOwner;
-        public IOwner SelectedOwner;
-       
+        
         public Dictionary<IOwner, uint> LineDistribution;
         public uint LinesAfterDecay;
         public uint LinesTotal;
@@ -23,7 +22,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.LinesAfterDecay = 0;
             this.LinesTotal = 0;
             SuggestedOwner = null;
-            SelectedOwner = null;
         }
 
         public void AddLineDistributions(Dictionary<IOwner, uint> childLineDistributions)
