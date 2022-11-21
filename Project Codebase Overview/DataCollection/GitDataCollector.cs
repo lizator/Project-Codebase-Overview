@@ -888,6 +888,69 @@ namespace Project_Codebase_Overview.DataCollection
             */
 
         }
+
+
+        public PCOFolder Simple2CollectAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        {
+            RootPath = path;
+            try
+            {
+                GitRepo = new Repository(RootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+
+            //initializeAuthors();
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
+
+            //set loading
+
+            dispatcherQueue?.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+            });
+
+            var stopwatch = new Stopwatch();
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+            var threadDataTemp = new PCOGitThreadData(rootFolder, RootPath, dispatcherQueue);
+
+            stopwatch.Start();
+
+            foreach (string filePath in filePaths)
+            {
+                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
+                threadDataTemp.AddFileCommitsCMD(addedFile, filePath);
+            }
+            threadDataTemp.Invoke();
+
+
+
+            stopwatch.Stop();
+            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
+
+            return rootFolder;
+        }
+
+        
         #endregion
     }
 }
