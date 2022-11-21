@@ -228,13 +228,13 @@ namespace Project_Codebase_Overview.SaveState
                 PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
 
                 pCOFile.Creator = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail);
-                if (serialFolder.SelectedAuthorEmail != null)
+                if (subFile.SelectedAuthorEmail != null)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.SelectedAuthorEmail);
                 }
-                else if (serialFolder.SelectedTeamName != null)
+                else if (subFile.SelectedTeamName != null)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == subFile.SelectedTeamName);
                 }
                 foreach (var serialCommit in subFile.Commits)
                 {
