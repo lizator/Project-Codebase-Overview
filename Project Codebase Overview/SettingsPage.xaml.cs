@@ -72,6 +72,8 @@ namespace Project_Codebase_Overview
 
             CutOffSelectionComboBox.SelectedIndex = ((int)settingsState.CutOffSelectionUnit)-1;
 
+            BranchNameBlock.Text = PCOState.GetInstance().GetBranchName();
+
             DecayCheckBox.IsChecked = settingsState.IsDecayActive;
 
             DecayTimerNumberBox.Value = settingsState.DecayDropOffInteval;
