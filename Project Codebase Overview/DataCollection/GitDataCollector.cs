@@ -59,6 +59,18 @@ namespace Project_Codebase_Overview.DataCollection
             return RootFolder;
 
         }
+        public async Task<PCOFolder> CollectNewData(string path, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA)
+        {
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+            await System.Threading.Tasks.Task.Run(() =>
+            {
+                RootFolder = this.Parallel2GetNewData(path, dispatcherQueue, oldDataRootFolder, lastLoadedCommitSHA);
+            });
+
+            return RootFolder;
+
+        }
 
         public PCOFolder SimpleCollectAllData(string path)
         // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
@@ -478,8 +490,7 @@ namespace Project_Codebase_Overview.DataCollection
             
             return rootFolder;
         }
-
-        public PCOFolder Parallel2GetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, int parallelChunkSetter = 0)
+        public RepositoryStatus GetRepoStatus(string path)
         {
             RootPath = path;
             try
@@ -499,6 +510,176 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
+            return gitStatus;
+        }
+
+        private void InitializeNewAuthorsAndCreators(List<string> changedFilePaths, string lastCommitSha)
+        {
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            var isPathNew = new Dictionary<string, bool>();
+            foreach (var changedPath in changedFilePaths)
+            {
+                isPathNew.Add(changedPath, !RootFolder.IsPathInitialized(changedPath));
+            }
+            var currentEmail = "";
+            var maxFilepathLength = 0;
+            foreach (var path in changedFilePaths)
+            {
+                maxFilepathLength = Math.Max(maxFilepathLength, path.Length);
+            }
+
+
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --pretty=format:\"Commit - %h - %ae - %an\" --stat=" + maxFilepathLength * 2 + "," + maxFilepathLength * 2 + " " + lastCommitSha + "..HEAD");
+
+            // git log --pretty=format:"Commit - %h - %ae - %an" --stat=1000,1000 bdf1db970a616b0bede045a5160f50dcdc2f0fdd..HEAD
+
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = AUTHOR_REGEX_2.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    var name = match.Groups[3].Value;
+                    currentEmail = match.Groups[2].Value;
+
+                    contributorState.InitializeAuthor(currentEmail, name, null);
+                }
+                else if (line.Trim().Length > 0)
+                {
+                    var split = line.Split('|');
+                    if (split.Length == 2)
+                    {
+                        var currPath = split[0].Trim();
+
+                        while (currPath.Contains('{') && currPath.Contains('}') && currPath.Contains("=>"))
+                        {
+                            var firstIndex = currPath.IndexOf('{');
+                            var lastIndex = currPath.IndexOf('}');
+                            var str = currPath.Substring(firstIndex, lastIndex - firstIndex + 1);
+                            var lastStr = str.Split("=>")[1].Trim();
+                            var newSubString = lastStr.Substring(0, lastStr.Length - 1);
+                            currPath = currPath.Replace(str, newSubString);
+                        }
+                        if (isPathNew[currPath])
+                        {
+                            contributorState.UpdateCreator(currPath, currentEmail);
+                        }
+                    }
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+        }
+        public PCOFolder Parallel2GetNewData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA)
+        {
+            /* For loading changes when loading state from save-file. Loads changes since last save. */
+
+            var gitStatus = GetRepoStatus(path);
+
+
+            //Save latest commit sha to state
+            var latestCommitSha = GitRepo.Commits.First().Sha;
+            if (latestCommitSha.Equals(lastLoadedCommitSHA))
+            {
+                return oldDataRootFolder;
+            }
+
+            PCOState.GetInstance().SetLatestCommitSha(latestCommitSha);
+
+            //get filepaths
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git diff --numstat " + lastLoadedCommitSHA + " HEAD");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            List<string> changedFilePaths = new List<string>();
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var regex = new Regex("[0-9]+\t[0-9]+\t(.+)");
+                var match = regex.Match(line);
+               // AUTHOR_REGEX.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    var pathMatch = match.Groups[1].Value;
+                    changedFilePaths.Add(pathMatch);
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            //find files that are new since last load
+            InitializeNewAuthorsAndCreators(changedFilePaths, lastLoadedCommitSHA);
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            //set loading
+            dispatcherQueue?.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(changedFilePaths.Count);
+            });
+
+            var rangePartitioner = Partitioner.Create(0, changedFilePaths.Count(), Math.Max(PARALLEL_CHUNK_SIZE, 1)); //Keep this line after testing is done
+            
+
+            Parallel.ForEach(rangePartitioner,
+                new ParallelOptions() { MaxDegreeOfParallelism = 4 },
+                (range, loop) =>
+                {
+
+                    var threadData = new PCOGitThreadData(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue);
+                    var threadRootFolder = threadData.ThreadRootFolder;
+
+                    for (int i = range.Item1; i < range.Item2; i++)
+                    {
+                        var filePath = changedFilePaths[i];
+                        PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
+
+                        threadData.AddFileCommitsCMD(addedFile, filePath);
+
+                        threadData.ThreadFileCount += 1;
+                    }
+                    threadData.Invoke();
+
+                    lock (RootFolderLock)
+                    {
+                        var finalThreadRootFolder = threadData.ThreadRootFolder;
+                        PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
+                    }
+                });
+
+            var updatedRoot = PCOFolderMergeHelper.MergeFolders(oldDataRootFolder, rootFolder);
+            return updatedRoot;
+        }
+
+        public PCOFolder Parallel2GetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, int parallelChunkSetter = 0)
+        {
+            var gitStatus = GetRepoStatus(path);
 
             //Save latest commit sha to state
             var latestCommit = GitRepo.Commits.First();

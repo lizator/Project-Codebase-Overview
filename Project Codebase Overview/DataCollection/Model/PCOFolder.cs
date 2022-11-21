@@ -66,6 +66,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             Children.Add(child.Name, child);
         }
+
+        public void RemoveChild(ExplorerItem child)
+        {
+            Children.Remove(child.Name);
+        }
+        public bool ContainsChild(ExplorerItem child)
+        {
+            return Children.ContainsKey(child.Name);
+        }
         public void AddChildren(ExplorerItem[] child)
         {
             throw new NotImplementedException();

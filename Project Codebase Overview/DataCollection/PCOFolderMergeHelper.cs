@@ -1,4 +1,5 @@
-﻿using Project_Codebase_Overview.DataCollection.Model;
+﻿using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.DataCollection.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,13 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 if (item is PCOFile)
                 {
+                    IOwner selectedOwner = null; 
+                    if (folderA.ContainsChild(item))
+                    {
+                        selectedOwner = folderA.Children[item.Name].GraphModel.SelectedOwner;
+                        folderA.RemoveChild(item);
+                    }
+                    item.GraphModel.SelectedOwner = selectedOwner;
                     item.Parent = folderA;
                     folderA.AddChild(item);
                 } else

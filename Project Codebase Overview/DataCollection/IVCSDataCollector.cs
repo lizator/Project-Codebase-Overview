@@ -11,5 +11,6 @@ namespace Project_Codebase_Overview.DataCollection
     {
         public Task<PCOFolder> CollectAllData(string path);
 
+        public Task<PCOFolder> CollectNewData(string path, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA);
     }
 }

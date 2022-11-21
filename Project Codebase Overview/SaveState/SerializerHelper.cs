@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState.Model;
@@ -135,7 +136,7 @@ namespace Project_Codebase_Overview.SaveState
             return serialFile;
         }
 
-        public static void SetPCOStateFromInitializerState(SerializerState serializerState)
+        public static async void SetPCOStateFromInitializerState(SerializerState serializerState)
         {
             PCOState.GetInstance().ClearState();
 
@@ -143,7 +144,12 @@ namespace Project_Codebase_Overview.SaveState
             SetPCOTeams(serializerState);
             SetPCOSettings(serializerState.Settings);
 
-            PCOState.GetInstance().GetExplorerState().ResetState( GetPCORoot(serializerState.RootFolder, null), serializerState.RepositoryRootPath);
+            var oldDataRoot = GetPCORoot(serializerState.RootFolder, null);
+            //update data to latest commit
+            GitDataCollector dataCollector = new GitDataCollector();
+            var updatedRoot = await dataCollector.CollectNewData(serializerState.RepositoryRootPath, oldDataRoot, serializerState.LatestCommitSHA);
+
+            PCOState.GetInstance().GetExplorerState().ResetState(updatedRoot, serializerState.RepositoryRootPath);
             
         }
 
