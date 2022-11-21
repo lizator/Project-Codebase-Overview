@@ -395,7 +395,7 @@ namespace Project_Codebase_Overview
             state.GetExplorerState().SetRootPath(path);
 
             stopwatch.Restart();
-            collector.Simple2CollectAllData(path, null);
+            //collector.Simple2CollectAllData(path, null);
             stopwatch.Stop();
             var simple2 = stopwatch.ElapsedMilliseconds;
 
