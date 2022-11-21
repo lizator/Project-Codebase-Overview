@@ -72,7 +72,6 @@ namespace Project_Codebase_Overview.DataCollection
 
         }
 
-
         public RepositoryStatus GetRepoStatus(string path)
         {
             RootPath = path;
@@ -167,6 +166,7 @@ namespace Project_Codebase_Overview.DataCollection
             process.WaitForExit();
 
         }
+
         public PCOFolder Parallel2GetNewData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA)
         {
             /* For loading changes when loading state from save-file. Loads changes since last save. */
@@ -260,8 +260,6 @@ namespace Project_Codebase_Overview.DataCollection
             return updatedRoot;
         }
 
-
-
         private async void initializeAuthorsAndCreators(List<string> filepaths)
         {
             var contributorState = PCOState.GetInstance().GetContributorState();
@@ -322,8 +320,6 @@ namespace Project_Codebase_Overview.DataCollection
             process.WaitForExit();
 
         }
-
-        
 
         public PCOFolder Parallel2GetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, int parallelChunkSetter = 0)
         {
