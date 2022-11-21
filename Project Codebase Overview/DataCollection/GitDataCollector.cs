@@ -332,6 +332,7 @@ namespace Project_Codebase_Overview.DataCollection
             //Save latest commit sha to state
             var latestCommit = GitRepo.Commits.First();
             PCOState.GetInstance().SetLatestCommitSha(latestCommit.Sha);
+            PCOState.GetInstance().SetBranchName(GitRepo.Head.FriendlyName);
 
             //initializeAuthors();
 
@@ -398,6 +399,48 @@ namespace Project_Codebase_Overview.DataCollection
             Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
             
             return rootFolder;
+        }
+
+        public bool DoesBranchContainLastCommit()
+        {
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git branch --contains " + PCOState.GetInstance().GetLatestCommitSha());
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            var containsList = new List<string>();
+            var hasError = false;
+            var errorList = new List<string>();
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                if (line != null)
+                {
+                    if (line.StartsWith('*'))
+                    {
+                        line = line.Substring(1);
+                    }
+                    var name = line.Trim();
+                    containsList.Add(name);
+                }
+            };
+
+            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                errorList.Add(line);
+                hasError = true;
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            return !hasError && containsList.Contains(PCOState.GetInstance().GetBranchName());
         }
 
         private class PCOGitThreadData

@@ -28,11 +28,11 @@ namespace Project_Codebase_Overview.State
         private ContributorState ContributorState;
 
         private static PCOState Instance;
-
+        private string LatestCommitSha;
+        private string BranchName;
         public Repository TempGitRepo;
-        public int mergeCounter;
-        private string latestCommitSha;
-        
+
+
 
         public static PCOState GetInstance()
         {
@@ -88,11 +88,20 @@ namespace Project_Codebase_Overview.State
 
         public void SetLatestCommitSha(string sha)
         {
-            latestCommitSha = sha;
+            LatestCommitSha = sha;
         }
         public string GetLatestCommitSha()
         {
-            return latestCommitSha;
+            return LatestCommitSha;
+        }
+
+        public void SetBranchName(string name)
+        {
+            BranchName = name;
+        }
+        public string GetBranchName()
+        {
+            return BranchName;
         }
         public async Task SaveStateToFile(StorageFile file)
         {
