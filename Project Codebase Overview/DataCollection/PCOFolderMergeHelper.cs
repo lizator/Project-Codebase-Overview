@@ -34,6 +34,7 @@ namespace Project_Codebase_Overview.DataCollection
                     if (folderA.ContainsChild(item))
                     {
                         selectedOwner = folderA.Children[item.Name].SelectedOwner;
+                        ((PCOFile)item).Creator = ((PCOFile)folderA.Children[item.Name]).Creator;
                         folderA.RemoveChild(item);
                     }
                     item.SelectedOwner = selectedOwner;

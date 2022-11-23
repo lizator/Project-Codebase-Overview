@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.State;
 using System;
@@ -36,7 +37,14 @@ namespace Project_Codebase_Overview
             PCOState.GetInstance().GetLoadingState().PropertyChanged += LoadingStatePropertyChanged;
 
             //start load
-            PCOState.GetInstance().GetExplorerState().InitializeRoot();
+            if (PCOState.GetInstance().GetLoadingState().IsLoadingNewState)
+            {
+                PCOState.GetInstance().GetExplorerState().InitializeRoot();
+            }
+            else
+            {
+               PCOState.GetInstance().GetExplorerState().LoadRootFolderChanges(); 
+            }
         }
 
         private void LoadingStatePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

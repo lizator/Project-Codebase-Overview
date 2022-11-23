@@ -127,5 +127,23 @@ namespace Project_Codebase_Overview.Dialogs
         {
             throw new NotImplementedException();
         }
+
+        public static async Task<bool> ShowYesNoDialog(XamlRoot xamlRoot, string title, string description)
+        {
+            ContentDialog dialog = new ContentDialog();
+
+            // XamlRoot must be set in the case of a ContentDialog running in a Desktop app
+            dialog.XamlRoot = xamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = title;
+            dialog.PrimaryButtonText = "Yes";
+            dialog.SecondaryButtonText = "No";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+            dialog.Content = new TextBlock() { Text = description, TextWrapping = TextWrapping.WrapWholeWords};
+
+            var result = await dialog.ShowAsync();
+            return result == ContentDialogResult.Primary;
+        }
+
     }
 }

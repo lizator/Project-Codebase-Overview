@@ -41,12 +41,14 @@ namespace Project_Codebase_Overview.State
         }
         private int _percentageDone;
 
+        public bool IsLoadingNewState; //true if first load of repo, false if loading from saved state with changes
         public LoadingState()
         {
             _filesLoaded = 0;
             _percentageDone = 0;
             _isLoading = true;
             _totalFilesToLoad = 100;
+            IsLoadingNewState = true;
         }
 
         public void SetTotalFilesToLoad(int total)

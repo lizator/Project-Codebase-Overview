@@ -136,7 +136,7 @@
             <Button Grid.Row="12" Grid.Column="0">Export CodeOwners file</Button>
             <Button Grid.Row="13" Grid.Column="0" Click="SaveClick">Save</Button>
             <Button Grid.Row="14" Grid.Column="0" Click="LoadClick">Load</Button>
-            <Button Grid.Row="15" Grid.Column="0">Open new repository</Button>
+            <Button Grid.Row="15" Grid.Column="0" Click="NewRepoClick">Open new repository</Button>
             
         </Grid>
         

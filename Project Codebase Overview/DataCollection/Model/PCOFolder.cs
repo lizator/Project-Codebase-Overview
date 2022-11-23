@@ -1,13 +1,16 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.Gauges;
+using Syncfusion.UI.Xaml.TreeGrid;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -156,6 +159,35 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     return folder.IsPathInitialized(newPath);
                 }
                 return false;
+            }
+        }
+
+        public void RemoveFileByPath(string path)
+        {
+            var split = path.Split('/');
+            if (split.Length == 1)
+            {
+                if(this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFile))
+                {
+                    RemoveChild(Children[split[0]]);
+                }
+                else
+                {
+                    Debug.WriteLine("Could not find file to remove in structure during update: " + split[0]);
+                }
+            }
+            else
+            {
+                if (this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFolder))
+                {
+                    var folder = (PCOFolder)this.Children[split[0]];
+                    var newPath = path.Substring(path.IndexOf('/') + 1);
+                    folder.RemoveFileByPath(newPath);
+                }
+                else
+                {
+                    Debug.WriteLine("Could not find folder of file to remove in structure during update: " + path);
+                }
             }
         }
     }

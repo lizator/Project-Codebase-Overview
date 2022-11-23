@@ -95,7 +95,7 @@ namespace Project_Codebase_Overview.DataCollection
             return gitStatus;
         }
 
-        private void InitializeNewAuthorsAndCreators(List<string> changedFilePaths, string lastCommitSha)
+        private void InitializeNewAuthorsAndCreators(List<string> changedFilePaths, string lastCommitSha, List<string> deletedFilePaths)
         {
             var contributorState = PCOState.GetInstance().GetContributorState();
 
@@ -103,6 +103,10 @@ namespace Project_Codebase_Overview.DataCollection
             foreach (var changedPath in changedFilePaths)
             {
                 isPathNew.Add(changedPath, !RootFolder.IsPathInitialized(changedPath));
+            }
+            foreach(var deletedPath in deletedFilePaths)
+            {
+                isPathNew.Add(deletedPath, false);//to avoid managing deleted files!
             }
             var currentEmail = "";
             var maxFilepathLength = 0;
@@ -172,6 +176,7 @@ namespace Project_Codebase_Overview.DataCollection
             /* For loading changes when loading state from save-file. Loads changes since last save. */
 
             var gitStatus = GetRepoStatus(path);
+            RootFolder = oldDataRootFolder;
 
 
             //Save latest commit sha to state
@@ -183,7 +188,7 @@ namespace Project_Codebase_Overview.DataCollection
 
             PCOState.GetInstance().SetLatestCommitSha(latestCommitSha);
 
-            //get filepaths
+            //get changed filepaths
             var processInfo = new ProcessStartInfo("cmd.exe", "/c git diff --numstat " + lastLoadedCommitSHA + " HEAD");
 
             processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
@@ -200,7 +205,7 @@ namespace Project_Codebase_Overview.DataCollection
 
                 var line = e.Data;
                 if (line == null) return;
-                var regex = new Regex("[0-9]+\t[0-9]+\t(.+)");
+                var regex = new Regex("[0-9\\-]+\t[0-9\\-]+\t(.+)");
                 var match = regex.Match(line);
                 // AUTHOR_REGEX.Match(line.Trim());
 
@@ -214,12 +219,41 @@ namespace Project_Codebase_Overview.DataCollection
             process.BeginOutputReadLine();
             process.WaitForExit();
 
-            //find files that are new since last load
-            InitializeNewAuthorsAndCreators(changedFilePaths, lastLoadedCommitSHA);
+            //get list of deleted files' paths (they need to be removed!)
+            List<string> deletedFilePaths = new List<string>();
 
-            //create root folder
+            var processInfoDeleted = new ProcessStartInfo("cmd.exe", "/c git log --pretty=format: --name-only --diff-filter=D " + lastLoadedCommitSHA + "..HEAD");
+
+            processInfoDeleted.RedirectStandardInput = processInfoDeleted.RedirectStandardOutput = processInfoDeleted.RedirectStandardError = true;
+            processInfoDeleted.CreateNoWindow = true;
+            processInfoDeleted.UseShellExecute = false;
+            processInfoDeleted.WorkingDirectory = RootPath;
+
+            var processDeleted = Process.Start(processInfoDeleted);
+
+            processDeleted.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                if (line == null) return;
+                deletedFilePaths.Add(line);
+            };
+
+            processDeleted.BeginOutputReadLine();
+            processDeleted.WaitForExit();
+
+            //remove deleted files from structure and deleted filepaths from changedpaths
+            foreach(var deletedFilePath in deletedFilePaths)
+            {
+                changedFilePaths.Remove(deletedFilePath);
+                oldDataRootFolder.RemoveFileByPath(deletedFilePath);
+            }
+
+            //find files that are new since last load
+            InitializeNewAuthorsAndCreators(changedFilePaths, lastLoadedCommitSHA, deletedFilePaths);
+
+            //create new root folder for changed files
             var rootFolderName = Path.GetFileName(RootPath);
-            var rootFolder = new PCOFolder(rootFolderName, null);
+            var newRootFolder = new PCOFolder(rootFolderName, null);
 
             //set loading
             dispatcherQueue?.TryEnqueue(() =>
@@ -252,11 +286,13 @@ namespace Project_Codebase_Overview.DataCollection
                     lock (RootFolderLock)
                     {
                         var finalThreadRootFolder = threadData.ThreadRootFolder;
-                        PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
+                        PCOFolderMergeHelper.MergeFolders(newRootFolder, finalThreadRootFolder);
                     }
                 });
 
-            var updatedRoot = PCOFolderMergeHelper.MergeFolders(oldDataRootFolder, rootFolder);
+            var updatedRoot = PCOFolderMergeHelper.MergeFolders(oldDataRootFolder, newRootFolder);
+
+            
             return updatedRoot;
         }
 
@@ -555,6 +591,11 @@ namespace Project_Codebase_Overview.DataCollection
                 this.Process.WaitForExit();
             }
 
+        }
+        public bool IsRepoChangesAvailable(string repositoryRootPath, string latestCommitSHA)
+        {
+            GetRepoStatus(repositoryRootPath);//checks if available and sets GitRepo
+            return !latestCommitSHA.Equals(GitRepo.Commits.First().Sha);
         }
 
         #region Depricated
@@ -946,7 +987,7 @@ namespace Project_Codebase_Overview.DataCollection
             return rootFolder;
         }
 
-        
+       
         #endregion
     }
 }

@@ -145,11 +145,8 @@ namespace Project_Codebase_Overview.SaveState
             SetPCOSettings(serializerState.Settings);
 
             var oldDataRoot = GetPCORoot(serializerState.RootFolder, null);
-            //update data to latest commit
-            GitDataCollector dataCollector = new GitDataCollector();
-            var updatedRoot = await dataCollector.CollectNewData(serializerState.RepositoryRootPath, oldDataRoot, serializerState.LatestCommitSHA);
+            PCOState.GetInstance().GetExplorerState().ResetState(oldDataRoot, serializerState.RepositoryRootPath);
 
-            PCOState.GetInstance().GetExplorerState().ResetState(updatedRoot, serializerState.RepositoryRootPath);
             
         }
 

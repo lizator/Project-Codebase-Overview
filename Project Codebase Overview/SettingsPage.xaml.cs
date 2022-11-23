@@ -26,6 +26,9 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.Globalization.NumberFormatting;
 using Project_Codebase_Overview.Dialogs;
+using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.FileExplorerView;
+using Project_Codebase_Overview.SaveState.Model;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -248,9 +251,31 @@ namespace Project_Codebase_Overview
             {
                 return;
             }
-            PCOState.GetInstance().LoadFile(file);
+
+            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
 
             ((Application.Current as App)?.MainWindow as MainWindow).ShowToast("Loaded file: " + file.Name);
+
+            if (repoChangesAvailable)
+            {
+                bool loadNewData = await DialogHandler.ShowYesNoDialog(XamlRoot, "Load", 
+                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
+                if (loadNewData)
+                {
+                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
+                    //goto loading page
+                    ((Application.Current as App)?.MainWindow as MainWindow).NavigateToLoadingPage();
+
+                }
+            }
+           
+
+            
+        }
+
+        private async void NewRepoClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

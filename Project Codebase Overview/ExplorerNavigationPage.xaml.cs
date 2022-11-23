@@ -38,14 +38,5 @@ namespace Project_Codebase_Overview
             this.MainFrame.Content = rootFrame;
             rootFrame.Navigate(typeof(ExplorerPage));
         }
-
-        public async void NavigateToLoadingPage()
-        {
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(LoadingPage));
-        }
-
-
     }
 }

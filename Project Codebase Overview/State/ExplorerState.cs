@@ -33,9 +33,6 @@ namespace Project_Codebase_Overview.FileExplorerView
             this.RootFolder = newRoot;
             ResetHistory(newRoot);
             ReloadExplorer();
-            
-            //TODO: make som git collector stuff to get new changes made since last save!
-
         }
 
         public void AddFolderHistory(PCOFolder addedFolder)
@@ -141,6 +138,16 @@ namespace Project_Codebase_Overview.FileExplorerView
                 
             }
 
+            return null;
+        }
+
+        public async Task<object> LoadRootFolderChanges()
+        {
+            var collector = new GitDataCollector();
+            var folder = await collector.CollectNewData(RootPath, RootFolder, PCOState.GetInstance().GetLatestCommitSha());
+            ResetState(folder, RootPath);
+            PCOState.GetInstance().GetLoadingState().IsLoading = false;
+            
             return null;
         }
 

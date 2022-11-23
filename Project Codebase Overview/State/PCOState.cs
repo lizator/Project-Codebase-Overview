@@ -1,7 +1,10 @@
 ﻿using LibGit2Sharp;
+using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState;
 using Project_Codebase_Overview.SaveState.Model;
@@ -114,13 +117,21 @@ namespace Project_Codebase_Overview.State
             await FileIO.WriteTextAsync(file, jsonString);
         }
 
-        public void LoadFile(StorageFile file)
+        public async Task<bool> LoadFile(StorageFile file)
         {
             var path =  file.Path;
             var jsonString = File.ReadAllText(path);
             SerializerState serializerState = JsonConvert.DeserializeObject<SerializerState>(jsonString);
-
+            //setup state for old root
             SerializerHelper.SetPCOStateFromInitializerState(serializerState);
+            LatestCommitSha = serializerState.LatestCommitSHA;
+            //TODO: handle branching???
+
+            //check if any new commits to load
+            GitDataCollector gitDataCollector = new GitDataCollector();
+            var repoChangesAvailable = gitDataCollector.IsRepoChangesAvailable(serializerState.RepositoryRootPath, serializerState.LatestCommitSHA);
+
+            return repoChangesAvailable;
   
         }
     }
