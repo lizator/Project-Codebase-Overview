@@ -215,7 +215,10 @@ namespace Project_Codebase_Overview.Dialogs
                 ShowNameFlyout();
                 return;
             }
-
+            if (Team.Name != null && Team.Name != "" && !Team.Name.Equals(NameBox.Text))
+            {
+                manager.RenameTeam(Team.Name, NameBox.Text);
+            }
             Team.Name = NameBox.Text;
             Team.EmptyMembers();
             foreach (var pair in IsAuthorInTeam)

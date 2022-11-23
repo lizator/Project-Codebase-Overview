@@ -193,5 +193,12 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             return CurrentAuthorDialog;
         }
+
+        public void RenameTeam(string origName, string newName)
+        {
+            var tmpTeam = Teams[origName];
+            Teams.Remove(origName);
+            Teams.Add(newName, tmpTeam);
+        }
     }
 }
