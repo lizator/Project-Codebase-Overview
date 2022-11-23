@@ -166,6 +166,26 @@
             </editors:SfComboBox>
         </Grid>
         <Grid Grid.Row="4" ColumnDefinitions="*, auto, auto">
+            <editors:SfSegmentedControl Grid.Column="0"
+                                        SelectionAnimationType="Slide"
+                                        SelectionChanged="ActivityChanged"
+                                        Width="200"
+                                        HorizontalAlignment="Left"  
+                                        x:Name="ActiveSlider"
+                                        Margin="0,4,0,4"
+                                        >
+                <editors:SfSegmentedControl.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.ThemeDictionaries>
+                            <ResourceDictionary x:Key="Light">
+                                <SolidColorBrush x:Key="SyncfusionSegmentedItemSelectedBackground" Color="ForestGreen"/>
+                            </ResourceDictionary>
+                        </ResourceDictionary.ThemeDictionaries>
+                    </ResourceDictionary>
+                </editors:SfSegmentedControl.Resources>
+                <x:String>Active</x:String>
+                <x:String>Deactive</x:String>
+            </editors:SfSegmentedControl>
             <Button Grid.Column="1" Content="Cancel" Background="IndianRed" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
             <Button Grid.Column="2" Content="Save" Background="ForestGreen" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
         </Grid>

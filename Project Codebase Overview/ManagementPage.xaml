@@ -86,7 +86,7 @@
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
                             <!--Sub author count-->
-                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="SubAuthorCount" Width="150"/>
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" Width="120"/>
                             <!-- Team -->
                             <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
@@ -101,6 +101,14 @@
                                             </Ellipse>
                                             <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Team.Name}" Grid.Column="1"></TextBlock>
                                         </Grid>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            </treeGrid:TreeGridTemplateColumn>
+                            <!--Active Column-->
+                            <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader">
+                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <SymbolIcon Symbol="{Binding ActiveSymbol}"/>
                                     </DataTemplate>
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
