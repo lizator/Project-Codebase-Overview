@@ -34,6 +34,8 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.VoiceCommands;
 using Syncfusion.UI.Xaml.Editors;
 using Project_Codebase_Overview.ChangeHistoryFolder;
+using System.ComponentModel;
+using Syncfusion.UI.Xaml.Data;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -72,8 +74,15 @@ namespace Project_Codebase_Overview
             }
 
             ViewModel.UpdateBreadcrumbBar();
+
+            rootTreeGrid.SortColumnsChanged += RootTreeGrid_SortColumnsChanged;
         }
-        
+
+        private void RootTreeGrid_SortColumnsChanged(object sender, Syncfusion.UI.Xaml.Grids.GridSortColumnsChangedEventArgs e)
+        {
+            var comparer = rootTreeGrid.SortComparers.Where(c => c.PropertyName.Equals("Name")).Single().Comparer as CustomSortNameComparer;
+            comparer.SortDirection = e.AddedItems.Where(i => i.ColumnName.Equals("Name")).FirstOrDefault()?.SortDirection ?? comparer.SortDirection;
+        }
 
         private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
@@ -362,6 +371,61 @@ namespace Project_Codebase_Overview
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
 
+        }
+    }
+
+    public class CustomSortNameComparer : IComparer<object>
+    {
+
+        public int Compare(object x, object y)
+        {
+            var item1 = x as ExplorerItem;
+            var item2 = y as ExplorerItem;
+
+            var value1 = item1.Name;
+            var value2 = item2.Name;
+            int c = 0;
+
+            if (item1.GetType() == typeof(PCOFolder) && item2.GetType() == typeof(PCOFile))
+            {
+                return SortDirection == SortDirection.Descending ? 1 : -1;
+            }
+
+            if (item1.GetType() == typeof(PCOFile) && item2.GetType() == typeof(PCOFolder))
+            {
+                return SortDirection == SortDirection.Descending ? -1 : 1;
+            }
+
+
+            if (value1 == null && value2 != null)
+            {
+                c = -1;
+            }
+            
+
+
+            else if (value1 != null && value2 == null)
+            {
+                c = 1;
+            }
+
+            else if (value1 != null && value2 != null)
+            {
+                c = string.Compare(value1, value2, StringComparison.InvariantCulture);
+            }
+
+
+
+            return c;
+        }
+
+        //Get or Set the SortDirection value
+        private SortDirection _SortDirection;
+
+        public SortDirection SortDirection
+        {
+            get { return _SortDirection; }
+            set { _SortDirection = value; }
         }
     }
 }
