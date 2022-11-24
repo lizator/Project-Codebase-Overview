@@ -345,6 +345,10 @@ namespace Project_Codebase_Overview.DataCollection
                             var lastStr = str.Split("=>")[1].Trim();
                             var newSubString = lastStr.Substring(0, lastStr.Length - 1);
                             currPath = currPath.Replace(str, newSubString);
+                            while (currPath.Contains("//"))
+                            {
+                                currPath = currPath.Replace("//", "/");
+                            }
                         }
 
                         contributorState.UpdateCreator(currPath, currentEmail);

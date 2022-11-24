@@ -61,7 +61,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
             }
             this.GraphModel.UpdateSuggestedOwner();
-            this.GenerateBarGraph();
+            //this.GenerateBarGraph();
         }
 
 
