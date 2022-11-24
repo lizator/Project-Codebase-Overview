@@ -8,15 +8,19 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Project_Codebase_Overview.Dialogs;
+using Project_Codebase_Overview.LocalSettings;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Management.Automation;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.Storage.Pickers;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -29,9 +33,12 @@ namespace Project_Codebase_Overview
     /// </summary>
     public sealed partial class StartWindow : Window
     {
+        ObservableCollection<RecentFileInfo> RecentFiles;
         public StartWindow()
         {
             this.InitializeComponent();
+
+            RecentFiles = LocalSettingsHelper.GetRecentFiles().ToObservableCollection();
         }
 
 
@@ -119,6 +126,43 @@ namespace Project_Codebase_Overview
                 NavigateToExplorerPage();
             }
 
+        }
+
+        private async void RecentFileClick(object sender, ItemClickEventArgs e)
+        {
+            var fileInfo = e.ClickedItem as RecentFileInfo;
+            try
+            {
+                var file = await StorageFile.GetFileFromPathAsync(fileInfo.FilePath);
+                
+                bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+
+                if (repoChangesAvailable)
+                {
+                    bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
+                        "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
+                    if (loadNewData)
+                    {
+                        PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
+                        //goto loading page
+                        NavigateToLoadingPage();
+                    }
+                    else
+                    {
+                        NavigateToExplorerPage();
+                    }
+                }
+                else
+                {
+                    NavigateToExplorerPage();
+                }
+            }
+            catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog(ex.Message, Content.XamlRoot);
+            }
+           
+            
         }
     }
 }

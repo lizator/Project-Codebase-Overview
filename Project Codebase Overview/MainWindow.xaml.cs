@@ -44,6 +44,10 @@ namespace Project_Codebase_Overview
         {
             this.InitializeComponent();
             (Application.Current as App)?.SetMainWindow(this);
+
+            //fullscreen
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            PInvoke.User32.ShowWindow(hWnd, PInvoke.User32.WindowShowStyle.SW_MAXIMIZE);
         }
 
         public async void NavigateToLoadingPage()

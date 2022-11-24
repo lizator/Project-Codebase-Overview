@@ -6,6 +6,7 @@ using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.FileExplorerView;
+using Project_Codebase_Overview.LocalSettings;
 using Project_Codebase_Overview.SaveState;
 using Project_Codebase_Overview.SaveState.Model;
 using System;
@@ -115,6 +116,8 @@ namespace Project_Codebase_Overview.State
             //var jsonString = System.Text.Json.JsonSerializer.Serialize(serializableState);
             var jsonString = JsonConvert.SerializeObject(serializableState, Formatting.Indented);
             await FileIO.WriteTextAsync(file, jsonString);
+
+            LocalSettingsHelper.AddRecentFile(file.Name, GetExplorerState().GetRoot().Name, file.Path);
         }
 
         public async Task<bool> LoadFile(StorageFile file)
@@ -130,6 +133,8 @@ namespace Project_Codebase_Overview.State
             //check if any new commits to load
             GitDataCollector gitDataCollector = new GitDataCollector();
             var repoChangesAvailable = gitDataCollector.IsRepoChangesAvailable(serializerState.RepositoryRootPath, serializerState.LatestCommitSHA);
+
+            LocalSettingsHelper.AddRecentFile(file.Name, GetExplorerState().GetRoot().Name, file.Path);
 
             return repoChangesAvailable;
   

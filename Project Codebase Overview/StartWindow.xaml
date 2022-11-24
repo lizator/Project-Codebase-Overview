@@ -19,7 +19,23 @@
                     <Button Content="Load Save" Click="LoadFileClick" FontSize="18" Margin="4" Width="200"/>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Column="1" Background="DarkGray"></Grid>
+            <Grid Grid.Column="1">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Recent Files" HorizontalAlignment="Center"/>
+                    <ListView ItemsSource="{x:Bind RecentFiles}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RecentFileClick">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="auto, auto, auto">
+                                    <TextBlock Grid.Row="0" Text="{Binding FileName}" FontSize="12"/>
+                                    <TextBlock Grid.Row="1" Text="{Binding FilePath}" FontSize="10"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding RepoName}" FontSize="10"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    
+                </StackPanel>
+            </Grid>
             
         </Grid>
     </Grid>
