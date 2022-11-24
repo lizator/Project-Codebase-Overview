@@ -524,5 +524,44 @@ namespace Project_Codebase_Overview
             window.Activate();
             window.NavigateToLoadingPage();
         }
+
+        private async void LoadFileClick(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ClearState();
+
+            var filePicker = new FileOpenPicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, windowHandler);
+            filePicker.FileTypeFilter.Add(".json");
+            var file = await filePicker.PickSingleFileAsync();
+
+            if (file == null)
+            {
+                return;
+            }
+
+            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+
+            if (repoChangesAvailable)
+            {
+                bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
+                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
+                if (loadNewData)
+                {
+                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
+                    //goto loading page
+                    NavigateToLoadingPage();
+                }
+                else
+                {
+                    NavigateToExplorerPage();
+                }
+            }
+            else
+            {
+                NavigateToExplorerPage();
+            }
+
+        }
     }
 }

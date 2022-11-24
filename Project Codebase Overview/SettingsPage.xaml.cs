@@ -268,9 +268,6 @@ namespace Project_Codebase_Overview
 
                 }
             }
-           
-
-            
         }
 
         private async void NewRepoClick(object sender, RoutedEventArgs e)

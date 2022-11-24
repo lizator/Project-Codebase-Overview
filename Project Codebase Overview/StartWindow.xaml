@@ -13,10 +13,10 @@
         </Grid>
         <Grid Grid.Row="1" ColumnDefinitions="3*,2*">
             <Grid Grid.Column="0" RowDefinitions="*,auto">
-                <TextBlock Grid.Row="0" Text="Select a local Git repository to begin" FontSize="22" FontFamily="Rockwell" HorizontalTextAlignment="Center"/>
+                <TextBlock Grid.Row="0" Text="Select a local Git repository to begin" FontSize="22" FontFamily="Rockwell" HorizontalTextAlignment="Center" TextWrapping="WrapWholeWords"/>
                 <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0 6 0 10">
                     <Button Content="Select Repository" Click="SelectFolder" FontSize="18" Margin="4" Width="200"/>
-                    <Button Content="Load Rave" FontSize="18" Margin="4" Width="200" IsEnabled="False"/>
+                    <Button Content="Load Save" Click="LoadFileClick" FontSize="18" Margin="4" Width="200"/>
                 </StackPanel>
             </Grid>
             <Grid Grid.Column="1" Background="DarkGray"></Grid>
