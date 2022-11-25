@@ -88,6 +88,7 @@ namespace Project_Codebase_Overview.State
             SettingsState = new SettingsState();
             ContributorState = new ContributorState();
             PCOColorPicker.ResetInstance();
+            ChangeHistory = new ChangeHistory();
         }
 
         public void SetLatestCommitSha(string sha)

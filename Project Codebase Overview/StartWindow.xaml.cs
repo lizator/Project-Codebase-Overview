@@ -70,10 +70,7 @@ namespace Project_Codebase_Overview
 
             PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
 
-            MainWindow window = new MainWindow();
-            window.Activate();
-            window.NavigateToLoadingPage();
-            Close();
+            NavigateToLoadingPage();
         }
 
         private void NavigateToExplorerPage()
@@ -81,12 +78,14 @@ namespace Project_Codebase_Overview
             var mainWindow = new MainWindow();
             mainWindow.Activate();
             mainWindow.NavigateToExplorerPage();
+            Close();
         }
         private void NavigateToLoadingPage()
         {
             var mainWindow = new MainWindow();
             mainWindow.Activate();
             mainWindow.NavigateToLoadingPage();
+            Close();
         }
 
         private async void LoadFileClick(object sender, RoutedEventArgs e)

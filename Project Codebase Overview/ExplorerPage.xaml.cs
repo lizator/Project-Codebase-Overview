@@ -65,6 +65,7 @@ namespace Project_Codebase_Overview
             rootTreeGrid.SelectionChanged += sfTreeGrid_SelectionChanged;
 
             PCOState.GetInstance().ChangeHistory.PropertyChanged += ChangeHistory_PropertyChanged;
+            this.UpdateUndoRedoButtons();
 
             ViewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
 
@@ -127,33 +128,39 @@ namespace Project_Codebase_Overview
             }
         }
 
+        private void UpdateUndoRedoButtons()
+        {
+            if (PCOState.GetInstance().ChangeHistory.RedoAvailable)
+            {
+                RedoButton.IsEnabled = true;
+                RedoImage.Opacity = 1;
+            }
+            else
+            {
+                RedoButton.IsEnabled = false;
+                RedoImage.Opacity = 0.3;
+            }
+            if (PCOState.GetInstance().ChangeHistory.UndoAvailable)
+            {
+                UndoButton.IsEnabled = true;
+                UndoImage.Opacity = 1;
+            }
+            else
+            {
+                UndoButton.IsEnabled = false;
+                UndoImage.Opacity = 0.3;
+            }  
+        }
+
         private void ChangeHistory_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName.Equals("RedoAvailable"))
             {
-                if (((ChangeHistory)sender).RedoAvailable)
-                {
-                    RedoButton.IsEnabled = true;
-                    RedoImage.Opacity = 1;
-                }
-                else
-                {
-                    RedoButton.IsEnabled = false;
-                    RedoImage.Opacity = 0.3;
-                }
+                this.UpdateUndoRedoButtons();
             }
             else if (e.PropertyName.Equals("UndoAvailable"))
             {
-                if (((ChangeHistory)sender).UndoAvailable)
-                {
-                    UndoButton.IsEnabled = true;
-                    UndoImage.Opacity = 1;
-                }
-                else
-                {
-                    UndoButton.IsEnabled = false;
-                    UndoImage.Opacity = 0.3;
-                }
+                this.UpdateUndoRedoButtons();  
             }
         }
 
