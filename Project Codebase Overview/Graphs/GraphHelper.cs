@@ -77,13 +77,27 @@ namespace Project_Codebase_Overview.Graphs
                     block.Percentage = blockSize;
 
                     block.IsCreator = creator != null && dist.Key.ContainsEmail(creator.Email);
+                    block.IsActive = dist.Key.IsActive;
 
                     if (block.IsCreator)
                     {
-                        block.ToolTip = string.Format("{0}: {1:N2}%\nCreator", dist.Key.Name, blockSize);
+                        if (dist.Key.IsActive)
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nCreator", dist.Key.Name, blockSize);
+                        } else
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nCreator - Deactivated", dist.Key.Name, blockSize);
+                        }
                     } else
                     {
-                        block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+                        if (dist.Key.IsActive)
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+                        }
+                        else
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nDeactivated", dist.Key.Name, blockSize);
+                        }
                     }
 
 

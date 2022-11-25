@@ -5,6 +5,7 @@ using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
@@ -72,7 +73,9 @@ namespace Project_Codebase_Overview.ContributorManagement
                 }
                 return author;
             }
-            return null;
+            Debug.WriteLine("Author with email " + email + " has been created late");
+            InitializeAuthor(email, "no name", null);
+            return this.Authors[email];
         }
 
         public void InitializeAuthor(string email, string name, Color? color)
@@ -99,12 +102,12 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
             {
-                return GetAllAuthors().Select(x => (IOwner)x).ToList();
+                return GetAllAuthors().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }
             else
             {
                 //Mode.TEAMS
-                return GetAllTeams().Select(x => (IOwner)x).ToList();
+                return GetAllTeams().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }
         }
 

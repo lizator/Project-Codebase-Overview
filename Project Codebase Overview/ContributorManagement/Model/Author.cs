@@ -34,6 +34,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             SetProperty(ref _isActive, value);
             ActiveSymbol = _isActive ? Symbol.Accept : Symbol.Cancel;
+            Team?.UpdateIsActive();
         }
 
         private Symbol _activeSymbol;

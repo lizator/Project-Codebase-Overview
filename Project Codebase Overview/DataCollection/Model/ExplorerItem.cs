@@ -59,6 +59,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     ownerlist.MoveTo(ownerlist.IndexOf(this.GraphModel.SuggestedOwner), 0);
                 }
             }
+            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.USER)
+            {
+                ownerlist = ownerlist.Where(author => ((Author)author).IsActive).ToList();
+            }
             ownerlist.Add(new Author("Unselected", "Unselected"));
             return ownerlist.ToObservableCollection();
         }
@@ -104,14 +108,33 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 
                 gaugeRange.Background = new SolidColorBrush(block.Color);
 
-                if (block.IsCreator && block.EndValue - block.StartValue > 10)
+                if (block.EndValue - block.StartValue > 10)
                 {
-                    Image img = new Image();
-                    img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
-                    img.Height = 20;
-                    img.Width = 20;
-                    img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
-                    gaugeRange.Child = img;
+                    var panel = new StackPanel();
+                    panel.Orientation = Orientation.Horizontal;
+                    panel.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+
+                    if (block.IsCreator)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    if (!block.IsActive)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/noBW.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    gaugeRange.Child = panel;
                 }
 
                 var tooltip = new ToolTip();

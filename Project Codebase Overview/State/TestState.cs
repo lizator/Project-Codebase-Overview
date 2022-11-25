@@ -16,6 +16,8 @@ namespace Project_Codebase_Overview.State
         private Dictionary<string, int> WatchUseCount;
         private Dictionary<string, long> WatchTimesTotalMS;
 
+        public int Counter = 0;
+
         public TestState()
         {
             this.TestWatches = new Dictionary<string, Stopwatch>();

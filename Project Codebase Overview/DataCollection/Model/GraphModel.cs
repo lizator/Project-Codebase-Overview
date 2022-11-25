@@ -41,8 +41,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         internal void UpdateSuggestedOwner()
         {
-            var highestValue = this.LineDistribution.Values.Max();
-            this.SuggestedOwner = this.LineDistribution.First(x => x.Value == highestValue).Key;
+            var activeLineDistributions = this.LineDistribution.Where(x => x.Key.IsActive);
+            this.SuggestedOwner = activeLineDistributions.Count() > 0 ? activeLineDistributions.OrderByDescending(x => x.Value).First().Key : null;
         }
     }
 }
