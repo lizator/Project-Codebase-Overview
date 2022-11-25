@@ -191,7 +191,7 @@ namespace Project_Codebase_Overview
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
             OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
 
-            appWindow.Resize(new Windows.Graphics.SizeInt32(700, 500));
+            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
             presenter.IsResizable = false;
 
             DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
@@ -562,6 +562,11 @@ namespace Project_Codebase_Overview
                 NavigateToExplorerPage();
             }
 
+        }
+
+        private void timeprint(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("time: " + DateTime.Now.Date.ToShortDateString());
         }
     }
 }

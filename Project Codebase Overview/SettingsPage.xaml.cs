@@ -205,7 +205,7 @@ namespace Project_Codebase_Overview
             savePicker.FileTypeChoices.Clear();
             savePicker.FileTypeChoices.Add("json", new List<string>() { ".json" });
             // Default file name if the user does not type one in or select a file to replace
-            savePicker.SuggestedFileName = "Project State - " + DateTime.Now.Date.ToString();
+            savePicker.SuggestedFileName = "PCO - " + PCOState.GetInstance().GetExplorerState().GetRoot().Name + " - " + DateTime.Now.Date.ToShortDateString();
 
             StorageFile file = await savePicker.PickSaveFileAsync();
             string outputText = "";

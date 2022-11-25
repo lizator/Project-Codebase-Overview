@@ -21,7 +21,8 @@ namespace Project_Codebase_Overview.LocalSettings
             var index = recentList.Select(x => x.FilePath).ToList().IndexOf(filePath);
             if (index != -1)
             {
-                //the file is already on the list - move it up
+                //the file is already on the list - move it up and update date
+                recentList[index].DateString = DateTime.Now.Date.ToShortDateString();
                 recentList.MoveTo(index, 0);
             }
             else
@@ -30,7 +31,7 @@ namespace Project_Codebase_Overview.LocalSettings
                 {
                     recentList.Remove(recentList.Last());
                 }
-                recentList.Add(new RecentFileInfo(fileName, repoName, filePath));
+                recentList.Add(new RecentFileInfo(fileName, repoName, filePath, DateTime.Now.Date.ToShortDateString()));
             }
 
             //save recent list
