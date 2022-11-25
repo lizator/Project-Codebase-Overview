@@ -16,12 +16,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
 using Project_Codebase_Overview.State;
+using System.Globalization;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
     public abstract class ExplorerItem : ObservableObject, IComparable
     {
         public string Name { get; set; }
+        public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
+        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
         public abstract void CalculateData();
         public abstract int CompareTo(object obj);
 
@@ -30,14 +33,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
-        public string SelectedOwnerName { get => this.GraphModel.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.GraphModel.SelectedOwner?.Name ?? "Unselected"); }
+        public string SelectedOwnerName { get => this.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.SelectedOwner?.Name ?? "Unselected"); }
         private string selectedOwnerName;
-        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.GraphModel.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
+        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
         private SolidColorBrush selectedOwnerColor;
-        public string LinesTotalString { get; }
 
         public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
 
+        public IOwner SelectedOwner { get => _selectedOwner; set => SetProperty(ref _selectedOwner, value); }
+        private IOwner _selectedOwner;
         public SfLinearGauge BarGraph
         {
             get => GetBarGraph();
@@ -54,6 +58,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 {
                     ownerlist.MoveTo(ownerlist.IndexOf(this.GraphModel.SuggestedOwner), 0);
                 }
+            }
+            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.USER)
+            {
+                ownerlist = ownerlist.Where(author => ((Author)author).IsActive).ToList();
             }
             ownerlist.Add(new Author("Unselected", "Unselected"));
             return ownerlist.ToObservableCollection();
@@ -72,13 +80,21 @@ namespace Project_Codebase_Overview.DataCollection.Model
             sfLinearGauge.Axis.AxisLineStroke = new SolidColorBrush(Color.FromArgb(255,0,0,0));
 
             var blocks = new List<GraphBlock>();
-            if (this.GetType() == typeof(PCOFile))
+            if (this.GraphModel.LinesTotal > 0)
             {
-                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal, ((PCOFile)this).Creator);
+                if (this.GetType() == typeof(PCOFile))
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel, ((PCOFile)this).Creator);
+                }
+                else
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel);
+                }
             } else
             {
-                blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel.LineDistribution, this.GraphModel.LinesTotal);
+                this.GraphModel.SuggestedOwner = null;
             }
+
 
 
             foreach (var block in blocks)
@@ -92,14 +108,33 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 
                 gaugeRange.Background = new SolidColorBrush(block.Color);
 
-                if (block.IsCreator && block.EndValue - block.StartValue > 10)
+                if (block.EndValue - block.StartValue > 10)
                 {
-                    Image img = new Image();
-                    img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
-                    img.Height = 20;
-                    img.Width = 20;
-                    img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
-                    gaugeRange.Child = img;
+                    var panel = new StackPanel();
+                    panel.Orientation = Orientation.Horizontal;
+                    panel.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+
+                    if (block.IsCreator)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    if (!block.IsActive)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/noBW.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    gaugeRange.Child = panel;
                 }
 
                 var tooltip = new ToolTip();

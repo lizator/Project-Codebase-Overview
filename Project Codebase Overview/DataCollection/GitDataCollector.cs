@@ -59,53 +59,20 @@ namespace Project_Codebase_Overview.DataCollection
             return RootFolder;
 
         }
-
-        public PCOFolder SimpleCollectAllData(string path)
-        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-        // could be important to keep around for optimization testing
+        public async Task<PCOFolder> CollectNewData(string path, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA)
         {
-            RootPath = path;
-            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
-            //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
-            try
+            var dispatcherQueue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+
+            await System.Threading.Tasks.Task.Run(() =>
             {
-                GitRepo = new Repository(RootPath);
-            }
-            catch (Exception e)
-            { 
-                throw new Exception("The selected directory does not contain a git repository.");
-            }
-         
+                RootFolder = this.Parallel2GetNewData(path, dispatcherQueue, oldDataRootFolder, lastLoadedCommitSHA);
+            });
 
-            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+            return RootFolder;
 
-            //check if there are altered files (IS NOT ALLOWED)
-            if (gitStatus.IsDirty)
-            {
-                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
-            }
-
-            //initializeAuthors();
-
-            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
-
-            initializeAuthorsAndCreators(filePaths);
-
-            //create root folder
-            var rootFolderName = Path.GetFileName(RootPath);
-            var rootFolder = new PCOFolder(rootFolderName, null);
-           
-            foreach (string filePath in filePaths)
-            {
-                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                AddFileCommitsCMD(addedFile, filePath);
-            }
-
-            return rootFolder;
         }
 
-         public PCOFolder Simple2CollectAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
-        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        public RepositoryStatus GetRepoStatus(string path)
         {
             RootPath = path;
             try
@@ -113,10 +80,10 @@ namespace Project_Codebase_Overview.DataCollection
                 GitRepo = new Repository(RootPath);
             }
             catch (Exception e)
-            { 
+            {
                 throw new Exception("The selected directory does not contain a git repository.");
             }
-         
+
 
             RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
 
@@ -125,108 +92,34 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 throw new Exception("Repository contains dirty files. Commit all changes and retry.");
             }
+            return gitStatus;
+        }
 
+        private void InitializeNewAuthorsAndCreators(List<string> changedFilePaths, string lastCommitSha, List<string> deletedFilePaths)
+        {
+            var contributorState = PCOState.GetInstance().GetContributorState();
 
-            //initializeAuthors();
-
-            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
-
-            initializeAuthorsAndCreators(filePaths);
-
-            //set loading
-            
-            dispatcherQueue?.TryEnqueue(() =>
+            var isPathNew = new Dictionary<string, bool>();
+            foreach (var changedPath in changedFilePaths)
             {
-                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
-            });
-
-            var stopwatch = new Stopwatch();
-
-            //create root folder
-            var rootFolderName = Path.GetFileName(RootPath);
-            var rootFolder = new PCOFolder(rootFolderName, null);
-            var threadDataTemp = new PCOGitThreadData(rootFolder, RootPath, dispatcherQueue);
-
-            stopwatch.Start();
-
-            foreach (string filePath in filePaths)
-            {
-                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
-                threadDataTemp.AddFileCommitsCMD(addedFile, filePath);
+                isPathNew.Add(changedPath, !RootFolder.IsPathInitialized(changedPath));
             }
-            threadDataTemp.Invoke();
-
-
-
-            stopwatch.Stop();
-            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
-
-            return rootFolder;
-        }
-
-
-        private async void AddFileCommitsCMD(PCOFile file, string filePath)
-        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-        {
-            ProcessStartInfo processInfo;
-            Process process;
-
-            var commits = new Dictionary<string, PCOCommit>();
-
-            processInfo = new ProcessStartInfo("cmd.exe", "/c git blame -e \"" + filePath + "\"");
-
-            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = true;
-            processInfo.CreateNoWindow = true;
-            processInfo.UseShellExecute = false;
-            processInfo.WorkingDirectory = RootPath;
-
-            process = Process.Start(processInfo);
-
-            CultureInfo provider = CultureInfo.InvariantCulture;
-
-            var contributorState = PCOState.GetInstance().GetContributorState();
-
-            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            foreach(var deletedPath in deletedFilePaths)
             {
-
-                var line = e.Data;
-                if (line == null) return;
-                var match = GIT_BLAME_REGEX.Match(line);
-
-
-                if (match.Success)
-                {
-                    var key = match.Groups[1].Value;
-                    var email = match.Groups[2].Value;
-                    var datestring = match.Groups[3].Value;
-                    if (!commits.ContainsKey(key))
-                    {
-                        DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                        commits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
-                    }
-                     commits[key].AddLine(PCOCommit.LineType.NORMAL);
-                    
-
-                }
-            };
+                isPathNew.Add(deletedPath, false);//to avoid managing deleted files!
+            }
+            var currentEmail = "";
+            var maxFilepathLength = 0;
+            foreach (var path in changedFilePaths)
+            {
+                maxFilepathLength = Math.Max(maxFilepathLength, path.Length);
+            }
 
 
-            process.BeginOutputReadLine();
-            process.WaitForExit();
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --pretty=format:\"Commit - %h - %ae - %an\" --stat=" + maxFilepathLength * 2 + "," + maxFilepathLength * 2 + " " + lastCommitSha + "..HEAD");
 
-            file.commits = commits.Values.ToList();
-                
-            AddCreatorToFile(file, filePath);
+            // git log --pretty=format:"Commit - %h - %ae - %an" --stat=1000,1000 bdf1db970a616b0bede045a5160f50dcdc2f0fdd..HEAD
 
-        }
-
-        private async void AddCreatorToFile(PCOFile file, string filePath)
-        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-        {
-            return;
-            var contributorState = PCOState.GetInstance().GetContributorState();
-
-            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --diff-filter=A -- \"" + filePath + "\"");
 
             processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
             processInfo.CreateNoWindow = true;
@@ -240,14 +133,36 @@ namespace Project_Codebase_Overview.DataCollection
 
                 var line = e.Data;
                 if (line == null) return;
-                var match = AUTHOR_REGEX.Match(line.Trim());
+                var match = AUTHOR_REGEX_2.Match(line.Trim());
 
                 if (match.Success)
                 {
-                    var name = match.Groups[1].Value;
-                    var email = match.Groups[2].Value;
+                    var name = match.Groups[3].Value;
+                    currentEmail = match.Groups[2].Value;
 
-                    file.Creator = contributorState.GetAuthor(email);
+                    contributorState.InitializeAuthor(currentEmail, name, null);
+                }
+                else if (line.Trim().Length > 0)
+                {
+                    var split = line.Split('|');
+                    if (split.Length == 2)
+                    {
+                        var currPath = split[0].Trim();
+
+                        while (currPath.Contains('{') && currPath.Contains('}') && currPath.Contains("=>"))
+                        {
+                            var firstIndex = currPath.IndexOf('{');
+                            var lastIndex = currPath.IndexOf('}');
+                            var str = currPath.Substring(firstIndex, lastIndex - firstIndex + 1);
+                            var lastStr = str.Split("=>")[1].Trim();
+                            var newSubString = lastStr.Substring(0, lastStr.Length - 1);
+                            currPath = currPath.Replace(str, newSubString);
+                        }
+                        if (isPathNew[currPath])
+                        {
+                            contributorState.UpdateCreator(currPath, currentEmail);
+                        }
+                    }
                 }
             };
 
@@ -256,38 +171,129 @@ namespace Project_Codebase_Overview.DataCollection
 
         }
 
-        private async void initializeAuthors()
+        public PCOFolder Parallel2GetNewData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, PCOFolder oldDataRootFolder, string lastLoadedCommitSHA)
         {
-            var contributorState = PCOState.GetInstance().GetContributorState();
+            /* For loading changes when loading state from save-file. Loads changes since last save. */
 
-            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log");
+            var gitStatus = GetRepoStatus(path);
+            RootFolder = oldDataRootFolder;
 
-            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError =  true;
+
+            //Save latest commit sha to state
+            var latestCommitSha = GitRepo.Commits.First().Sha;
+            if (latestCommitSha.Equals(lastLoadedCommitSHA))
+            {
+                return oldDataRootFolder;
+            }
+
+            PCOState.GetInstance().SetLatestCommitSha(latestCommitSha);
+
+            //get changed filepaths
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git diff --numstat " + lastLoadedCommitSHA + " HEAD");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
             processInfo.CreateNoWindow = true;
             processInfo.UseShellExecute = false;
             processInfo.WorkingDirectory = RootPath;
 
             var process = Process.Start(processInfo);
 
+            List<string> changedFilePaths = new List<string>();
+
             process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
             {
 
                 var line = e.Data;
                 if (line == null) return;
-                var match = AUTHOR_REGEX.Match(line.Trim());
+                var regex = new Regex("[0-9\\-]+\t[0-9\\-]+\t(.+)");
+                var match = regex.Match(line);
+                // AUTHOR_REGEX.Match(line.Trim());
 
                 if (match.Success)
                 {
-                    var name = match.Groups[1].Value;
-                    var email = match.Groups[2].Value;
-
-                    contributorState.InitializeAuthor(email, name);
+                    var pathMatch = match.Groups[1].Value;
+                    changedFilePaths.Add(pathMatch);
                 }
             };
 
             process.BeginOutputReadLine();
             process.WaitForExit();
 
+            //get list of deleted files' paths (they need to be removed!)
+            List<string> deletedFilePaths = new List<string>();
+
+            var processInfoDeleted = new ProcessStartInfo("cmd.exe", "/c git log --pretty=format: --name-only --diff-filter=D " + lastLoadedCommitSHA + "..HEAD");
+
+            processInfoDeleted.RedirectStandardInput = processInfoDeleted.RedirectStandardOutput = processInfoDeleted.RedirectStandardError = true;
+            processInfoDeleted.CreateNoWindow = true;
+            processInfoDeleted.UseShellExecute = false;
+            processInfoDeleted.WorkingDirectory = RootPath;
+
+            var processDeleted = Process.Start(processInfoDeleted);
+
+            processDeleted.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                if (line == null) return;
+                deletedFilePaths.Add(line);
+            };
+
+            processDeleted.BeginOutputReadLine();
+            processDeleted.WaitForExit();
+
+            //remove deleted files from structure and deleted filepaths from changedpaths
+            foreach(var deletedFilePath in deletedFilePaths)
+            {
+                changedFilePaths.Remove(deletedFilePath);
+                oldDataRootFolder.RemoveFileByPath(deletedFilePath);
+            }
+
+            //find files that are new since last load
+            InitializeNewAuthorsAndCreators(changedFilePaths, lastLoadedCommitSHA, deletedFilePaths);
+
+            //create new root folder for changed files
+            var rootFolderName = Path.GetFileName(RootPath);
+            var newRootFolder = new PCOFolder(rootFolderName, null);
+
+            //set loading
+            dispatcherQueue?.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(changedFilePaths.Count);
+            });
+
+            var rangePartitioner = Partitioner.Create(0, changedFilePaths.Count(), Math.Max(PARALLEL_CHUNK_SIZE, 1)); //Keep this line after testing is done
+
+
+            Parallel.ForEach(rangePartitioner,
+                new ParallelOptions() { MaxDegreeOfParallelism = 4 },
+                (range, loop) =>
+                {
+
+                    var threadData = new PCOGitThreadData(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue);
+                    var threadRootFolder = threadData.ThreadRootFolder;
+
+                    for (int i = range.Item1; i < range.Item2; i++)
+                    {
+                        var filePath = changedFilePaths[i];
+                        PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
+
+                        threadData.AddFileCommitsCMD(addedFile, filePath);
+
+                        threadData.ThreadFileCount += 1;
+                    }
+                    threadData.Invoke();
+
+                    lock (RootFolderLock)
+                    {
+                        var finalThreadRootFolder = threadData.ThreadRootFolder;
+                        PCOFolderMergeHelper.MergeFolders(newRootFolder, finalThreadRootFolder);
+                    }
+                });
+
+            var updatedRoot = PCOFolderMergeHelper.MergeFolders(oldDataRootFolder, newRootFolder);
+
+            
+            return updatedRoot;
         }
 
         private async void initializeAuthorsAndCreators(List<string> filepaths)
@@ -323,7 +329,7 @@ namespace Project_Codebase_Overview.DataCollection
                     var name = match.Groups[3].Value;
                     currentEmail = match.Groups[2].Value;
 
-                    contributorState.InitializeAuthor(currentEmail, name);
+                    contributorState.InitializeAuthor(currentEmail, name, null);
                 } else if (line.Trim().Length > 0)
                 {
                     var split = line.Split('|');
@@ -339,6 +345,10 @@ namespace Project_Codebase_Overview.DataCollection
                             var lastStr = str.Split("=>")[1].Trim();
                             var newSubString = lastStr.Substring(0, lastStr.Length - 1);
                             currPath = currPath.Replace(str, newSubString);
+                            while (currPath.Contains("//"))
+                            {
+                                currPath = currPath.Replace("//", "/");
+                            }
                         }
 
                         contributorState.UpdateCreator(currPath, currentEmail);
@@ -351,153 +361,14 @@ namespace Project_Codebase_Overview.DataCollection
 
         }
 
-
-        public PCOFolder AlternativeCollectAllData(string path)
-        {
-            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-            RootPath = path;
-            try
-            {
-                PCOState.GetInstance().TempGitRepo = new Repository(RootPath);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("The selected directory does not contain a git repository.");
-            }
-
-
-            RepositoryStatus gitStatus = PCOState.GetInstance().TempGitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
-
-            //check if there are altered files (IS NOT ALLOWED)
-            if (gitStatus.IsDirty)
-            {
-                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
-            }
-
-
-            //create root folder
-            var rootFolderName = Path.GetFileName(RootPath);
-            var rootFolder = new PCOFolder(rootFolderName, null);
-
-            List<string[]> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath.Split("/")).ToList();
-
-            rootFolder.AddChildrenAlternativly(filePaths);
-
-            return rootFolder;
-        }
-        public static void AddFileCommitsAlt(PCOFile file, string filePath)
-        {
-            var blameHunkGroups = PCOState.GetInstance().TempGitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
-
-            foreach (var group in blameHunkGroups)
-            {
-                int commitLineCount = group.Sum(hunk => hunk.LineCount);
-                var finalSignature = group.First().FinalSignature;
-                var commit = new PCOCommit(finalSignature.Email, finalSignature.Name, finalSignature.When.Date);
-                commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
-                file.commits.Add(commit);
-            }
-        }
-
-        public PCOFolder ParallelGetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
-        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-        {
-            RootPath = path;
-            try
-            {
-                GitRepo = new Repository(RootPath);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("The selected directory does not contain a git repository.");
-            }
-
-
-            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
-
-            //check if there are altered files (IS NOT ALLOWED)
-            if (gitStatus.IsDirty)
-            {
-                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
-            }
-
-            //initializeAuthors();
-
-            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
-
-            initializeAuthorsAndCreators(filePaths);
-
-            //create root folder
-            var rootFolderName = Path.GetFileName(RootPath);
-            var rootFolder = new PCOFolder(rootFolderName, null);
-
-            //set loading
-            dispatcherQueue?.TryEnqueue(() =>
-            {
-                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
-            });
-            
-
-            //Debug.WriteLine(filePaths.Count());
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Parallel.ForEach<string, PCOGitThreadData>(filePaths,
-                new ParallelOptions() { MaxDegreeOfParallelism = 4 },
-                () => new(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue),
-                (filePath, loop, threadData) =>
-                {
-                    var threadRootFolder = threadData.ThreadRootFolder;
-                    PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
-
-                    AddFileCommitsCMD(addedFile, filePath);
-
-                    threadData.ThreadFileCount += 1;
-
-                    return threadData;
-                },
-                (finalThreadData) =>
-                {
-                    //finalThreadData.Invoke();
-
-
-                    lock (RootFolderLock)
-                    {
-                        var finalThreadRootFolder = finalThreadData.ThreadRootFolder;
-                        PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
-
-                        //TODO Add finalThreadData.ThreadFileCount to loading
-                        
-                    }
-                }
-                );
-
-            stopwatch.Stop();
-            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
-            
-            return rootFolder;
-        }
-
         public PCOFolder Parallel2GetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue, int parallelChunkSetter = 0)
         {
-            RootPath = path;
-            try
-            {
-                GitRepo = new Repository(RootPath);
-            }
-            catch (Exception e)
-            {
-                throw new Exception("The selected directory does not contain a git repository.");
-            }
+            var gitStatus = GetRepoStatus(path);
 
-
-            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
-
-            //check if there are altered files (IS NOT ALLOWED)
-            if (gitStatus.IsDirty)
-            {
-                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
-            }
+            //Save latest commit sha to state
+            var latestCommit = GitRepo.Commits.First();
+            PCOState.GetInstance().SetLatestCommitSha(latestCommit.Sha);
+            PCOState.GetInstance().SetBranchName(GitRepo.Head.FriendlyName);
 
             //initializeAuthors();
 
@@ -514,7 +385,7 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
             });
-            
+
 
             // Testing parallel block size start TODO: remove parallelChunkSetter and use PARALLEL_CUNK_SIZE parameter instead
             Stopwatch stopwatch = new Stopwatch();
@@ -564,6 +435,48 @@ namespace Project_Codebase_Overview.DataCollection
             Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
             
             return rootFolder;
+        }
+
+        public bool DoesBranchContainLastCommit()
+        {
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git branch --contains " + PCOState.GetInstance().GetLatestCommitSha());
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            var containsList = new List<string>();
+            var hasError = false;
+            var errorList = new List<string>();
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                if (line != null)
+                {
+                    if (line.StartsWith('*'))
+                    {
+                        line = line.Substring(1);
+                    }
+                    var name = line.Trim();
+                    containsList.Add(name);
+                }
+            };
+
+            process.ErrorDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+                var line = e.Data;
+                errorList.Add(line);
+                hasError = true;
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            return !hasError && containsList.Contains(PCOState.GetInstance().GetBranchName());
         }
 
         private class PCOGitThreadData
@@ -640,8 +553,8 @@ namespace Project_Codebase_Overview.DataCollection
                             var datestring = match.Groups[3].Value;
                             if (!CurrentCommits.ContainsKey(key))
                             {
-                                DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
-                                CurrentCommits.Add(key, new PCOCommit(email, contributorState.GetAuthor(email)?.Name ?? email, date));
+                                DateTime date = DateTime.ParseExact(datestring, "yyyy-MM-dd", provider);
+                                CurrentCommits.Add(key, new PCOCommit(email, date));
                             }
                             CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
 
@@ -683,7 +596,308 @@ namespace Project_Codebase_Overview.DataCollection
             }
 
         }
+        public bool IsRepoChangesAvailable(string repositoryRootPath, string latestCommitSHA)
+        {
+            GetRepoStatus(repositoryRootPath);//checks if available and sets GitRepo
+            return !latestCommitSHA.Equals(GitRepo.Commits.First().Sha);
+        }
 
+        #region Depricated
+        public PCOFolder AlternativeCollectAllData(string path)
+        {
+            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+            RootPath = path;
+            try
+            {
+                PCOState.GetInstance().TempGitRepo = new Repository(RootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = PCOState.GetInstance().TempGitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            List<string[]> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath.Split("/")).ToList();
+
+            rootFolder.AddChildrenAlternativly(filePaths);
+
+            return rootFolder;
+        }
+        public static void AddFileCommitsAlt(PCOFile file, string filePath)
+        {
+            //Depricated...
+            var blameHunkGroups = PCOState.GetInstance().TempGitRepo.Blame(filePath).GroupBy(hunk => hunk.FinalCommit.Id);
+
+            foreach (var group in blameHunkGroups)
+            {
+                int commitLineCount = group.Sum(hunk => hunk.LineCount);
+                var finalSignature = group.First().FinalSignature;
+                var commit = new PCOCommit(finalSignature.Email, finalSignature.When.Date);
+                commit.AddLine(PCOCommit.LineType.NORMAL, commitLineCount);
+                file.commits.Add(commit);
+            }
+        }
+
+        public PCOFolder ParallelGetAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        {
+            RootPath = path;
+            try
+            {
+                GitRepo = new Repository(RootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+            //initializeAuthors();
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            //set loading
+            dispatcherQueue?.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+            });
+
+
+            //Debug.WriteLine(filePaths.Count());
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            Parallel.ForEach<string, PCOGitThreadData>(filePaths,
+                new ParallelOptions() { MaxDegreeOfParallelism = 4 },
+                () => new(new PCOFolder(rootFolderName, null), RootPath, dispatcherQueue),
+                (filePath, loop, threadData) =>
+                {
+                    var threadRootFolder = threadData.ThreadRootFolder;
+                    PCOFile addedFile = threadRootFolder.AddChildRecursive(filePath.Split("/"), 0);
+
+                    AddFileCommitsCMD(addedFile, filePath);
+
+                    threadData.ThreadFileCount += 1;
+
+                    return threadData;
+                },
+                (finalThreadData) =>
+                {
+                    //finalThreadData.Invoke();
+
+
+                    lock (RootFolderLock)
+                    {
+                        var finalThreadRootFolder = finalThreadData.ThreadRootFolder;
+                        PCOFolderMergeHelper.MergeFolders(rootFolder, finalThreadRootFolder);
+
+                        //TODO Add finalThreadData.ThreadFileCount to loading
+
+                    }
+                }
+                );
+
+            stopwatch.Stop();
+            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
+
+            return rootFolder;
+        }
+        public PCOFolder SimpleCollectAllData(string path)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        // could be important to keep around for optimization testing
+        {
+            RootPath = path;
+            //rootPath = "C:\\Users\\Jacob\\source\\repos\\lizator\\Project-Codebase-Overview";
+            //var rootPath = "C:\\Users\\frede\\source\\repos\\Project Codebase Overview";
+            try
+            {
+                GitRepo = new Repository(RootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                //throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+            //initializeAuthors();
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+
+            foreach (string filePath in filePaths)
+            {
+                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
+                AddFileCommitsCMD(addedFile, filePath);
+            }
+
+            return rootFolder;
+        }
+
+
+        private async void AddFileCommitsCMD(PCOFile file, string filePath)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        {
+            ProcessStartInfo processInfo;
+            Process process;
+
+            var commits = new Dictionary<string, PCOCommit>();
+
+            processInfo = new ProcessStartInfo("cmd.exe", "/c git blame -e \"" + filePath + "\"");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            process = Process.Start(processInfo);
+
+            CultureInfo provider = CultureInfo.InvariantCulture;
+
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = GIT_BLAME_REGEX.Match(line);
+
+
+                if (match.Success)
+                {
+                    var key = match.Groups[1].Value;
+                    var email = match.Groups[2].Value;
+                    var datestring = match.Groups[3].Value;
+                    if (!commits.ContainsKey(key))
+                    {
+                        DateTime date = DateTime.ParseExact(datestring, "yyyy-mm-dd", provider);
+                        commits.Add(key, new PCOCommit(email, date));
+                    }
+                    commits[key].AddLine(PCOCommit.LineType.NORMAL);
+
+
+                }
+            };
+
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            file.commits = commits.Values.ToList();
+
+            AddCreatorToFile(file, filePath);
+
+        }
+
+        private async void AddCreatorToFile(PCOFile file, string filePath)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        {
+            return;
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log --diff-filter=A -- \"" + filePath + "\"");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = AUTHOR_REGEX.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    var name = match.Groups[1].Value;
+                    var email = match.Groups[2].Value;
+
+                    file.Creator = contributorState.GetAuthor(email);
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+        }
+
+        private async void initializeAuthors()
+        {
+            var contributorState = PCOState.GetInstance().GetContributorState();
+
+            var processInfo = new ProcessStartInfo("cmd.exe", "/c git log");
+
+            processInfo.RedirectStandardInput = processInfo.RedirectStandardOutput = processInfo.RedirectStandardError = true;
+            processInfo.CreateNoWindow = true;
+            processInfo.UseShellExecute = false;
+            processInfo.WorkingDirectory = RootPath;
+
+            var process = Process.Start(processInfo);
+
+            process.OutputDataReceived += delegate (object sender, DataReceivedEventArgs e)
+            {
+
+                var line = e.Data;
+                if (line == null) return;
+                var match = AUTHOR_REGEX.Match(line.Trim());
+
+                if (match.Success)
+                {
+                    var name = match.Groups[1].Value;
+                    var email = match.Groups[2].Value;
+
+                    contributorState.InitializeAuthor(email, name, null);
+                }
+            };
+
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+        }
         public void testTime()
         // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
         {
@@ -696,15 +910,15 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 //CollectAllData(path);
                 AlternativeCollectAllData(path);
-                if (i%10 == 0)
+                if (i % 10 == 0)
                 {
                     Debug.WriteLine(i);
                 }
             }
             stopwatch.Stop();
 
-            Debug.WriteLine("Average elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds/repetitions);
-            
+            Debug.WriteLine("Average elapsed Time is {0} ms", stopwatch.ElapsedMilliseconds / repetitions);
+
             /*
             ALL PROGRAMS CLOSED
             Results:
@@ -713,7 +927,71 @@ namespace Project_Codebase_Overview.DataCollection
             -version 2(creating breadth first ish setup) time 1768
 
             */
-        
+
         }
+
+
+        public PCOFolder Simple2CollectAllData(string path, Microsoft.UI.Dispatching.DispatcherQueue dispatcherQueue)
+        // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
+        {
+            RootPath = path;
+            try
+            {
+                GitRepo = new Repository(RootPath);
+            }
+            catch (Exception e)
+            {
+                throw new Exception("The selected directory does not contain a git repository.");
+            }
+
+
+            RepositoryStatus gitStatus = GitRepo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+
+            //check if there are altered files (IS NOT ALLOWED)
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+
+            //initializeAuthors();
+
+            List<string> filePaths = gitStatus.Unaltered.Select(statusEntry => statusEntry.FilePath).ToList();
+
+            initializeAuthorsAndCreators(filePaths);
+
+            //set loading
+
+            dispatcherQueue?.TryEnqueue(() =>
+            {
+                PCOState.GetInstance().GetLoadingState().SetTotalFilesToLoad(filePaths.Count);
+            });
+
+            var stopwatch = new Stopwatch();
+
+            //create root folder
+            var rootFolderName = Path.GetFileName(RootPath);
+            var rootFolder = new PCOFolder(rootFolderName, null);
+            var threadDataTemp = new PCOGitThreadData(rootFolder, RootPath, dispatcherQueue);
+
+            stopwatch.Start();
+
+            foreach (string filePath in filePaths)
+            {
+                PCOFile addedFile = rootFolder.AddChildRecursive(filePath.Split("/"), 0);
+                threadDataTemp.AddFileCommitsCMD(addedFile, filePath);
+            }
+            threadDataTemp.Invoke();
+
+
+
+            stopwatch.Stop();
+            Debug.WriteLine("time taken: " + stopwatch.ElapsedMilliseconds / 1000 + " seconds");
+
+            return rootFolder;
+        }
+
+       
+        #endregion
     }
 }

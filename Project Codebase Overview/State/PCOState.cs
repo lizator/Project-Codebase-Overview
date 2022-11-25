@@ -1,12 +1,23 @@
 ﻿using LibGit2Sharp;
+using Microsoft.UI.Xaml;
+using Newtonsoft.Json;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.DataCollection;
+using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.FileExplorerView;
+using Project_Codebase_Overview.LocalSettings;
+using Project_Codebase_Overview.SaveState;
+using Project_Codebase_Overview.SaveState.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Windows.Foundation;
+using Windows.Storage;
 
 namespace Project_Codebase_Overview.State
 {
@@ -21,9 +32,11 @@ namespace Project_Codebase_Overview.State
         private ContributorState ContributorState;
 
         private static PCOState Instance;
-
+        private string LatestCommitSha;
+        private string BranchName;
         public Repository TempGitRepo;
-        public int mergeCounter;
+
+
 
         public static PCOState GetInstance()
         {
@@ -69,12 +82,63 @@ namespace Project_Codebase_Overview.State
 
         public void ClearState()
         {
-            ExplorerState = new ExplorerState();
+            //TODO: make a reset state for all the other shit (aldready done for explorerState
             LoadingState = new LoadingState();
             TestState = new TestState();
             SettingsState = new SettingsState();
             ContributorState = new ContributorState();
             PCOColorPicker.ResetInstance();
+            ChangeHistory = new ChangeHistory();
+        }
+
+        public void SetLatestCommitSha(string sha)
+        {
+            LatestCommitSha = sha;
+        }
+        public string GetLatestCommitSha()
+        {
+            return LatestCommitSha;
+        }
+
+        public void SetBranchName(string name)
+        {
+            BranchName = name;
+        }
+        public string GetBranchName()
+        {
+            return BranchName;
+        }
+        public async Task SaveStateToFile(StorageFile file)
+        {
+            var serializableState = SerializerHelper.GetSerializableStateFromPCOState(this);
+
+
+
+            //var jsonString = System.Text.Json.JsonSerializer.Serialize(serializableState);
+            var jsonString = JsonConvert.SerializeObject(serializableState, Formatting.Indented);
+            await FileIO.WriteTextAsync(file, jsonString);
+
+            LocalSettingsHelper.AddRecentFile(file.Name, GetExplorerState().GetRoot().Name, file.Path);
+        }
+
+        public async Task<bool> LoadFile(StorageFile file)
+        {
+            var path =  file.Path;
+            var jsonString = File.ReadAllText(path);
+            SerializerState serializerState = JsonConvert.DeserializeObject<SerializerState>(jsonString);
+            //setup state for old root
+            SerializerHelper.SetPCOStateFromInitializerState(serializerState);
+            LatestCommitSha = serializerState.LatestCommitSHA;
+            //TODO: handle branching???
+
+            //check if any new commits to load
+            GitDataCollector gitDataCollector = new GitDataCollector();
+            var repoChangesAvailable = gitDataCollector.IsRepoChangesAvailable(serializerState.RepositoryRootPath, serializerState.LatestCommitSHA);
+
+            LocalSettingsHelper.AddRecentFile(file.Name, GetExplorerState().GetRoot().Name, file.Path);
+
+            return repoChangesAvailable;
+  
         }
     }
 }

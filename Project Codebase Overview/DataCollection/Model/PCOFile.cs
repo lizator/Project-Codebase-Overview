@@ -2,6 +2,7 @@
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
+using Project_Codebase_Overview.Settings;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
@@ -18,7 +19,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
     {
 
         public List<PCOCommit> commits;
-        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString("N0", CultureInfo.InvariantCulture); }
         public Author Creator { get; set; }
 
         public PCOFile(string name, PCOFolder parent, List<PCOCommit> commits = null)
@@ -32,6 +32,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = this.Name;
 
@@ -40,7 +41,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             foreach (var groupedComm in groupedCommits)
             {
                 IOwner  owner;
-                if(PCOState.GetInstance().GetSettingsState().CurrentMode == Mode.USER)
+                if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
                 {
                     owner = groupedComm.First().GetAuthor(); 
                 }
@@ -53,8 +54,14 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 foreach (var commit in groupedComm)
                 {
+                    if (!PCOState.GetInstance().GetSettingsState().IsDateWithinCutOff(commit.GetDate()))
+                    {
+                        continue;
+                    }
+                    var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
+                    this.GraphModel.LinesAfterDecay += linesAfterDecay;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
-                    this.GraphModel.LineDistribution[owner] += (uint)commit.GetLines();
+                    this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
                 }
             }
             if (this.GraphModel.LinesTotal > 0)

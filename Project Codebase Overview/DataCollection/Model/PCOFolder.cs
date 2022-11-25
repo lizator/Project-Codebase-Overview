@@ -1,12 +1,16 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.Dialogs;
+using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.Gauges;
+using Syncfusion.UI.Xaml.TreeGrid;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +21,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     public class PCOFolder : ExplorerItem, INotifyCollectionChanged
     {
         public Dictionary<string, ExplorerItem> Children { get; } // <childname, childobject>
+        public Dictionary<string, ExplorerItem> ViewChildren { get; } // <childname, childobject>
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
@@ -25,6 +30,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.Name = name;
             this.Parent = parent;
             this.Children = new Dictionary<string, ExplorerItem>();
+            this.ViewChildren = new Dictionary<string, ExplorerItem>();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = name;
         }
@@ -40,6 +46,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override void CalculateData()
         {
+            this.ViewChildren.Clear();
             this.GraphModel = new GraphModel();
             this.GraphModel.FileName = Name;
             foreach (var child in Children)
@@ -47,15 +54,29 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 child.Value.CalculateData();
                 this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
                 this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
+                this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
+                if (PCOState.GetInstance().GetSettingsState().IsFilesVisibile || child.Value.GetType() == typeof(PCOFolder))
+                {
+                    ViewChildren.Add(child.Key, child.Value);
+                }
             }
             this.GraphModel.UpdateSuggestedOwner();
-            this.GenerateBarGraph();
+            //this.GenerateBarGraph();
         }
 
 
         public void AddChild(ExplorerItem child)
         {
             Children.Add(child.Name, child);
+        }
+
+        public void RemoveChild(ExplorerItem child)
+        {
+            Children.Remove(child.Name);
+        }
+        public bool ContainsChild(ExplorerItem child)
+        {
+            return Children.ContainsKey(child.Name);
         }
         public void AddChildren(ExplorerItem[] child)
         {
@@ -64,11 +85,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
 
         public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
-        public string LinesTotal { get => this.GraphModel.LinesTotal.ToString(); }
 
         private List<ExplorerItem> GetSortedChildren()
         {
             var x = this.Children.Values.ToArray();
+            Array.Sort(x);
+            return x.ToList();
+        }
+
+        public List<ExplorerItem> SortedViewChildren { get => GetSortedViewChildren(); }
+
+        private List<ExplorerItem> GetSortedViewChildren()
+        {
+            var x = this.ViewChildren.Values.ToArray();
             Array.Sort(x);
             return x.ToList();
         }
@@ -112,6 +141,53 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.AddChild(folder);
                 }
 
+            }
+        }
+
+        public bool IsPathInitialized(string path)
+        {
+            var split = path.Split('/');
+            if (split.Length == 1)
+            {
+                return this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFile);
+            } else
+            {
+                if (this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFolder))
+                {
+                    var folder = (PCOFolder)this.Children[split[0]];
+                    var newPath = path.Substring(path.IndexOf('/') + 1);
+                    return folder.IsPathInitialized(newPath);
+                }
+                return false;
+            }
+        }
+
+        public void RemoveFileByPath(string path)
+        {
+            var split = path.Split('/');
+            if (split.Length == 1)
+            {
+                if(this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFile))
+                {
+                    RemoveChild(Children[split[0]]);
+                }
+                else
+                {
+                    Debug.WriteLine("Could not find file to remove in structure during update: " + split[0]);
+                }
+            }
+            else
+            {
+                if (this.Children.ContainsKey(split[0]) && this.Children[split[0]].GetType() == typeof(PCOFolder))
+                {
+                    var folder = (PCOFolder)this.Children[split[0]];
+                    var newPath = path.Substring(path.IndexOf('/') + 1);
+                    folder.RemoveFileByPath(newPath);
+                }
+                else
+                {
+                    Debug.WriteLine("Could not find folder of file to remove in structure during update: " + path);
+                }
             }
         }
     }

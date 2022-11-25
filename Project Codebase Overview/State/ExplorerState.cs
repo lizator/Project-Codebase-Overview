@@ -17,7 +17,7 @@ namespace Project_Codebase_Overview.FileExplorerView
         private PCOFolder RootFolder;
         private string RootPath;
         private List<PCOFolder> FolderHistory = new List<PCOFolder>();
-        private int CurrentRootIndex;
+        private int CurrentRootIndex = 0;
         private static readonly int MAX_HISTORY_SIZE = 20;
         public delegate void NotifyReload();
         public event NotifyReload NotifyReloadEvent;
@@ -26,6 +26,15 @@ namespace Project_Codebase_Overview.FileExplorerView
         {
 
         }
+
+        public void ResetState(PCOFolder newRoot, string newRootPath)
+        {
+            this.RootPath = newRootPath;
+            this.RootFolder = newRoot;
+            ResetHistory(newRoot);
+            ReloadExplorer();
+        }
+
         public void AddFolderHistory(PCOFolder addedFolder)
         {
             //remove forwardhistory
@@ -129,6 +138,16 @@ namespace Project_Codebase_Overview.FileExplorerView
                 
             }
 
+            return null;
+        }
+
+        public async Task<object> LoadRootFolderChanges()
+        {
+            var collector = new GitDataCollector();
+            var folder = await collector.CollectNewData(RootPath, RootFolder, PCOState.GetInstance().GetLatestCommitSha());
+            ResetState(folder, RootPath);
+            PCOState.GetInstance().GetLoadingState().IsLoading = false;
+            
             return null;
         }
 

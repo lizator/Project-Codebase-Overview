@@ -62,7 +62,7 @@ namespace Project_Codebase_Overview
         private void SetDummyUsers()
         {
             Users = new ObservableCollection<Author>();
-            PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0], null);
+            PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0]);
             var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
             var parentAuth = authorList.First();
 

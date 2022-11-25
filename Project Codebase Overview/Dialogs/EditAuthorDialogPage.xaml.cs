@@ -19,6 +19,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using System.Reflection.Emit;
 using Microsoft.VisualBasic;
 using Project_Codebase_Overview.State;
+using Project_Codebase_Overview.Settings;
+using Windows.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -39,6 +41,8 @@ namespace Project_Codebase_Overview.Dialogs
         public ObservableCollection<PCOTeam> Teams;
         public Author CurrentAuthor;
         public PCOTeam NoTeamObject;
+        private bool IsInitialized = false;
+        private bool IsActive = true;
         private class Observables : ObservableObject
         {
             private SolidColorBrush _brush;
@@ -61,10 +65,12 @@ namespace Project_Codebase_Overview.Dialogs
             Teams = new ObservableCollection<PCOTeam>();
             LocalObservables = new Observables();
 
-            NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black, null);
-            
+            NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black);
+
             var manager = PCOState.GetInstance().GetContributorState();
             CurrentAuthor = manager.GetSelectedAuthor();
+
+            IsActive = CurrentAuthor.IsActive;
 
             NameBox.Text = CurrentAuthor.Name;
             LocalObservables.Brush = new SolidColorBrush(CurrentAuthor.Color);
@@ -99,6 +105,9 @@ namespace Project_Codebase_Overview.Dialogs
             {
                 LocalObservables.SelectedTeam = NoTeamObject;
             }
+
+
+            ActiveSlider.SelectedIndex = IsActive ? 0 : 1;
 
         }
 
@@ -150,6 +159,8 @@ namespace Project_Codebase_Overview.Dialogs
 
             CurrentAuthor.Name = NameBox.Text;
             CurrentAuthor.Color = LocalObservables.Brush.Color;
+
+            CurrentAuthor.IsActive = IsActive;
 
             CurrentAuthor.EmptySubAuthors();
             foreach (var subAuthor in SubAuthors)
@@ -203,5 +214,27 @@ namespace Project_Codebase_Overview.Dialogs
         {
             //var co = 2;
         }
+
+        private void ActivityChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
+        {
+            var resourceDict = ActiveSlider.Resources.ThemeDictionaries.First().Value as ResourceDictionary;
+            var selectedBrush = resourceDict.Values.First() as SolidColorBrush;
+            if (!IsInitialized)
+            {
+                selectedBrush.Color = IsActive ? Color.FromArgb(255, 82, 139, 82) : Color.FromArgb(255, 205, 92, 92);
+                IsInitialized = true;
+                return;
+            }
+            if (e.NewValue.Equals("Active"))
+            {
+                IsActive = true;
+            }
+            else if (e.NewValue.Equals("Deactive"))
+            {
+                IsActive = false;
+            }
+            selectedBrush.Color = IsActive ? Color.FromArgb(255, 82, 139, 82) : Color.FromArgb(255, 205, 92, 92);
+        }
     }
 }
+

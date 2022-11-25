@@ -10,18 +10,18 @@ namespace Project_Codebase_Overview.DataCollection.Model
     public class GraphModel
     {
         public IOwner SuggestedOwner;
-        public IOwner SelectedOwner;
-       
+        
         public Dictionary<IOwner, uint> LineDistribution;
+        public uint LinesAfterDecay;
         public uint LinesTotal;
         public string FileName;
 
         public GraphModel()
         {
             this.LineDistribution = new Dictionary<IOwner, uint>();
+            this.LinesAfterDecay = 0;
             this.LinesTotal = 0;
             SuggestedOwner = null;
-            SelectedOwner = null;
         }
 
         public void AddLineDistributions(Dictionary<IOwner, uint> childLineDistributions)
@@ -39,24 +39,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
         }
 
-        //For UI purposes
-        public Dictionary<Author, uint> GetAuthorDistribution()
-        {
-
-            throw new NotImplementedException();
-        }
-        //For UI purposes
-        public Dictionary<IOwner, double> GetTeamDistribution()
-        {
-            //Count line distribution according to team setup
-            
-            throw new NotImplementedException();
-        }
-
         internal void UpdateSuggestedOwner()
         {
-            var highestValue = this.LineDistribution.Values.Max();
-            this.SuggestedOwner = this.LineDistribution.First(x => x.Value == highestValue).Key;
+            var activeLineDistributions = this.LineDistribution.Where(x => x.Key.IsActive);
+            this.SuggestedOwner = activeLineDistributions.Count() > 0 ? activeLineDistributions.OrderByDescending(x => x.Value).First().Key : null;
         }
     }
 }

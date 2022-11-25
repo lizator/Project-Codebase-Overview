@@ -14,16 +14,16 @@ namespace Project_Codebase_Overview.DataCollection.Model
         private int codeLines;
         private int commentLines;
         private int whiteSpaceLines;
-        private Author author;
-        private DateTime commitDate;
+        private Author Author;
+        private DateTime CommitDate;
 
-        public PCOCommit(string email, string name, DateTime commitDate)
+        public PCOCommit(string email, DateTime commitDate)
         {
             this.codeLines = 0;
             this.commentLines = 0;
             this.whiteSpaceLines = 0;
-            this.author = PCOState.GetInstance().GetContributorState().GetAuthor(email);
-            this.commitDate = commitDate;
+            this.Author = PCOState.GetInstance().GetContributorState().GetAuthor(email);
+            this.CommitDate = commitDate;
         }
 
         public void AddLine(LineType type, int amount = 1)
@@ -52,9 +52,13 @@ namespace Project_Codebase_Overview.DataCollection.Model
         }
         public Author GetAuthor()
         {
-            return this.author.OverAuthor == null ? this.author : this.author.OverAuthor;
+            return this.Author.OverAuthor == null ? this.Author : this.Author.OverAuthor;
         }
 
+        public DateTime GetDate()
+        {
+            return this.CommitDate;
+        }
 
         public enum LineType
         {

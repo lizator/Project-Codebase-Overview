@@ -16,6 +16,7 @@ namespace Project_Codebase_Overview.Graphs.Model
         public double EndValue { get; set; }
         public string ToolTip { get; set; }
         public bool IsCreator { get; set; }
+        public bool IsActive { get; set; }
 
 
         public GraphBlock()

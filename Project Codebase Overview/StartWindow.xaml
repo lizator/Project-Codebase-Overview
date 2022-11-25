@@ -11,15 +11,47 @@
         <Grid Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock Text="Project Codebase Overview" FontSize="40" FontFamily="Rockwell"  Margin="0 2 0 20"/>
         </Grid>
-        <Grid Grid.Row="1" ColumnDefinitions="3*,2*">
-            <Grid Grid.Column="0" RowDefinitions="*,auto">
-                <TextBlock Grid.Row="0" Text="Select a local Git repository to begin" FontSize="22" FontFamily="Rockwell" HorizontalTextAlignment="Center"/>
-                <StackPanel Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0 6 0 10">
-                    <Button Content="Select Repository" Click="SelectFolder" FontSize="18" Margin="4" Width="200"/>
-                    <Button Content="Load Rave" FontSize="18" Margin="4" Width="200" IsEnabled="False"/>
-                </StackPanel>
-            </Grid>
-            <Grid Grid.Column="1" Background="DarkGray"></Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="*,auto">
+            <!--left side--> 
+            <StackPanel Orientation="Vertical" Grid.Column="0">
+                <Grid ColumnDefinitions="*, auto" Padding="5">
+                    <TextBlock Grid.Column="0" Text="Recent Files" FontSize="22" Margin="15,0,0,0"/>
+                    <TextBlock Grid.Column="1" Text="Last opened" FontSize="14" VerticalAlignment="Bottom"/>
+                </Grid>
+                    
+                <ListView ItemsSource="{x:Bind RecentFiles}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RecentFileClick">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="auto, auto, auto" Padding="5">
+                                <Grid Grid.Row="0" ColumnDefinitions="*, auto">
+                                    <TextBlock Grid.Column="0" Text="{Binding FileName}" FontSize="14" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding DateString}" FontSize="12"/>
+                                </Grid>
+                                <TextBlock Grid.Row="1" Text="{Binding FilePath}" FontSize="12" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Row="2" Text="{Binding RepoName}" FontSize="12" FontStyle="Italic" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+            </StackPanel>
+            <!--right side--> 
+            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,20,10" BorderBrush="Black" BorderThickness="1,0,0,0">
+                <TextBlock Text="Get started" FontSize="22" HorizontalAlignment="Center"/>
+                <Button  Click="SelectFolder" Margin="4" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Select Repository" FontSize="18"/>
+                        <TextBlock Text="Locate a local repository and scan it to start a Codebase Overview"  FontSize="12" TextWrapping="WrapWholeWords"/>
+                    </StackPanel>
+                </Button>
+                <Button  Click="LoadFileClick"  Margin="4" Width="200">
+                    <StackPanel>
+                        <TextBlock Text="Load save" FontSize="18"/>
+                        <TextBlock Text="Locate a Codebase Overview save file to load it and continue where you left off"  FontSize="12" TextWrapping="WrapWholeWords"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            
             
         </Grid>
     </Grid>

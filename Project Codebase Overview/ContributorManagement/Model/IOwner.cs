@@ -11,6 +11,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
     {
         string Name { get; set; }
         Color Color { get; set; }
+        bool IsActive { get; set; }
         public bool ContainsEmail(string email);
         
     }

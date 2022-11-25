@@ -33,9 +33,11 @@ namespace Project_Codebase_Overview.Graphs
         private static readonly int GRAPH_SMALL_CHECK_STARTING_POINT = 60;
         private static readonly int GRAPH_SMALL_CHECK_MIN_SIZE = 5;
 
-        public static List<GraphBlock> GetGraphBlocksFromDistribution(Dictionary<IOwner, uint> distributions, uint linesTotal, Author creator = null)
+        public static List<GraphBlock> GetGraphBlocksFromDistribution(GraphModel graphModel, Author creator = null)
         {
             //Creator is only given for files
+            var distributions = graphModel.LineDistribution;
+            var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
 
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
@@ -75,13 +77,27 @@ namespace Project_Codebase_Overview.Graphs
                     block.Percentage = blockSize;
 
                     block.IsCreator = creator != null && dist.Key.ContainsEmail(creator.Email);
+                    block.IsActive = dist.Key.IsActive;
 
                     if (block.IsCreator)
                     {
-                        block.ToolTip = string.Format("{0}: {1:N2}%\nCreator", dist.Key.Name, blockSize);
+                        if (dist.Key.IsActive)
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nCreator", dist.Key.Name, blockSize);
+                        } else
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nCreator - Deactivated", dist.Key.Name, blockSize);
+                        }
                     } else
                     {
-                        block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+                        if (dist.Key.IsActive)
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%", dist.Key.Name, blockSize);
+                        }
+                        else
+                        {
+                            block.ToolTip = string.Format("{0}: {1:N2}%\nDeactivated", dist.Key.Name, blockSize);
+                        }
                     }
 
 
@@ -106,7 +122,7 @@ namespace Project_Codebase_Overview.Graphs
 
         public static SfCircularChart GetPieChartFromExplorerItem(ExplorerItem item)
         {
-            List<GraphBlock> blocks = GraphHelper.GetGraphBlocksFromDistribution(item.GraphModel.LineDistribution, item.GraphModel.LinesTotal, null);
+            List<GraphBlock> blocks = GraphHelper.GetGraphBlocksFromDistribution(item.GraphModel, null);
 
             //piechart for linedistribution between contributors
             SfCircularChart lineDistChart = new SfCircularChart();

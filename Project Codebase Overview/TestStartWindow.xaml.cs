@@ -191,7 +191,7 @@ namespace Project_Codebase_Overview
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
             OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
 
-            appWindow.Resize(new Windows.Graphics.SizeInt32(700, 500));
+            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
             presenter.IsResizable = false;
 
             DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
@@ -234,6 +234,41 @@ namespace Project_Codebase_Overview
             state.GetExplorerState().SetRootPath(path);
 
             NavigateToLoadingPage();
+        }
+        private async void FolderTestClick(object sender, RoutedEventArgs e)
+        {
+            var root = new PCOFolder("root", null);
+            var in1 = new PCOFolder("in1", root);
+            var in2 = new PCOFolder("in2", in1);
+            var file = new PCOFile("file.txt", in2);
+            in2.AddChild(file);
+            in1.AddChild(in2);
+            root.AddChild(in1);
+            if (root.IsPathInitialized("in1/in2/file.txt"))
+            {
+                Debug.WriteLine("works");
+            } else
+            {
+                Debug.WriteLine("Does not");
+            }
+
+            if (!root.IsPathInitialized("in1/in2/file2.txt"))
+            {
+                Debug.WriteLine("works");
+            }
+            else
+            {
+                Debug.WriteLine("Does not");
+            }
+
+            if (!root.IsPathInitialized("in1/in3/file.txt"))
+            {
+                Debug.WriteLine("works");
+            }
+            else
+            {
+                Debug.WriteLine("Does not");
+            }
         }
 
         private async void OpenManagementPage(object sender, RoutedEventArgs e)
@@ -488,6 +523,50 @@ namespace Project_Codebase_Overview
             MainWindow window = new MainWindow();
             window.Activate();
             window.NavigateToLoadingPage();
+        }
+
+        private async void LoadFileClick(object sender, RoutedEventArgs e)
+        {
+            PCOState.GetInstance().ClearState();
+
+            var filePicker = new FileOpenPicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            WinRT.Interop.InitializeWithWindow.Initialize(filePicker, windowHandler);
+            filePicker.FileTypeFilter.Add(".json");
+            var file = await filePicker.PickSingleFileAsync();
+
+            if (file == null)
+            {
+                return;
+            }
+
+            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+
+            if (repoChangesAvailable)
+            {
+                bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
+                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
+                if (loadNewData)
+                {
+                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
+                    //goto loading page
+                    NavigateToLoadingPage();
+                }
+                else
+                {
+                    NavigateToExplorerPage();
+                }
+            }
+            else
+            {
+                NavigateToExplorerPage();
+            }
+
+        }
+
+        private void timeprint(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("time: " + DateTime.Now.Date.ToShortDateString());
         }
     }
 }

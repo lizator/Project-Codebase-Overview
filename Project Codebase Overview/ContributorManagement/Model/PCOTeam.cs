@@ -27,11 +27,14 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         
         public ObservableCollection<Author> Members { get; set; }
 
-        public PCOTeam(string name, Color color, List<Author> members)
+        private bool _isActive = true;
+        public bool IsActive { get => _isActive; set => SetProperty(ref _isActive, value); }
+
+        public PCOTeam(string name, Color color)
         {
             Name = name;
             Color = color;
-            Members = new ObservableCollection<Author>(members ?? new List<Author>());
+            Members = new ObservableCollection<Author>();
             UpdateMemberString();
         }
 
@@ -61,6 +64,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.Members.Add(member);
 
             UpdateMemberString();
+            UpdateIsActive();
 
         }
 
@@ -71,6 +75,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
                 var member = Members.First();
                 member.DisconnectFromTeam();
             }
+            UpdateIsActive();
         }
 
         public void RemoveMember(Author member)
@@ -80,6 +85,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
                 member.Team = null;
                 this.Members.Remove(member);
                 UpdateMemberString();
+                UpdateIsActive();
             }
         }
 
@@ -120,6 +126,11 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             }
             MemberString = stringBuilder.ToString().Substring(0, stringBuilder.Length - 2);
             
+        }
+
+        public void UpdateIsActive()
+        {
+            IsActive = Members.Where(x => x.IsActive).Any();
         }
 
     }

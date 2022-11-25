@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -27,6 +28,17 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
         private int _subAuthorCount;
         public int SubAuthorCount { get => _subAuthorCount; set => SetProperty(ref _subAuthorCount, value); }
+        private bool _isActive;
+        public bool IsActive { get => _isActive; set => SetIsActive(value); }
+        private void SetIsActive(bool value)
+        {
+            SetProperty(ref _isActive, value);
+            ActiveSymbol = _isActive ? Symbol.Accept : Symbol.Cancel;
+            Team?.UpdateIsActive();
+        }
+
+        private Symbol _activeSymbol;
+        public Symbol ActiveSymbol { get => _activeSymbol; set => SetProperty(ref _activeSymbol, value); }
 
         public Author(string email, string name)
         {
@@ -35,11 +47,14 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.Aliases = new ObservableCollection<string> { name };
             SubAuthors = new ObservableCollection<Author>();
             SubAuthorCount = 0;
+            IsActive = true;
         }
+
+
 
         public bool ContainsEmail(string email)
         {
-            return Email.Equals(email) || SubAuthors.Where(sub => sub.Equals(email)).Any();
+            return Email.Equals(email) || SubAuthors.Where(sub => sub.Email.Equals(email)).Any();
         }
 
         public void AddAlias(string alias)
@@ -76,7 +91,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             if (OverAuthor == null)
             {
-                throw new Exception("Cannot disconnect author. No overauthor is set");
+                throw new Exception("Cannot disconnect Author. No overauthor is set");
             }
             this.OverAuthor.SubAuthorCount--;
             this.OverAuthor.SubAuthors.Remove(this);

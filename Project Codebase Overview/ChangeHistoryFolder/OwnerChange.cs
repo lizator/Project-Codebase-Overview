@@ -26,7 +26,7 @@ namespace Project_Codebase_Overview.ChangeHistoryFolder
 
         public void RedoChange()
         {
-            Item.GraphModel.SelectedOwner = NewOwner;
+            Item.SelectedOwner = NewOwner;
             Item.SelectedOwnerColor = null;
             Item.SelectedOwnerName = null;
             SfComboBox.Text = Item.SelectedOwnerName;
@@ -34,7 +34,7 @@ namespace Project_Codebase_Overview.ChangeHistoryFolder
 
         public void UndoChange()
         {
-            Item.GraphModel.SelectedOwner = PreviousOwner;
+            Item.SelectedOwner = PreviousOwner;
             Item.SelectedOwnerColor = null;
             Item.SelectedOwnerName = null;
             if (Item.SelectedOwnerName.Equals("Unselected")){
