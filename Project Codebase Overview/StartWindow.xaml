@@ -14,7 +14,10 @@
         <Grid Grid.Row="1" ColumnDefinitions="*,auto">
             <!--left side--> 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <TextBlock Text="Recent Files" FontSize="22" HorizontalAlignment="Center"/>
+                <Grid ColumnDefinitions="*, auto" Padding="5">
+                    <TextBlock Grid.Column="0" Text="Recent Files" FontSize="22" Margin="15,0,0,0"/>
+                    <TextBlock Grid.Column="1" Text="Last opened" FontSize="14" VerticalAlignment="Bottom"/>
+                </Grid>
                     
                 <ListView ItemsSource="{x:Bind RecentFiles}" SelectionMode="None" IsItemClickEnabled="True" ItemClick="RecentFileClick">
                     <ListView.ItemTemplate>
@@ -33,7 +36,7 @@
 
             </StackPanel>
             <!--right side--> 
-            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0 6 0 10" BorderBrush="Black" BorderThickness="1,0,0,0">
+            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,20,10" BorderBrush="Black" BorderThickness="1,0,0,0">
                 <TextBlock Text="Get started" FontSize="22" HorizontalAlignment="Center"/>
                 <Button  Click="SelectFolder" Margin="4" Width="200">
                     <StackPanel>
