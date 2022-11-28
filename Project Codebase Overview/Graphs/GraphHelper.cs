@@ -61,7 +61,7 @@ namespace Project_Codebase_Overview.Graphs
                     block.Name = String.Format("{0} others", distributionAmount - blockCount);
                     block.Percentage = (1 - (double)lineCount / (double)linesTotal) * 100;
                     block.ToolTip = string.Format("{0} others: {1:N2}%", distributionAmount - blockCount, (1 - (double)lineCount / (double)linesTotal) * 100);
-
+                    block.IsActive = true;
                     currentStartPos = block.EndValue;
 
                     blockList.Add(block);
