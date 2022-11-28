@@ -126,7 +126,7 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
-            serialFile.CreatorEmail = pCOFile.Creator.Email;
+            serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
             
             foreach(var commit in pCOFile.commits)
             {
@@ -229,7 +229,7 @@ namespace Project_Codebase_Overview.SaveState
             {
                 PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
 
-                pCOFile.Creator = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail);
+                pCOFile.Creator = !subFile.CreatorEmail.Equals("") ? PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail) : null;
                 if (subFile.SelectedAuthorEmail != null)
                 {
                     pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.SelectedAuthorEmail);
