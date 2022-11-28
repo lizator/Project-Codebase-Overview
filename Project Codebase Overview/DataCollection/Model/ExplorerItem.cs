@@ -30,6 +30,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
+
+        public string Comment { get => _comment; set => SetProperty(ref _comment, value); }
+        private string _comment;
+
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
