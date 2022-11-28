@@ -127,8 +127,24 @@ namespace Project_Codebase_Overview.SaveState
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
             serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
-            
-            foreach(var commit in pCOFile.commits)
+
+            var selectedOwner = pCOFile.SelectedOwner;
+            if (selectedOwner != null)
+            {
+
+                if (selectedOwner.GetType() == typeof(Author))
+                {
+                    serialFile.SelectedAuthorEmail = ((Author)selectedOwner).Email;
+                    serialFile.SelectedTeamName = "";
+                }
+                else
+                {
+                    serialFile.SelectedAuthorEmail = "";
+                    serialFile.SelectedTeamName = ((PCOTeam)selectedOwner).Name;
+                }
+            }
+
+            foreach (var commit in pCOFile.commits)
             {
                 SerializerCommit serialCommit = new SerializerCommit();
                 serialCommit.AuthorEmail = commit.GetAuthor().Email;
