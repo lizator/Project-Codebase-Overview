@@ -18,6 +18,7 @@ namespace Project_Codebase_Overview.SaveState
     {
         public static SerializerState GetSerializableStateFromPCOState(PCOState pCOState)
         {
+            // MAIN METHOD FOR CONVERTING PCOSTATE TO SERIALIZERSTATE
             SerializerState serialState = new SerializerState();
 
             serialState.RootFolder = GetSerializerRoot(pCOState.GetExplorerState().GetRoot());
@@ -33,7 +34,10 @@ namespace Project_Codebase_Overview.SaveState
         private static SerializerSettings GetSerializerSettings(SettingsState settingsState)
         {
             SerializerSettings serialSettings = new SerializerSettings();
-
+            serialSettings.DecayTimeUnit = settingsState.DecayTimeUnit;
+            serialSettings.IsDecayActive = settingsState.IsDecayActive;
+            serialSettings.DecayDropOffInteval = settingsState.DecayDropOffInteval;
+            serialSettings.DecayPercentage = settingsState.DecayPercentage;
 
             return serialSettings;
         }
@@ -138,6 +142,7 @@ namespace Project_Codebase_Overview.SaveState
 
         public static async void SetPCOStateFromInitializerState(SerializerState serializerState)
         {
+            // MAIN METHOD FOR CONVERTING (AND LOADING) FROM SERIALIZERSTATE TO PCOSTATE
             PCOState.GetInstance().ClearState();
 
             SetPCOAuthors(serializerState);
