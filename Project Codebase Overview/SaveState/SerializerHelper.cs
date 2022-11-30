@@ -91,6 +91,7 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFolder serialFolder = new SerializerFolder();
             serialFolder.Name = pCOFolder.Name;
+            serialFolder.Comment = pCOFolder.Comment ?? "";
 
             var selectedOwner = pCOFolder.SelectedOwner;
             if(selectedOwner != null)
@@ -127,6 +128,7 @@ namespace Project_Codebase_Overview.SaveState
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
             serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
+            serialFile.Comment = pCOFile.Comment ?? "";
 
             var selectedOwner = pCOFile.SelectedOwner;
             if (selectedOwner != null)
@@ -225,6 +227,7 @@ namespace Project_Codebase_Overview.SaveState
             
             //create the folder
             PCOFolder pCOFolder = new PCOFolder(serialFolder.Name, parent);
+            pCOFolder.Comment = serialFolder.Comment ?? "";
             //set owner
             if (serialFolder.SelectedAuthorEmail != null)
             {
@@ -244,6 +247,7 @@ namespace Project_Codebase_Overview.SaveState
             foreach(var subFile in serialFolder.SubFiles)
             {
                 PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
+                pCOFile.Comment = subFile.Comment ?? "";
 
                 pCOFile.Creator = !subFile.CreatorEmail.Equals("") ? PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail) : null;
                 if (subFile.SelectedAuthorEmail != null)
