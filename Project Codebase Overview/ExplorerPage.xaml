@@ -218,7 +218,8 @@
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" />
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="225" AllowSorting="False" AllowFiltering="True" FilterPopupStyle="{StaticResource popupstyleforOwner}">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="225"
+                                                     AllowSorting="False" AllowFiltering="True" FilterPopupStyle="{StaticResource popupstyleforOwner}">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <editors:SfComboBox ItemsSource="{Binding Owners}" 

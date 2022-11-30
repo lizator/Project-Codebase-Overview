@@ -5,15 +5,19 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.ChangeHistoryFolder;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.Graphs;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.DataGrid;
+using Syncfusion.UI.Xaml.Editors;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -53,6 +57,7 @@ namespace Project_Codebase_Overview.Dialogs
     public sealed partial class ExpandExplorerItemDialog : Page
     {
         public ObservableCollection<TopContributor> TopContributors;
+        public ObservableCollection<IOwner> OwnerList;
         private ContentDialog DialogRef;
         private ExplorerItem ExplorerItem;
         private string ItemPath;
@@ -71,6 +76,20 @@ namespace Project_Codebase_Overview.Dialogs
             ExplorerItem = parameters.Item;
             DialogRef = parameters.Dialog;
 
+            //set ownerlist
+            OwnerList = PCOState.GetInstance().GetContributorState().GetAllOwners().ToObservableCollection();
+
+
+            //set path
+            string path = PCOState.GetInstance().GetExplorerState().GetRootPath().Replace('\\', '/')
+                + "/" + ExplorerItem.GetRelativePath(true);
+            if (path.Length > 70)
+            {
+                path = "..." + path.Substring(path.Length - 67);
+            }
+            ItemPath = path;
+
+            //set comment
             CommentBox.Text = ExplorerItem.Comment ?? "";
 
             //set Top Contributors
@@ -88,12 +107,17 @@ namespace Project_Codebase_Overview.Dialogs
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Percent", HeaderText = "%", 
                     DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
-                foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
+
+                for (int i = 0; i < 3; i++)
                 {
-                    Author author = dist.Key as Author;
-                    string teamName = author.Team?.Name ?? "";
-                    TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
+                    foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
+                    {
+                        Author author = dist.Key as Author;
+                        string teamName = author.Team?.Name ?? "";
+                        TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
+                    }
                 }
+                
             }
             else
             {
@@ -130,6 +154,34 @@ namespace Project_Codebase_Overview.Dialogs
         private void CloseClick(object sender, RoutedEventArgs e)
         {
             DialogRef.Hide();
+        }
+        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
+        {
+            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
+            var previousOwner = item.SelectedOwner;
+            if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
+            {
+                ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
+                if (previousOwner != null && !previousOwner.Name.Equals("Unselected"))
+                {
+                    item.SelectedOwner = null;
+                    item.SelectedOwnerColor = null;
+                    item.SelectedOwnerName = null;
+                    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, null, item, (SfComboBox)sender));
+                }
+
+                return;
+            }
+            Debug.WriteLine("Changed selected owner");
+            var newOwner = (IOwner)e.AddedItems[0];
+            if (!newOwner.Equals(previousOwner))
+            {
+                item.SelectedOwner = newOwner;
+                item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
+                item.SelectedOwnerName = null;
+                PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, newOwner, item, (SfComboBox)sender));
+            }
+
         }
     }
 }
