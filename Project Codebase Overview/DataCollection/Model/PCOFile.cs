@@ -103,7 +103,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 if (this.SelectedOwner.GetType() == typeof(Author))
                 {
-                    builder.AppendLine(path + " " + ((Author)this.SelectedOwner).Email);
+                    var vCSEmail = ((Author)this.SelectedOwner).VCSEmail;
+                    if (vCSEmail != null && vCSEmail.Length > 0)
+                    {
+                        builder.AppendLine(path + " " + vCSEmail);
+                    } else
+                    {
+                        builder.AppendLine("# Path \"" + path + "\" should be owned by user \"" + this.SelectedOwner.Name + "\" but it did not have an Email set.");
+                        PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
+                    }
                 }
                 else
                 {
@@ -114,8 +122,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     }
                     else
                     {
-                        builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + ((PCOTeam)this.SelectedOwner).Name + "\" but it did not have an ID set.");
-                        PCOState.GetInstance().SetCodeOwnersExportToTeamMissingID(true);
+                        builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + this.SelectedOwner.Name + "\" but it did not have an ID set.");
+                        PCOState.GetInstance().SetCodeOwnersExportTeamMissingID(true);
                     }
                 }
             }

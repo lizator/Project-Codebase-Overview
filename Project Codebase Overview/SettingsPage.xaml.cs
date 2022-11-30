@@ -216,9 +216,17 @@ namespace Project_Codebase_Overview
                 // write to file
                 await PCOState.GetInstance().ExportStateToCodeowners(file);
 
-                if (PCOState.GetInstance().GetCodeOwnersExportToTeamMissingID())
+                if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID() && PCOState.GetInstance().GetCodeOwnersExportAuthorMissingEmail())
+                {
+                    await DialogHandler.ShowOkDialog("Missing Info", "One or more teams and users were missing their VCS info and their ownership was skipped.", XamlRoot);
+                }
+                else if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID())
                 {
                     await DialogHandler.ShowOkDialog("Missing ID", "One or more teams were missing their VCSID and their ownership was skipped.", XamlRoot);
+                }
+                else if (PCOState.GetInstance().GetCodeOwnersExportAuthorMissingEmail())
+                {
+                    await DialogHandler.ShowOkDialog("Missing Email", "One or more Author were missing their VCS Email and their ownership was skipped.", XamlRoot);
                 }
 
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.

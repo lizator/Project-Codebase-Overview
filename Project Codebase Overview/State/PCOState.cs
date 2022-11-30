@@ -35,7 +35,8 @@ namespace Project_Codebase_Overview.State
         private string LatestCommitSha;
         private string BranchName;
         public Repository TempGitRepo;
-        private bool CodeOwnersExportToTeamMissingID;
+        private bool CodeOwnersExportTeamMissingID;
+        private bool CodeOwnersExportAuthorMissingEmail;
 
 
 
@@ -123,7 +124,8 @@ namespace Project_Codebase_Overview.State
         }
         public async Task ExportStateToCodeowners(StorageFile file)
         {
-            CodeOwnersExportToTeamMissingID = false;
+            CodeOwnersExportTeamMissingID = false;
+            CodeOwnersExportAuthorMissingEmail = false;
 
             var builder = new StringBuilder();
             builder.AppendLine("# Codeowners file created using PCO for project at \"" + this.ExplorerState.GetRootPath() + "\"");
@@ -145,13 +147,22 @@ namespace Project_Codebase_Overview.State
             await FileIO.WriteTextAsync(file, builder.ToString());
         }
 
-        public void SetCodeOwnersExportToTeamMissingID(bool val)
+        public void SetCodeOwnersExportTeamMissingID(bool val)
         {
-            CodeOwnersExportToTeamMissingID = val;
+            CodeOwnersExportTeamMissingID = val;
         }
-        public bool GetCodeOwnersExportToTeamMissingID()
+        public bool GetCodeOwnersExportTeamMissingID()
         {
-            return CodeOwnersExportToTeamMissingID;
+            return CodeOwnersExportTeamMissingID;
+        }
+
+        public void SetCodeOwnersExportAuthorMissingEmail(bool val)
+        {
+            CodeOwnersExportAuthorMissingEmail = val;
+        }
+        public bool GetCodeOwnersExportAuthorMissingEmail()
+        {
+            return CodeOwnersExportAuthorMissingEmail;
         }
 
         public async Task<bool> LoadFile(StorageFile file)

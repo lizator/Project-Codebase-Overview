@@ -49,6 +49,8 @@ namespace Project_Codebase_Overview.Dialogs
             public SolidColorBrush Brush { get => _brush; set => SetProperty(ref _brush, value); }
             private string _nameFlyoutMsg;
             public string NameFlyoutMsg { get => _nameFlyoutMsg; set => SetProperty(ref _nameFlyoutMsg, value); }
+            private string _emailFlyoutMsg;
+            public string EmailFlyoutMsg { get => _emailFlyoutMsg; set => SetProperty(ref _emailFlyoutMsg, value); }
             private string _teamNameMsg;
             public string TeamNameMsg { get => _teamNameMsg; set => SetProperty(ref _teamNameMsg, value); }
             private PCOTeam _selectedTeam;
@@ -73,6 +75,7 @@ namespace Project_Codebase_Overview.Dialogs
             IsActive = CurrentAuthor.IsActive;
 
             NameBox.Text = CurrentAuthor.Name;
+            VCSEmailBox.Text = CurrentAuthor.VCSEmail;
             LocalObservables.Brush = new SolidColorBrush(CurrentAuthor.Color);
 
             foreach (var author in manager.GetAllAuthors())
@@ -156,8 +159,16 @@ namespace Project_Codebase_Overview.Dialogs
                 ShowNameFlyout();
                 return;
             }
+            if (VCSEmailBox.Text.Length > 0 && !VCSEmailBox.Text.ToLower().Equals(CurrentAuthor.VCSEmail) && !manager.CheckTeamVCSEmailAvailable(VCSEmailBox.Text))
+            {
+                LocalObservables.EmailFlyoutMsg = "The user can not have the same VCS Email as another user.";
+                ShowEmailFlyout();
+                return;
+            }
 
             CurrentAuthor.Name = NameBox.Text;
+            CurrentAuthor.VCSEmail = VCSEmailBox.Text.ToLower();
+
             CurrentAuthor.Color = LocalObservables.Brush.Color;
 
             CurrentAuthor.IsActive = IsActive;
@@ -208,6 +219,10 @@ namespace Project_Codebase_Overview.Dialogs
         private void ShowNameFlyout()
         {
             FlyoutBase.ShowAttachedFlyout((FrameworkElement)NameBox);
+        }
+        private void ShowEmailFlyout()
+        {
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)VCSEmailBox);
         }
 
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)

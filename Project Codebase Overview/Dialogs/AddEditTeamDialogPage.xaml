@@ -46,9 +46,9 @@
                             <Grid RowDefinitions="auto, auto, auto, auto, auto">
                                 <TextBlock Grid.Row="0" Text="The VCSID is used in CodeOwners to give teams in"/>
                                 <TextBlock Grid.Row="1" Text="Github/Gitlab ownership" Margin="0,0,0,8"/>
-                                <TextBlock Grid.Row="2" Text="In Gihub, the ID is denoted by the orginisation name and the"/>
+                                <TextBlock Grid.Row="2" Text="In Github, the ID is denoted by the orginisation name and the"/>
                                 <TextBlock Grid.Row="3" Text="team name. EX: '@orginasation/team-a'" Margin="0,0,0,8"/>
-                                <TextBlock Grid.Row="4" Text="In Gihub, the ID is denoted by the group nam. EX: '@group-a'" />
+                                <TextBlock Grid.Row="4" Text="In Gitlab, the ID is denoted by the group nam. EX: '@group-a'" />
                             </Grid>
                         </Flyout>
                     </Button.Flyout>

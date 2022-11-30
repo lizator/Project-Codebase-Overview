@@ -19,6 +19,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public Color Color { get => _color; set => SetProperty(ref _color, value); }
         private string _email;
         public string Email { get => _email; set => SetProperty(ref _email, value); }
+        private string _vCSEmail;
+        public string VCSEmail { get => _vCSEmail; set => SetProperty(ref _vCSEmail, value); }
         public ObservableCollection<string> Aliases { get; }
 
         private Author _overAuthor;
@@ -44,6 +46,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             this.Name = name;
             this.Email = email;
+            this.VCSEmail = email;
             this.Aliases = new ObservableCollection<string> { name };
             SubAuthors = new ObservableCollection<Author>();
             SubAuthorCount = 0;

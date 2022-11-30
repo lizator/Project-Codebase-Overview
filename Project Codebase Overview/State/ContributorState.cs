@@ -158,6 +158,15 @@ namespace Project_Codebase_Overview.ContributorManagement
             }
             return true;
         }
+        
+        public bool CheckTeamVCSEmailAvailable(string email)
+        {
+            if (Authors.Values.Where(val => val.VCSEmail.ToLower().Equals(email.ToLower())).Any())
+            {
+                return false;
+            }
+            return true;
+        }
 
         public void AddTeam(PCOTeam team)
         {
