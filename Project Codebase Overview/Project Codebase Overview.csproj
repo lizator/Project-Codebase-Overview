@@ -23,6 +23,7 @@
   <ItemGroup>
     <None Remove="Dialogs\AddEditTeamDialogPage.xaml" />
     <None Remove="Dialogs\EditAuthorDialogPage.xaml" />
+    <None Remove="Dialogs\ExpandExplorerItemDialog.xaml" />
     <None Remove="ExplorerNavigationPage.xaml" />
     <None Remove="ExplorerPage.xaml" />
     <None Remove="ManagementPage.xaml" />
@@ -65,6 +66,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Dialogs\ExpandExplorerItemDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Dialogs\EditAuthorDialogPage.xaml">

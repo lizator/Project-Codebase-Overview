@@ -63,11 +63,15 @@ namespace Project_Codebase_Overview.Dialogs
         {
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = xamlRoot;
-            dialog.Title = item.Name;
-
             
+            ExpandDialogParameters parameters = new ExpandDialogParameters();
+            parameters.Item = item;
+            parameters.Dialog = dialog;
 
-            dialog.Content = GraphHelper.GetPieChartFromExplorerItem(item);
+            var frame = new Frame();
+            frame.Navigate(typeof(ExpandExplorerItemDialog), parameters);
+            dialog.Content = frame;
+
 
             var result = await dialog.ShowAsync();
             return result;
