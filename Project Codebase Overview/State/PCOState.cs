@@ -35,6 +35,7 @@ namespace Project_Codebase_Overview.State
         private string LatestCommitSha;
         private string BranchName;
         public Repository TempGitRepo;
+        private bool CodeOwnersExportToTeamMissingID;
 
 
 
@@ -122,6 +123,8 @@ namespace Project_Codebase_Overview.State
         }
         public async Task ExportStateToCodeowners(StorageFile file)
         {
+            CodeOwnersExportToTeamMissingID = false;
+
             var builder = new StringBuilder();
             builder.AppendLine("# Codeowners file created using PCO for project at \"" + this.ExplorerState.GetRootPath() + "\"");
             builder.AppendLine("# Created " + DateTime.Now.ToShortDateString());
@@ -140,6 +143,15 @@ namespace Project_Codebase_Overview.State
             builder.AppendLine("# ______ Codeowners end ______");
 
             await FileIO.WriteTextAsync(file, builder.ToString());
+        }
+
+        public void SetCodeOwnersExportToTeamMissingID(bool val)
+        {
+            CodeOwnersExportToTeamMissingID = val;
+        }
+        public bool GetCodeOwnersExportToTeamMissingID()
+        {
+            return CodeOwnersExportToTeamMissingID;
         }
 
         public async Task<bool> LoadFile(StorageFile file)

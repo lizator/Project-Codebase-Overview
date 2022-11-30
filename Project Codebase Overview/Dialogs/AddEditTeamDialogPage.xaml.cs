@@ -100,6 +100,7 @@ namespace Project_Codebase_Overview.Dialogs
             }
 
             NameBox.Text = Team.Name;
+            VCSIDBox.Text = Team.VCSID;
 
             UnselectedAuthorList = new ObservableCollection<Author>();
             SelectedAuthorList = new ObservableCollection<Author>();
@@ -215,11 +216,19 @@ namespace Project_Codebase_Overview.Dialogs
                 ShowNameFlyout();
                 return;
             }
+
+            var newVCSID = VCSIDBox.Text.StartsWith('@') || VCSIDBox.Text.Length == 0 ? VCSIDBox.Text : "@" + VCSIDBox.Text;
+            if (newVCSID.Length > 0 && !newVCSID.Equals(Team.VCSID) && !manager.CheckTeamVCSIDAvailable(newVCSID))
+            {
+                ShowVCSIDFlyout();
+                return;
+            }
             if (Team.Name != null && Team.Name != "" && !Team.Name.Equals(NameBox.Text))
             {
                 manager.RenameTeam(Team.Name, NameBox.Text);
             }
             Team.Name = NameBox.Text;
+            Team.VCSID = newVCSID;
             Team.EmptyMembers();
             foreach (var pair in IsAuthorInTeam)
             {
@@ -247,6 +256,11 @@ namespace Project_Codebase_Overview.Dialogs
         private void ShowNameFlyout()
         {
             FlyoutBase.ShowAttachedFlyout((FrameworkElement)NameBox);
+        }
+
+        private void ShowVCSIDFlyout()
+        {
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)VCSIDBox);
         }
 
         private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)

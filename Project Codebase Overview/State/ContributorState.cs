@@ -149,6 +149,15 @@ namespace Project_Codebase_Overview.ContributorManagement
             }
             return true;
         }
+        
+        public bool CheckTeamVCSIDAvailable(string ID)
+        {
+            if (Teams.Values.Where(val => val.VCSID.ToLower().Equals(ID.ToLower())).Any())
+            {
+                return false;
+            }
+            return true;
+        }
 
         public void AddTeam(PCOTeam team)
         {

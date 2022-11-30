@@ -91,7 +91,15 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     builder.AppendLine(path + " " + ((Author)this.SelectedOwner).Email);
                 } else
                 {
-                    builder.AppendLine("# Teams not implemented.. path: \"" + path + "\" should be owned by Team \"" + this.SelectedOwner.Name + "\"");
+                    var vCSID = ((PCOTeam)this.SelectedOwner).VCSID;
+                    if (vCSID != null && vCSID.Length > 0)
+                    {
+                        builder.AppendLine(path + " " + vCSID);
+                    } else
+                    {
+                        builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + ((PCOTeam)this.SelectedOwner).Name + "\" but it did not have an ID set.");
+                        PCOState.GetInstance().SetCodeOwnersExportToTeamMissingID(true);
+                    }
                 }
             }
 

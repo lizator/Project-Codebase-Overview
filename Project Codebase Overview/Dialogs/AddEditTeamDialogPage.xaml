@@ -14,12 +14,12 @@
         </DataTemplate>
         <CollectionViewSource x:Name="UnselectedAuthors" IsSourceGrouped="True"/>
     </Page.Resources>
-    
-    
 
-    <Grid RowDefinitions="auto, *, auto" >
-        <Grid Grid.Row="0" ColumnDefinitions="3*, 2*" Padding="2,2,2,10">
-            <Grid Grid.Column="0" ColumnDefinitions="auto, *" Padding="0,0,6,0">
+
+
+    <Grid RowDefinitions="auto, auto, *, auto" >
+        <Grid Grid.Row="0" ColumnDefinitions="*" Padding="2,2,2,6">
+            <Grid Grid.Column="0" ColumnDefinitions="auto, *" >
                 <TextBlock Text="Name:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
                 <TextBox x:Name="NameBox" Grid.Column="1">
                     <FlyoutBase.AttachedFlyout>
@@ -29,12 +29,38 @@
                     </FlyoutBase.AttachedFlyout>
                 </TextBox>
             </Grid>
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="3*, 2*" Padding=" 0,0,0,10">
+            <Grid Grid.Column="0" ColumnDefinitions="auto, *, auto"  Padding="0,0,10,0">
+                <TextBlock Grid.Column="0" Text="VCS ID:" Padding="0,0,4,0" VerticalAlignment="Center"/>
+                <TextBox x:Name="VCSIDBox" Grid.Column="1" VerticalContentAlignment="Center">
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout>
+                            <TextBlock Text="The team cannot have the same ID as another team!"  />
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
+                </TextBox>
+                <Button Grid.Column="2" Padding="2" Margin="2">
+                    <Button.Flyout>
+                        <Flyout>
+                            <Grid RowDefinitions="auto, auto, auto, auto, auto">
+                                <TextBlock Grid.Row="0" Text="The VCSID is used in CodeOwners to give teams in"/>
+                                <TextBlock Grid.Row="1" Text="Github/Gitlab ownership" Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="2" Text="In Gihub, the ID is denoted by the orginisation name and the"/>
+                                <TextBlock Grid.Row="3" Text="team name. EX: '@orginasation/team-a'" Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="4" Text="In Gihub, the ID is denoted by the group nam. EX: '@group-a'" />
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                    <SymbolIcon Symbol="Help"/>
+                </Button>
+            </Grid>
             <Grid Grid.Column="1" ColumnDefinitions="auto, *">
-                <TextBlock Text="Search:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="SearchBox" Grid.Column="1" Padding="2,0,0,0" TextChanged="SearchBox_TextChanged"/>
+                <TextBlock Text="Search:" Padding="0,0,4,0" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBox x:Name="SearchBox" Grid.Column="1" TextChanged="SearchBox_TextChanged" VerticalContentAlignment="Center"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid ColumnDefinitions="*, auto, *">
                 <ListView Grid.Column="0" x:Name="UnselectedListView" 
                           SelectionMode="Multiple" ItemTemplate="{ThemeResource AuthorViewTemplate}"
@@ -72,7 +98,7 @@
                           />
             </Grid>
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="auto, *, auto, auto">
+        <Grid Grid.Row="3" ColumnDefinitions="auto, *, auto, auto">
 
             <Button Grid.Column="0" Margin="0,4,0,0">
                 <Button.Flyout>

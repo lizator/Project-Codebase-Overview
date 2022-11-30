@@ -24,7 +24,10 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public string MoreString { get => _moreString; set => SetProperty(ref _moreString, value); }
         private Visibility _moreVisibility = Visibility.Collapsed;
         public Visibility MoreVisibility { get => _moreVisibility; set => SetProperty(ref _moreVisibility, value); }
-        
+
+        private string _vCSID;
+        public string VCSID { get => _vCSID; set => SetProperty(ref _vCSID, value); }
+
         public ObservableCollection<Author> Members { get; set; }
 
         private bool _isActive = true;

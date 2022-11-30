@@ -215,6 +215,12 @@ namespace Project_Codebase_Overview
                 CachedFileManager.DeferUpdates(file);
                 // write to file
                 await PCOState.GetInstance().ExportStateToCodeowners(file);
+
+                if (PCOState.GetInstance().GetCodeOwnersExportToTeamMissingID())
+                {
+                    await DialogHandler.ShowOkDialog("Missing ID", "One or more teams were missing their VCSID and their ownership was skipped.", XamlRoot);
+                }
+
                 // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
                 // Completing updates may require Windows to ask for user input.
                 FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);

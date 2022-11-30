@@ -81,6 +81,7 @@ namespace Project_Codebase_Overview.SaveState
                 serialTeam.Name = pCOTeam.Name;
                 serialTeam.Color = pCOTeam.Color;
                 serialTeam.MemberEmails = pCOTeam.Members.Select(x => x.Email).ToList();
+                serialTeam.VCSID = pCOTeam.VCSID;
 
                 serialTeams.Add(serialTeam);
             }
@@ -204,6 +205,7 @@ namespace Project_Codebase_Overview.SaveState
             foreach(var serialTeam in serializerState.Teams)
             {
                 PCOTeam pcoTeam = new PCOTeam(serialTeam.Name, serialTeam.Color);
+                pcoTeam.VCSID = serialTeam.VCSID;
                 
                 foreach(var memberEmail in serialTeam.MemberEmails)
                 {
