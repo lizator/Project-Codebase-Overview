@@ -108,14 +108,12 @@ namespace Project_Codebase_Overview.Dialogs
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Percent", HeaderText = "%", 
                     DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
 
-                for (int i = 0; i < 3; i++)
+                
+                foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
                 {
-                    foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
-                    {
-                        Author author = dist.Key as Author;
-                        string teamName = author.Team?.Name ?? "";
-                        TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
-                    }
+                    Author author = dist.Key as Author;
+                    string teamName = author.Team?.Name ?? "";
+                    TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
                 }
                 
             }
@@ -132,7 +130,7 @@ namespace Project_Codebase_Overview.Dialogs
                 foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
                 {
                     PCOTeam team = dist.Key as PCOTeam;
-                    TopContributors.Add(new TopContributor("", team.Name, dist.Value, dist.Value / totalLines));
+                    TopContributors.Add(new TopContributor("", team.Name, dist.Value, (double) dist.Value / (double) totalLines));
                 }
             }
             
