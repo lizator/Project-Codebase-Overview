@@ -120,6 +120,27 @@ namespace Project_Codebase_Overview.State
 
             LocalSettingsHelper.AddRecentFile(file.Name, GetExplorerState().GetRoot().Name, file.Path);
         }
+        public async Task ExportStateToCodeowners(StorageFile file)
+        {
+            var builder = new StringBuilder();
+            builder.AppendLine("# Codeowners file created using PCO for project at \"" + this.ExplorerState.GetRootPath() + "\"");
+            builder.AppendLine("# Created " + DateTime.Now.ToShortDateString());
+            builder.AppendLine("#");
+            builder.AppendLine("# This file should keep the name as purely \"CODEOWNERS\".");
+            builder.AppendLine("# Place this file in the repository root directory or in the repositories .github/ or .gitlab/ folder.");
+            builder.AppendLine("#");
+            builder.AppendLine("# View the documentation for more information: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners");
+            builder.AppendLine("");
+            builder.AppendLine("");
+            builder.AppendLine("# ______ Codeowners start ______");
+
+            builder.Append(this.ExplorerState.GetRoot().ToCodeowners());
+
+            builder.AppendLine("");
+            builder.AppendLine("# ______ Codeowners end ______");
+
+            await FileIO.WriteTextAsync(file, builder.ToString());
+        }
 
         public async Task<bool> LoadFile(StorageFile file)
         {

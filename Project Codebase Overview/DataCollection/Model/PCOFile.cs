@@ -80,5 +80,38 @@ namespace Project_Codebase_Overview.DataCollection.Model
             return string.Compare(this.Name, ((PCOFile)obj).Name, StringComparison.InvariantCulture);
         }
 
+        public override string ToCodeowners()
+        {
+            var builder = new StringBuilder();
+            if (this.SelectedOwner != null)
+            {
+                builder.AppendLine("");
+                if (this.Comment != null && this.Comment.Length > 0)
+                {
+                    builder.AppendLine("# Comment:");
+                    string[] lines = this.Comment.Split(
+                        new string[] { Environment.NewLine },
+                        StringSplitOptions.None
+                    );
+                    foreach (var line in lines)
+                    {
+                        builder.Append("# " + line);
+                    }
+                }
+
+                var path = "/" + this.GetRelativePath(true);
+
+                if (this.SelectedOwner.GetType() == typeof(Author))
+                {
+                    builder.AppendLine(path + " " + ((Author)this.SelectedOwner).Email);
+                }
+                else
+                {
+                    builder.AppendLine("# Teams not implemented.. path: \"" + path + "\" should be owned by Team \"" + this.SelectedOwner.Name + "\"");
+                }
+            }
+
+            return builder.ToString();
+        }
     }
 }

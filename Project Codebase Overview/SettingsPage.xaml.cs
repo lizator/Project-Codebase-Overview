@@ -193,6 +193,48 @@ namespace Project_Codebase_Overview
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }
 
+        private async void ExportCodeownersClick(object sender, RoutedEventArgs e)
+        {
+
+            FileSavePicker savePicker = new FileSavePicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle((Application.Current as App)?.MainWindow as MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandler);
+
+            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Clear();
+            savePicker.FileTypeChoices.Add("any", new List<string>() { "." });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = "CODEOWNERS";
+
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            string outputText = "";
+            if(file != null)
+            {
+                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
+                CachedFileManager.DeferUpdates(file);
+                // write to file
+                await PCOState.GetInstance().ExportStateToCodeowners(file);
+                // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
+                // Completing updates may require Windows to ask for user input.
+                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
+                if (status == FileUpdateStatus.Complete)
+                {
+                    outputText = "Codeowners exported to: " + file.Path;
+                }
+                else
+                {
+                    outputText = "An error occurred While exporting file: " + file.Path;
+                }
+            }
+            else
+            {
+                outputText = "Export cancelled.";
+            }
+            Debug.WriteLine(outputText);
+            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast(outputText);
+        }
+
         private async void SaveClick(object sender, RoutedEventArgs e)
         {
             

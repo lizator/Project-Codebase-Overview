@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
@@ -62,6 +63,48 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             this.GraphModel.UpdateSuggestedOwner();
             //this.GenerateBarGraph();
+        }
+
+        public override string ToCodeowners()
+        {
+            var builder = new StringBuilder();
+            if (this.SelectedOwner != null)
+            {
+                builder.AppendLine("");
+                if (this.Comment != null && this.Comment.Length > 0)
+                {
+                    builder.AppendLine("# Comment:");
+                    string[] lines = this.Comment.Split(
+                        new string[] { Environment.NewLine },
+                        StringSplitOptions.None
+                    );
+                    foreach (var line in lines)
+                    {
+                        builder.Append("# " + line);
+                    }
+                }
+
+                var path = "/" + this.GetRelativePath(true);
+
+                if (this.SelectedOwner.GetType() == typeof(Author))
+                {
+                    builder.AppendLine(path + " " + ((Author)this.SelectedOwner).Email);
+                } else
+                {
+                    builder.AppendLine("# Teams not implemented.. path: \"" + path + "\" should be owned by Team \"" + this.SelectedOwner.Name + "\"");
+                }
+            }
+
+            foreach (var child in Children)
+            {
+                var txt = child.Value.ToCodeowners();
+                if (txt.Length > 0)
+                {
+                    builder.Append(txt);
+                }
+            }
+
+            return builder.ToString();
         }
 
 

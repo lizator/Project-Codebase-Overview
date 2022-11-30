@@ -27,6 +27,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
         public abstract void CalculateData();
         public abstract int CompareTo(object obj);
+        public abstract string ToCodeowners();
 
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
@@ -162,10 +163,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
             this.GetBarGraph();
         }
 
-        public string GetRelativePath()
+        public string GetRelativePath(bool useForwardSlashes = false)
         {
             PCOFolder tempFolder = this.Parent;
             string relativePath = "";
+            string seperator = useForwardSlashes ? "/" : "\\";
             if (this is PCOFolder folder)
             {
                 tempFolder = folder;
@@ -175,7 +177,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             while (tempFolder?.Parent != null)
             {
-                relativePath = tempFolder.Name + "\\" + relativePath;
+                relativePath = tempFolder.Name + seperator + relativePath;
                 tempFolder = tempFolder.Parent;
             }
             return relativePath;
