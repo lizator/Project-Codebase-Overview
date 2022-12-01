@@ -9,26 +9,8 @@
 
 # ______ Codeowners start ______
 
-/Project Codebase Overview/ frederikkoefoeds@gmail.com
+/Project\ Codebase\ Overview/TestDocs/ s195463@student.dtu.dk
 
-/Project Codebase Overview/SettingsPage.xaml jacob1211@hotmail.com
-
-/Project Codebase Overview/TestDocs/ frederikkoefoeds@gmail.com
-
-/Project Codebase Overview/TestDocs/TextFile1.txt jacob1211@hotmail.com
-
-/Project Codebase Overview/Assets/ jacob1211@hotmail.com
-
-/Project Codebase Overview/ChangeHistoryFolder/ jacob1211@hotmail.com
-
-/Project Codebase Overview/MainWindow.xaml frederikkoefoeds@gmail.com
-
-/Project Codebase Overview/MainWindow.xaml.cs frederikkoefoeds@gmail.com
-
-/Project Codebase Overview/ManagementPage.xaml jacob1211@hotmail.com
-
-/README.md jacob1211@hotmail.com
-
-/.gitattributes frederikkoefoeds@gmail.com
+/Project\ Codebase\ Overview/TestDocs/TextFile1.txt jacob1211@hotmail.com
 
 # ______ Codeowners end ______
