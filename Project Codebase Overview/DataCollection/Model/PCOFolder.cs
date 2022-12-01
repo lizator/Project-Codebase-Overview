@@ -85,6 +85,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
 
                 var path = "/" + this.GetRelativePath(true);
+                path = path.Replace(" ", "\\ ");
 
                 if (this.SelectedOwner.GetType() == typeof(Author))
                 {
