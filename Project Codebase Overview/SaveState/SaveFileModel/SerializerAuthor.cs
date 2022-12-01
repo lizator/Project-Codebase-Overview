@@ -13,6 +13,7 @@ namespace Project_Codebase_Overview.SaveState.Model
         public List<string> Aliases {get; set; }
         public Color Color { get; set; }
         public string Email { get; set; }
+        public string VCSEmail { get; set; }
         public List<SerializerAuthor> SubAuthors { get; set; }
         
 
