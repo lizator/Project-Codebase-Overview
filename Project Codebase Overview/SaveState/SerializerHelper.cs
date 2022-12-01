@@ -53,7 +53,8 @@ namespace Project_Codebase_Overview.SaveState
                 serialAuthor.Email = pCOAuthor.Email;
                 serialAuthor.VCSEmail = pCOAuthor.VCSEmail;
                 serialAuthor.Color= pCOAuthor.Color;
-                serialAuthor.Aliases = pCOAuthor.Aliases.ToList(); 
+                serialAuthor.Aliases = pCOAuthor.Aliases.ToList();
+                serialAuthor.IsActive = pCOAuthor.IsActive;
 
                 serialAuthor.SubAuthors = new List<SerializerAuthor>();
                 foreach(var pCOSubAuthor in pCOAuthor.SubAuthors)
@@ -64,6 +65,7 @@ namespace Project_Codebase_Overview.SaveState
                     serialSubAuthor.VCSEmail = pCOSubAuthor.VCSEmail;
                     serialSubAuthor.Color = pCOSubAuthor.Color;
                     serialSubAuthor.Aliases = pCOSubAuthor.Aliases.ToList();
+                    serialSubAuthor.IsActive = serialSubAuthor.IsActive;
 
                     serialAuthor.SubAuthors.Add(serialSubAuthor);
                 }
@@ -186,6 +188,7 @@ namespace Project_Codebase_Overview.SaveState
                 contributorState.InitializeAuthor(serialAuthor.Email, serialAuthor.Name, serialAuthor.Color);
                 var pcoAuthor = contributorState.GetAuthor(serialAuthor.Email);
                 pcoAuthor.VCSEmail = serialAuthor.VCSEmail;
+                pcoAuthor.IsActive = serialAuthor.IsActive;
                 //Add aliases
                 foreach(var alias in serialAuthor.Aliases)
                 {
@@ -197,6 +200,7 @@ namespace Project_Codebase_Overview.SaveState
                     contributorState.InitializeAuthor(serialSubAuthor.Email, serialSubAuthor.Name, serialSubAuthor.Color);
                     var subAuthor = contributorState.GetAuthor(serialSubAuthor.Email);
                     subAuthor.VCSEmail = serialSubAuthor.VCSEmail;
+                    subAuthor.IsActive = serialSubAuthor.IsActive;
                     pcoAuthor.ConnectAuthor(subAuthor);
                 }
             }

@@ -15,8 +15,8 @@ namespace Project_Codebase_Overview.SaveState.Model
         public string Email { get; set; }
         public string VCSEmail { get; set; }
         public List<SerializerAuthor> SubAuthors { get; set; }
+        public bool IsActive { get; set; }
         
-
         public SerializerAuthor()
         {
 

@@ -152,7 +152,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         
         public bool CheckTeamVCSIDAvailable(string ID)
         {
-            if (Teams.Values.Where(val => val.VCSID.ToLower().Equals(ID.ToLower())).Any())
+            if (Teams.Values.Where(val => val.VCSID?.ToLower()?.Equals(ID.ToLower()) ?? false).Any())
             {
                 return false;
             }

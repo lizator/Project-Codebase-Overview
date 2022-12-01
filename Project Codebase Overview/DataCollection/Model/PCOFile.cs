@@ -95,7 +95,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     );
                     foreach (var line in lines)
                     {
-                        builder.Append("# " + line);
+                        builder.AppendLine("# " + line);
                     }
                 }
 
