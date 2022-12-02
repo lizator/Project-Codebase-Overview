@@ -112,6 +112,9 @@ namespace Project_Codebase_Overview.Dialogs
 
             ActiveSlider.SelectedIndex = IsActive ? 0 : 1;
 
+            // ko TODO: delete after testing
+            CurrentAuthor.TeamHistory.Add(new TeamHistoryEntry("mami", new DateTimeOffset( new DateTime(1997, 11, 12)), new DateTimeOffset( new DateTime(2001, 9, 11))));
+            CurrentAuthor.TeamHistory.Add(new TeamHistoryEntry("cita", new DateTimeOffset( new DateTime(2001, 9, 11)), new DateTimeOffset( new DateTime(2008, 4, 2))));
         }
 
         private void UpdateAliasesAndEmails()
@@ -249,6 +252,11 @@ namespace Project_Codebase_Overview.Dialogs
                 IsActive = false;
             }
             selectedBrush.Color = IsActive ? Color.FromArgb(255, 82, 139, 82) : Color.FromArgb(255, 205, 92, 92);
+        }
+
+        private void DateChanging(object sender, Syncfusion.UI.Xaml.Editors.DateChangingEventArgs e)
+        {
+
         }
     }
 }

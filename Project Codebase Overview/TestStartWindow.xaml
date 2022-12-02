@@ -5,7 +5,12 @@
     xmlns:local="using:Project_Codebase_Overview"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    xmlns:datagrid="using:Syncfusion.UI.Xaml.DataGrid"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
+    xmlns:calendar="using:Syncfusion.UI.Xaml.Calendar"
+
+    >
 
     <Grid ColumnDefinitions="400, *">
         <StackPanel  Orientation="Vertical" Grid.Column="0">
@@ -21,7 +26,6 @@
             <Button BorderThickness="2" x:Name="ManagementPage" Click="OpenManagementPage" Margin="8,8,8,8" HorizontalAlignment="Center">Open simple management page</Button>
             <Button BorderThickness="2" x:Name="FolderTest" Click="FolderTestClick" Margin="8,8,8,8" HorizontalAlignment="Center">FolderTest</Button>
             <Button BorderThickness="2" x:Name="LoadFile" Click="LoadFileClick" Margin="8,8,8,8" HorizontalAlignment="Center">Load saved file</Button>
-            <Button BorderThickness="2" x:Name="timepritn" Click="timeprint" Margin="8,8,8,8" HorizontalAlignment="Center">timeprint</Button>
             <!--<Button BorderThickness="2" x:Name="TestLoading" Click="TestLoadingClick" Margin="8,8,8,8" HorizontalAlignment="Center">Loading test</Button>-->
         </StackPanel>
 
@@ -36,7 +40,33 @@
                 <Button Content="update new" Click="test3"/>
             </StackPanel>
 
-            <ListView ItemsSource="{x:Bind Colors}">
+
+            <datagrid:SfDataGrid ItemsSource="{x:Bind TeamHistory}" ColumnWidthMode="Star" EditTrigger="OnDoubleTap">
+                <datagrid:SfDataGrid.Columns>
+                    <datagrid:GridTextColumn MappingName="Team" AllowEditing="True"/>
+                    
+                    <datagrid:GridTemplateColumn MappingName="From">
+                        <datagrid:GridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <calendar:SfCalendarDatePicker SelectedDate="{Binding From}">
+                                </calendar:SfCalendarDatePicker>
+                            </DataTemplate>
+                        </datagrid:GridTemplateColumn.CellTemplate>
+                    </datagrid:GridTemplateColumn>
+                    
+                    <datagrid:GridTemplateColumn MappingName="To">
+                        <datagrid:GridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <calendar:SfCalendarDatePicker SelectedDate="{Binding To}">
+                                </calendar:SfCalendarDatePicker>
+                            </DataTemplate>
+                        </datagrid:GridTemplateColumn.CellTemplate>
+                    </datagrid:GridTemplateColumn>
+                    <datagrid:GridDateColumn MappingName="To" AllowNull="True" AllowEditing="True" ColumnWidthMode="SizeToCells"/>
+                </datagrid:SfDataGrid.Columns>
+            </datagrid:SfDataGrid>
+
+            <!--<ListView ItemsSource="{x:Bind Colors}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Ellipse Width="20" Height="20">
@@ -46,7 +76,7 @@
                         </Ellipse>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ListView>-->
             
 
 

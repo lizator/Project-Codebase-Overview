@@ -7,7 +7,7 @@
     xmlns:datagrid="using:Syncfusion.UI.Xaml.DataGrid"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
+    xmlns:editors="using:Syncfusion.UI.Xaml.Editors" xmlns:calendar="using:Syncfusion.UI.Xaml.Calendar"
     mc:Ignorable="d">
 
     <Grid RowDefinitions="auto, auto, *, *, auto, auto">
@@ -142,7 +142,7 @@
                 </datagrid:SfDataGrid.Columns>
             </datagrid:SfDataGrid>
         </Grid>
-        <Grid Grid.Row="4" ColumnDefinitions="auto, auto, *">
+        <Grid Grid.Row="4" ColumnDefinitions="auto, auto, *, auto">
             <Button Grid.Column="0" Margin="0,4,0,0" HorizontalAlignment="Left">
                 <Button.Flyout>
                     <Flyout>
@@ -187,6 +187,54 @@
                     </DataTemplate>
                 </editors:SfComboBox.ItemTemplate>
             </editors:SfComboBox>
+            <Button Grid.Column="3" Content="Team History">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Height="400" HorizontalAlignment="Stretch">
+                            <!--header-->
+                            <TextBlock FontSize="22" FontWeight="SemiBold" Text="Team History" HorizontalAlignment="Center"/>
+                            
+                            <!--add/delete-->
+                            <Grid ColumnDefinitions="auto,auto" HorizontalAlignment="Right">
+                                <Button>
+                                    <SymbolIcon Symbol="Add"/>
+                                </Button>
+                                <Button>
+                                    <SymbolIcon Symbol="Delete"/>
+                                </Button>
+                            </Grid>
+                            
+                            <!--history-->
+                            <datagrid:SfDataGrid ItemsSource="{x:Bind CurrentAuthor.TeamHistory}" ColumnWidthMode="Star" SelectionUnit="Row" SelectionMode="Single">
+                                <datagrid:SfDataGrid.Columns>
+                                    <datagrid:GridTextColumn MappingName="Team"/>
+
+                                    <datagrid:GridTemplateColumn MappingName="From" >
+                                        <datagrid:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <calendar:SfCalendarDatePicker SelectedDate="{Binding From}" SelectedDateChanging="DateChanging">
+                                                </calendar:SfCalendarDatePicker>
+                                            </DataTemplate>
+                                        </datagrid:GridTemplateColumn.CellTemplate>
+                                    </datagrid:GridTemplateColumn>
+
+                                    <datagrid:GridTemplateColumn MappingName="To" >
+                                        <datagrid:GridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <calendar:SfCalendarDatePicker SelectedDate="{Binding To}" SelectedDateChanging="DateChanging">
+                                                </calendar:SfCalendarDatePicker>
+                                            </DataTemplate>
+                                        </datagrid:GridTemplateColumn.CellTemplate>
+                                    </datagrid:GridTemplateColumn>
+                                </datagrid:SfDataGrid.Columns>
+                            </datagrid:SfDataGrid>
+
+
+                            <!--save/close-->
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
         </Grid>
         <Grid Grid.Row="5" ColumnDefinitions="*, auto, auto">
             <editors:SfSegmentedControl Grid.Column="0"

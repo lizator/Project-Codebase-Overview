@@ -32,6 +32,8 @@ using Windows.UI;
 using Project_Codebase_Overview.ContributorManagement;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using Project_Codebase_Overview.ContributorManagement.Model;
+using System.ComponentModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -45,6 +47,7 @@ namespace Project_Codebase_Overview
     {
         public ObservableCollection<Color> Colors;
 
+        public ObservableCollection<TeamHistoryEntry> TeamHistory = new ObservableCollection<TeamHistoryEntry>();
         public TestStartWindow()
         {
             this.InitializeComponent();
@@ -54,6 +57,9 @@ namespace Project_Codebase_Overview
             {
                 Colors.Add(color);
             }
+            
+            TeamHistory.Add(new TeamHistoryEntry("mami", new DateTimeOffset(new DateTime(1997, 11, 12)), new DateTimeOffset( new DateTime(2001, 9, 11))));
+            //TeamHistory.Add(new TeamHistoryEntry("cita", new DateTime(2001, 9, 11), new DateTime(2008, 4, 2)));
         }
 
         public class TestObservableClass : ObservableObject
@@ -564,9 +570,5 @@ namespace Project_Codebase_Overview
 
         }
 
-        private void timeprint(object sender, RoutedEventArgs e)
-        {
-            Debug.WriteLine("time: " + DateTime.Now.Date.ToShortDateString());
-        }
     }
 }

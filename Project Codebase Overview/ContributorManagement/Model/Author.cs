@@ -42,6 +42,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         private Symbol _activeSymbol;
         public Symbol ActiveSymbol { get => _activeSymbol; set => SetProperty(ref _activeSymbol, value); }
 
+        public ObservableCollection<TeamHistoryEntry> TeamHistory = new ObservableCollection<TeamHistoryEntry>();
+
         public Author(string email, string name)
         {
             this.Name = name;
