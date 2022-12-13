@@ -44,7 +44,7 @@ namespace Project_Codebase_Overview
     public sealed partial class TestStartWindow : Window
     {
         public ObservableCollection<Color> Colors;
-
+        public ObservableCollection<GraphBlock> Blocks = new ObservableCollection<GraphBlock>();
         public TestStartWindow()
         {
             this.InitializeComponent();
@@ -54,6 +54,35 @@ namespace Project_Codebase_Overview
             {
                 Colors.Add(color);
             }
+
+            var block1 = new GraphBlock();
+            block1.Color = Colors[0];
+            block1.Percentage = 45.0;
+            
+            var block2 = new GraphBlock();
+            block2.Color = Colors[1];
+            block2.Percentage = 35.0;
+            
+            var block3 = new GraphBlock();
+            block3.Color = Colors[2];
+            block3.Percentage = 20.0;
+
+            Blocks.Add(block1);
+            Blocks.Add(block2);
+            Blocks.Add(block3);
+        }
+
+        public void test1(object sender, RoutedEventArgs e)
+        {
+            var block3 = new GraphBlock();
+            block3.Color = Colors[4];
+            block3.Percentage = 20.0;
+
+            Blocks.Add(block3);
+        }
+        public void test2(object sender, RoutedEventArgs e)
+        {
+            Blocks[2].Percentage = 20.0;
         }
 
         public class TestObservableClass : ObservableObject
@@ -169,17 +198,6 @@ namespace Project_Codebase_Overview
                 sfLinearGauge.Axis.Ranges.Add(gaugeRange);
             }
             TestObj.BarGraph = sfLinearGauge;
-        }
-
-        public void test1(object sender, RoutedEventArgs e) 
-        {
-            TestObj.plusTest = false;
-            TestObj.test();
-        }
-        public void test2(object sender, RoutedEventArgs e) 
-        {
-            TestObj.plusTest = true;
-            TestObj.test();
         }
 
         private async void UseAsIntended(object sender, RoutedEventArgs e)
