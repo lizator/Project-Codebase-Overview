@@ -26,16 +26,13 @@ namespace Project_Codebase_Overview.ChangeHistoryFolder
 
         public void RedoChange()
         {
-            Item.SelectedOwner = NewOwner;
-            Item.SelectedOwnerColor = null;
             Item.SelectedOwnerName = null;
             SfComboBox.Text = Item.SelectedOwnerName;
         }
 
         public void UndoChange()
         {
-            Item.SelectedOwner = PreviousOwner;
-            Item.SelectedOwnerColor = null;
+            //Item.SelectedOwner = PreviousOwner;
             Item.SelectedOwnerName = null;
             if (Item.SelectedOwnerName.Equals("Unselected")){
                 SfComboBox.Text = "";

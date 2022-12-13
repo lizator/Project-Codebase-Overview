@@ -62,7 +62,7 @@ namespace Project_Codebase_Overview
         private void UpdateOwnerList()
         {
             OwnersList.Clear();
-            var list = PCOState.GetInstance().GetContributorState().GetAllOwners();
+            var list = PCOState.GetInstance().GetContributorState().GetAllOwnersInMode();
             foreach (var owner in list)
             {
                 OwnersList.Add(owner);

@@ -10,6 +10,59 @@
                 <!-- Other merged dictionaries here -->
             </ResourceDictionary.MergedDictionaries>
             <!-- Other app resources here -->
+
+            <DataTemplate x:Key="OwnerItemTemplate">
+                <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" Margin="6,0,0,0">
+                    <Ellipse Height="20" Width="20" StrokeThickness="1" 
+                                                              Stroke="Black"
+                                                            Grid.Column="0" >
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock Margin="10,0,0,0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="OwnerTokenTemplate">
+                <Grid HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Ellipse Height="16" Width="16" StrokeThickness="1"
+                         Stroke="Black"
+                         Grid.Column="0">
+                        <Ellipse.Fill>
+                            <SolidColorBrush Color="{Binding Color, Mode=OneWay}"></SolidColorBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                    <TextBlock  Margin="8,0,0,0"
+                            Grid.Column="1" 
+                            TextAlignment="Center"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center" 
+                            Text="{Binding Name}"/>
+                </Grid>
+            </DataTemplate>
+
+            <GroupStyle x:Key="OwnerGroupHeader">
+                <GroupStyle.HeaderTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <TextBlock
+                                FontWeight="SemiBold"
+                                FontSize="14"
+                                FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                VerticalAlignment="Center"
+                                Text="{Binding Key}" />
+                        </Grid>
+                    </DataTemplate>
+                </GroupStyle.HeaderTemplate>
+            </GroupStyle>
+
         </ResourceDictionary>
+
     </Application.Resources>
 </Application>
