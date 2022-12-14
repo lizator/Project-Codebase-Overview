@@ -161,15 +161,40 @@ namespace Project_Codebase_Overview.Dialogs
                     pair.Value.Name.ToLower().Contains(searchString.ToLower()) ||
                     pair.Value.Email.ToLower().Contains(searchString.ToLower()) ||
                     (
-                        pair.Value.Team == null ?
+                        pair.Value.Teams.Count == 0 ?
                             NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) :
-                            pair.Value.Team.Name.ToLower().Contains(searchString.ToLower())
+                            pair.Value.Teams.Select(x => x.Name.ToLower().Contains(searchString.ToLower())).Any()
                     )
                 ))
             )
-            .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => UnselectedAuthorList.Add(author));
+            .Select(pair => pair.Value).OrderBy(author => author.Name).ForEach(author => UnselectedAuthorList.Add(author));
 
-            var query = UnselectedAuthorList.GroupBy(item => (item.Team == null ? NO_TEAM_HEADER_TEXT : item.Team.Name))
+            //simple grouping
+            var groups = UnselectedAuthorList.GroupBy(item => (item.Teams.Count == 0 ? NO_TEAM_HEADER_TEXT : item.Teams[0].Name));
+            //add extras 
+            foreach(var author in UnselectedAuthorList)
+            {
+                if(author.Teams.Count > 1)
+                {
+                    for(int i=0; i < author.Teams.Count; i++)
+                    {
+                        var team = author.Teams[i];
+                        foreach(var group in groups)
+                        {
+                            if (group.Key.Equals(team.Name))
+                            {
+                                if (!group.Contains(author))
+                                {
+                                    group.Append(author);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            var query = groups
                 .OrderBy(item => (item.Key.Equals(NO_TEAM_HEADER_TEXT)) ? 0 : 1)
                 .ThenBy(item => item.Key)
                 .Select(item => new GroupInfoList(item) { Key = item.Key });

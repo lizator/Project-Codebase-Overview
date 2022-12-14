@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,8 +27,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         private Author _overAuthor;
         public Author OverAuthor { get => _overAuthor; set => SetProperty(ref _overAuthor, value); }
         public ObservableCollection<Author> SubAuthors { get; set; }
-        private PCOTeam _team;
-        public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
+        private ObservableCollection<PCOTeam> _teams;
+        public ObservableCollection<PCOTeam> Teams { get => _teams; set => SetProperty(ref _teams, value); }
         private int _subAuthorCount;
         public int SubAuthorCount { get => _subAuthorCount; set => SetProperty(ref _subAuthorCount, value); }
         private bool _isActive;
@@ -36,7 +37,10 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             SetProperty(ref _isActive, value);
             ActiveSymbol = _isActive ? Symbol.Accept : Symbol.Cancel;
-            Team?.UpdateIsActive();
+            foreach(var team in Teams)
+            {
+                team?.UpdateIsActive();
+            }
         }
 
         private Symbol _activeSymbol;
@@ -44,6 +48,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         public Author(string email, string name)
         {
+            Teams = new ObservableCollection<PCOTeam>();
             this.Name = name;
             this.Email = email;
             this.VCSEmail = email;
@@ -70,9 +75,13 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         public void ConnectAuthor(Author otherAuthor)
         {
-            if(otherAuthor.Team != null)
+            if(otherAuthor.Teams.Count != 0)
             {
-                otherAuthor.DisconnectFromTeam();
+                var otherAuthorTeams = otherAuthor.Teams.ToList();
+                foreach(var team in otherAuthorTeams)
+                {
+                    otherAuthor.DisconnectFromTeam(team);
+                }
             }
             if (otherAuthor.OverAuthor != null)
             {
@@ -115,9 +124,10 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             team.ConnectMember(this);
         }
-        public void DisconnectFromTeam()
+        public void DisconnectFromTeam(PCOTeam team)
         {
-            Team.RemoveMember(this);
+            team.RemoveMember(this);
+            this.Teams.Remove(team);
         }
     }
 }

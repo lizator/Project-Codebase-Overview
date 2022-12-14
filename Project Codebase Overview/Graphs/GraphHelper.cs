@@ -37,8 +37,8 @@ namespace Project_Codebase_Overview.Graphs
         {
             //Creator is only given for files
             var distributions = graphModel.LineDistribution;
-            var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
-
+            //var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
+            var linesTotal = graphModel.LineDistribution.Sum(x => x.Value);
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
             var distributionAmount = distributions.Count();

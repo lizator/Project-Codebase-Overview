@@ -112,7 +112,16 @@ namespace Project_Codebase_Overview.Dialogs
                 foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
                 {
                     Author author = dist.Key as Author;
-                    string teamName = author.Team?.Name ?? "";
+                    string teamName = "";
+                    if (author.Teams.Count > 1)
+                    {
+                        teamName = "Multiple";
+                    }
+                    else if(author.Teams.Count > 0)
+                    {
+                        teamName = author.Teams[0].Name;
+                    }
+                    
                     TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
                 }
                 

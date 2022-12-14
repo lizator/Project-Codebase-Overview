@@ -40,17 +40,31 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             foreach (var groupedComm in groupedCommits)
             {
-                IOwner  owner;
+                List<IOwner>  owners = new List<IOwner>();//commit can have multiple owners if user is in multiple teams
                 if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
                 {
-                    owner = groupedComm.First().GetAuthor(); 
+                    owners.Add(groupedComm.First().GetAuthor()); 
                 }
                 else
                 {
                     //Mode.TEAMS
-                    owner = groupedComm.First().GetAuthor().Team ?? PCOState.GetInstance().GetContributorState().GetNoTeam();
+                    if(groupedComm.First().GetAuthor().Teams.Count != 0)
+                    {
+                        foreach(var team in groupedComm.First().GetAuthor().Teams)
+                        {
+                            owners.Add(team);
+                        }
+                    }
+                    else
+                    {
+                        //not in team
+                        owners.Add(PCOState.GetInstance().GetContributorState().GetNoTeam());
+                    }
                 }
-                this.GraphModel.LineDistribution.TryAdd(owner, 0);
+                foreach (var owner in owners)
+                {
+                    this.GraphModel.LineDistribution.TryAdd(owner, 0);
+                }
 
                 foreach (var commit in groupedComm)
                 {
@@ -61,7 +75,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
                     this.GraphModel.LinesAfterDecay += linesAfterDecay;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
-                    this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
+                    foreach(var owner in owners)
+                    {
+                        this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
+                    }
                 }
             }
             if (this.GraphModel.LinesTotal > 0)

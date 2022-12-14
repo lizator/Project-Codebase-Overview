@@ -21,6 +21,9 @@ using Microsoft.VisualBasic;
 using Project_Codebase_Overview.State;
 using Project_Codebase_Overview.Settings;
 using Windows.UI;
+using Syncfusion.UI.Xaml.Data;
+using System.Reflection.Metadata;
+using Syncfusion.UI.Xaml.DataGrid;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -40,7 +43,6 @@ namespace Project_Codebase_Overview.Dialogs
         public ObservableCollection<Author> OtherAuthors;
         public ObservableCollection<PCOTeam> Teams;
         public Author CurrentAuthor;
-        public PCOTeam NoTeamObject;
         private bool IsInitialized = false;
         private bool IsActive = true;
         private class Observables : ObservableObject
@@ -53,8 +55,10 @@ namespace Project_Codebase_Overview.Dialogs
             public string EmailFlyoutMsg { get => _emailFlyoutMsg; set => SetProperty(ref _emailFlyoutMsg, value); }
             private string _teamNameMsg;
             public string TeamNameMsg { get => _teamNameMsg; set => SetProperty(ref _teamNameMsg, value); }
-            private PCOTeam _selectedTeam;
-            public PCOTeam SelectedTeam { get => _selectedTeam; set => SetProperty(ref _selectedTeam, value); }
+            private ObservableCollection<PCOTeam> _selectedTeams;
+            public ObservableCollection<PCOTeam> SelectedTeams { get => _selectedTeams; set => SetProperty(ref _selectedTeams, value); }
+            private string _selectedTeamsString;
+            public string SelectedTeamsString { get => _selectedTeamsString; set => SetProperty(ref _selectedTeamsString, value); }
         }
         private Observables LocalObservables;
         public EditAuthorDialogPage()
@@ -66,8 +70,6 @@ namespace Project_Codebase_Overview.Dialogs
             OtherAuthors = new ObservableCollection<Author>();
             Teams = new ObservableCollection<PCOTeam>();
             LocalObservables = new Observables();
-
-            NoTeamObject = new PCOTeam("No Team", PCOColorPicker.Black);
 
             var manager = PCOState.GetInstance().GetContributorState();
             CurrentAuthor = manager.GetSelectedAuthor();
@@ -94,21 +96,24 @@ namespace Project_Codebase_Overview.Dialogs
             UpdateAliasesAndEmails();
 
 
-            Teams.Add(NoTeamObject);
             foreach (var team in manager.GetAllTeams())
             {
                 Teams.Add(team);
             }
 
-            if (CurrentAuthor.Team != null)
+            if (CurrentAuthor.Teams.Count != 0)
             {
-                LocalObservables.SelectedTeam = CurrentAuthor.Team;
+                LocalObservables.SelectedTeams = CurrentAuthor.Teams.Select(x => x).ToObservableCollection();
             }
             else
             {
-                LocalObservables.SelectedTeam = NoTeamObject;
+                LocalObservables.SelectedTeams = new ObservableCollection<PCOTeam>();
             }
-
+            foreach(var team in CurrentAuthor.Teams)
+            {
+                TeamsDataGrid.SelectedItems.Add(team);
+            }
+            UpdateTeamsString();
 
             ActiveSlider.SelectedIndex = IsActive ? 0 : 1;
 
@@ -179,14 +184,21 @@ namespace Project_Codebase_Overview.Dialogs
                 CurrentAuthor.ConnectAuthor(subAuthor);
             }
 
-            if (CurrentAuthor.Team != null)
+            if (CurrentAuthor.Teams.Count != 0)
             {
-                CurrentAuthor.DisconnectFromTeam();
+                var previousTeams = CurrentAuthor.Teams.ToList();
+                foreach(var team in previousTeams)
+                {
+                    CurrentAuthor.DisconnectFromTeam(team);
+                }
             }
 
-            if (LocalObservables.SelectedTeam != NoTeamObject)
+            if (LocalObservables.SelectedTeams.Count != 0)
             {
-                CurrentAuthor.ConnectToTeam(LocalObservables.SelectedTeam);
+                foreach(var team in LocalObservables.SelectedTeams)
+                {
+                    CurrentAuthor.ConnectToTeam(team);
+                }
             }
 
             manager.SetAuthorUpdated(true);
@@ -249,6 +261,41 @@ namespace Project_Codebase_Overview.Dialogs
                 IsActive = false;
             }
             selectedBrush.Color = IsActive ? Color.FromArgb(255, 82, 139, 82) : Color.FromArgb(255, 205, 92, 92);
+        }
+
+        private void TeamSelectionChanged(object sender, Syncfusion.UI.Xaml.Grids.GridSelectionChangedEventArgs e)
+        {
+           
+            foreach(var addedItem in e.AddedItems)
+            {
+                var team = ((GridRowInfo)addedItem).RowData as PCOTeam;
+                if (! LocalObservables.SelectedTeams.Contains(team)) { 
+                    LocalObservables.SelectedTeams.Add(team);
+                }
+            }
+            foreach(var removedItem in e.RemovedItems)
+            {
+                var team = ((GridRowInfo)removedItem).RowData as PCOTeam;
+                if (LocalObservables.SelectedTeams.Contains(team))
+                {
+                    LocalObservables.SelectedTeams.Remove(team);
+                }
+            }
+            UpdateTeamsString();
+        }
+        private void UpdateTeamsString()
+        {
+            string teamsString = "";
+            foreach(var team in LocalObservables.SelectedTeams)
+            {
+                teamsString += team.Name + ", ";
+            }
+            if (teamsString.Length > 0)
+            {
+
+                teamsString = teamsString.Substring(0, teamsString.Length - 2);
+            }
+            LocalObservables.SelectedTeamsString = teamsString;
         }
     }
 }
