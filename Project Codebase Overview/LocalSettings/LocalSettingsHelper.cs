@@ -31,7 +31,7 @@ namespace Project_Codebase_Overview.LocalSettings
                 {
                     recentList.Remove(recentList.Last());
                 }
-                recentList.Add(new RecentFileInfo(fileName, repoName, filePath, DateTime.Now.Date.ToShortDateString()));
+                recentList.Insert(0, new RecentFileInfo(fileName, repoName, filePath, DateTime.Now.Date.ToShortDateString()));
             }
 
             //save recent list
