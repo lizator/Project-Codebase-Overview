@@ -172,27 +172,7 @@ namespace Project_Codebase_Overview.Dialogs
             //simple grouping
             var groups = UnselectedAuthorList.GroupBy(item => (item.Teams.Count == 0 ? NO_TEAM_HEADER_TEXT : item.Teams[0].Name));
             //add extras 
-            foreach(var author in UnselectedAuthorList)
-            {
-                if(author.Teams.Count > 1)
-                {
-                    for(int i=0; i < author.Teams.Count; i++)
-                    {
-                        var team = author.Teams[i];
-                        foreach(var group in groups)
-                        {
-                            if (group.Key.Equals(team.Name))
-                            {
-                                if (!group.Contains(author))
-                                {
-                                    group.Append(author);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            
 
             var query = groups
                 .OrderBy(item => (item.Key.Equals(NO_TEAM_HEADER_TEXT)) ? 0 : 1)
@@ -200,6 +180,29 @@ namespace Project_Codebase_Overview.Dialogs
                 .Select(item => new GroupInfoList(item) { Key = item.Key });
 
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
+
+            //Add "doubles" of users that are in multiple teams
+            foreach (var author in UnselectedAuthorList)
+            {
+                if (author.Teams.Count > 1)
+                {
+                    for (int i = 0; i < author.Teams.Count; i++)
+                    {
+                        var team = author.Teams[i];
+                        foreach (var group in ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source))
+                        {
+                            if (group.Key.Equals(team.Name))
+                            {
+                                if (!group.Contains(author))
+                                {
+                                    group.Add(author);
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
 
             SelectedAuthorList.Clear();
             AuthorList.Where(pair =>
@@ -315,7 +318,7 @@ namespace Project_Codebase_Overview.Dialogs
             manager.SetCurrentTeamDialog(null);
         }
     }
-    public class GroupInfoList : List<object>
+    public class GroupInfoList : ObservableCollection<object>
     {
         public GroupInfoList(IEnumerable<object> items) : base(items)
         {
