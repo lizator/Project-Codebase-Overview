@@ -82,54 +82,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
         public override string ToCodeowners()
         {
-            var builder = new StringBuilder();
-            if (this.SelectedOwner != null)
-            {
-                builder.AppendLine("");
-                if (this.Comment != null && this.Comment.Length > 0)
-                {
-                    builder.AppendLine("# Comment:");
-                    string[] lines = this.Comment.Split(
-                        new string[] { Environment.NewLine },
-                        StringSplitOptions.None
-                    );
-                    foreach (var line in lines)
-                    {
-                        builder.AppendLine("# " + line);
-                    }
-                }
-
-                var path = "/" + this.GetRelativePath(true);
-                path = path.Replace(" ", "\\ ");
-
-                if (this.SelectedOwner.GetType() == typeof(Author))
-                {
-                    var vCSEmail = ((Author)this.SelectedOwner).VCSEmail;
-                    if (vCSEmail != null && vCSEmail.Length > 0)
-                    {
-                        builder.AppendLine(path + " " + vCSEmail);
-                    } else
-                    {
-                        builder.AppendLine("# Path \"" + path + "\" should be owned by user \"" + this.SelectedOwner.Name + "\" but it did not have an Email set.");
-                        PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
-                    }
-                }
-                else
-                {
-                    var vCSID = ((PCOTeam)this.SelectedOwner).VCSID;
-                    if (vCSID != null && vCSID.Length > 0)
-                    {
-                        builder.AppendLine(path + " " + vCSID);
-                    }
-                    else
-                    {
-                        builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + this.SelectedOwner.Name + "\" but it did not have an ID set.");
-                        PCOState.GetInstance().SetCodeOwnersExportTeamMissingID(true);
-                    }
-                }
-            }
-
-            return builder.ToString();
+            return this.GetCodeownerLines();
         }
     }
 }

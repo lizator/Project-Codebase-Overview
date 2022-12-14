@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace Project_Codebase_Overview.SaveState
 {
@@ -98,21 +99,8 @@ namespace Project_Codebase_Overview.SaveState
             serialFolder.Name = pCOFolder.Name;
             serialFolder.Comment = pCOFolder.Comment ?? "";
 
-            var selectedOwner = pCOFolder.SelectedOwner;
-            if(selectedOwner != null)
-            {
-
-                if (selectedOwner.GetType() == typeof(Author))
-                {
-                    serialFolder.SelectedAuthorEmail = ((Author)selectedOwner).Email;
-                    serialFolder.SelectedTeamName = "";
-                }
-                else
-                {
-                    serialFolder.SelectedAuthorEmail = "";
-                    serialFolder.SelectedTeamName = ((PCOTeam)selectedOwner).Name;
-                }
-            }
+            serialFolder.SelectedTeamNames = pCOFolder.SelectedOwners.Where(owner => owner.GetType() == typeof(PCOTeam)).Select(owner => owner.Name).ToList();
+            serialFolder.SelectedAuthorEmails = pCOFolder.SelectedOwners.Where(owner => owner.GetType() == typeof(Author)).Select(owner => ((Author)owner).Email).ToList();
 
             foreach (var child in pCOFolder.Children.Values)
             {
@@ -135,21 +123,8 @@ namespace Project_Codebase_Overview.SaveState
             serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
             serialFile.Comment = pCOFile.Comment ?? "";
 
-            var selectedOwner = pCOFile.SelectedOwner;
-            if (selectedOwner != null)
-            {
-
-                if (selectedOwner.GetType() == typeof(Author))
-                {
-                    serialFile.SelectedAuthorEmail = ((Author)selectedOwner).Email;
-                    serialFile.SelectedTeamName = "";
-                }
-                else
-                {
-                    serialFile.SelectedAuthorEmail = "";
-                    serialFile.SelectedTeamName = ((PCOTeam)selectedOwner).Name;
-                }
-            }
+            serialFile.SelectedTeamNames = pCOFile.SelectedOwners.Where(owner => owner.GetType() == typeof(PCOTeam)).Select(owner => owner.Name).ToList();
+            serialFile.SelectedAuthorEmails = pCOFile.SelectedOwners.Where(owner => owner.GetType() == typeof(Author)).Select(owner => ((Author)owner).Email).ToList();
 
             foreach (var commit in pCOFile.commits)
             {
@@ -239,13 +214,25 @@ namespace Project_Codebase_Overview.SaveState
             PCOFolder pCOFolder = new PCOFolder(serialFolder.Name, parent);
             pCOFolder.Comment = serialFolder.Comment ?? "";
             //set owner
-            if (serialFolder.SelectedAuthorEmail != null)
+            if (serialFolder.SelectedAuthorEmails?.Count > 0)
             {
-                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                foreach (var authorEmail in serialFolder.SelectedAuthorEmails)
+                {
+                    if (!pCOFolder.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                    }
+                }
             }
-            else if(serialFolder.SelectedTeamName != null)
+            if (serialFolder.SelectedTeamNames?.Count > 0)
             {
-                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                foreach (var teamName in serialFolder.SelectedTeamNames)
+                {
+                    if (!pCOFolder.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                    }
+                }
             }
             //add subfolders to the folder
             foreach (var subFolder in serialFolder.SubFolders)
@@ -260,13 +247,25 @@ namespace Project_Codebase_Overview.SaveState
                 pCOFile.Comment = subFile.Comment ?? "";
 
                 pCOFile.Creator = !subFile.CreatorEmail.Equals("") ? PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail) : null;
-                if (subFile.SelectedAuthorEmail != null)
+                if (subFile.SelectedAuthorEmails?.Count > 0)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.SelectedAuthorEmail);
+                    foreach (var authorEmail in subFile.SelectedAuthorEmails)
+                    {
+                        if (!pCOFile.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                        }
+                    }
                 }
-                else if (subFile.SelectedTeamName != null)
+                if (subFile.SelectedTeamNames?.Count > 0)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == subFile.SelectedTeamName);
+                    foreach (var teamName in subFile.SelectedTeamNames)
+                    {
+                        if (!pCOFile.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                        }
+                    }
                 }
                 foreach (var serialCommit in subFile.Commits)
                 {

@@ -98,7 +98,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             return Teams.Values.ToList();
         }
-        public List<IOwner> GetAllOwners()
+        public List<IOwner> GetAllOwnersInMode()
         {
             if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
             {
@@ -109,6 +109,15 @@ namespace Project_Codebase_Overview.ContributorManagement
                 //Mode.TEAMS
                 return GetAllTeams().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }
+        }
+
+        public List<IOwner> GetAllOwners()
+        {
+            List<IOwner> owners = new List<IOwner>();
+            owners.AddRange(GetAllAuthors());
+            owners.AddRange(GetAllTeams().Where(x => x.IsActive));
+
+            return owners;
         }
 
         public void SetSelectedTeam(PCOTeam team)
