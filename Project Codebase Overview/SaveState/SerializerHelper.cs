@@ -218,14 +218,20 @@ namespace Project_Codebase_Overview.SaveState
             {
                 foreach (var authorEmail in serialFolder.SelectedAuthorEmails)
                 {
-                    pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                    if (!pCOFolder.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                    }
                 }
             }
             if (serialFolder.SelectedTeamNames?.Count > 0)
             {
                 foreach (var teamName in serialFolder.SelectedTeamNames)
                 {
-                    pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                    if (!pCOFolder.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                    }
                 }
             }
             //add subfolders to the folder
@@ -245,14 +251,20 @@ namespace Project_Codebase_Overview.SaveState
                 {
                     foreach (var authorEmail in subFile.SelectedAuthorEmails)
                     {
-                        pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                        if (!pCOFile.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                        }
                     }
                 }
                 if (subFile.SelectedTeamNames?.Count > 0)
                 {
                     foreach (var teamName in subFile.SelectedTeamNames)
                     {
-                        pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                        if (!pCOFile.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                        }
                     }
                 }
                 foreach (var serialCommit in subFile.Commits)

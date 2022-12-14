@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Project_Codebase_Overview.State;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,7 +57,9 @@ namespace Project_Codebase_Overview.ChangeHistoryFolder
             {
                 UndoAvailable = false;
             }
-            
+
+            PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
+
         }
         public void Redo()
         {
@@ -70,6 +73,8 @@ namespace Project_Codebase_Overview.ChangeHistoryFolder
             {
                 RedoAvailable = false;
             }
+
+            PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
         }
 
     }

@@ -283,12 +283,15 @@ namespace Project_Codebase_Overview
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
         {
             var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
+            var change = false;
 
             foreach (var newOwner in e.AddedItems)
             {
                 if (newOwner != null && (newOwner.GetType() == typeof(Author) || newOwner.GetType() == typeof(PCOTeam)))
                 {
                     item.SelectedOwners.Add((IOwner)newOwner);
+                    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(null, (IOwner)newOwner, item, (SfComboBox)sender));
+                    change = true;
                 }
             }
             foreach (var removedOwner in e.RemovedItems)
@@ -297,12 +300,16 @@ namespace Project_Codebase_Overview
                 if (removedOwner != null && (removedOwner.GetType() == typeof(Author) || removedOwner.GetType() == typeof(PCOTeam)))
                 {
                     item.SelectedOwners.Remove((IOwner)removedOwner);
+                    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange((IOwner)removedOwner, null, item, (SfComboBox)sender));
+                    change = true;
                 }
             }
 
             item.SelectedOwnerName = null;
-
-            Debug.WriteLine("Changed selected owners");
+            if (change)
+            {
+                Debug.WriteLine("Changed selected owners");
+            }
 
             //var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
             //var previousOwner = item.SelectedOwner;
@@ -340,6 +347,11 @@ namespace Project_Codebase_Overview
                 GraphViewActive = false;
                 GraphView.Visibility = Visibility.Collapsed;
                 rootTreeGrid.Visibility = Visibility.Visible;
+                if (PCOState.GetInstance().GetExplorerState().GraphViewHasChanges)
+                {
+                    PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
+                    PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+                }
 
             }
             else
@@ -351,6 +363,7 @@ namespace Project_Codebase_Overview
                 GraphView.Visibility = Visibility.Visible;
                 //GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
                 GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
+                PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
             }
 
         }
@@ -416,11 +429,6 @@ namespace Project_Codebase_Overview
             return;
             var comboBox = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
             var item = comboBox.DataContext as ExplorerItem;
-
-            if (item.Name.Equals("README.md"))
-            {
-                var ko = "muh";
-            }
 
             comboBox.SelectedItems.Clear();
             foreach (var owner in item.SelectedOwners.Select(x => x).ToArray())

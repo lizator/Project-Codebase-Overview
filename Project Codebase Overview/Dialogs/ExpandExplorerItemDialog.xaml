@@ -37,27 +37,47 @@
         
         <!-- owners -->
         <Grid ColumnDefinitions="auto, *" RowDefinitions="auto,auto" RowSpacing="5" ColumnSpacing="10" DataContext="{x:Bind ExplorerItem}">
-            <!--selected owner-->
+            <!--selected owner--><!--
+            <Grid.Resources>
+                <CollectionViewSource x:Name="SelectableCollection"
+                              Source="{Binding Owners}"
+                              IsSourceGrouped="True"/>
+            </Grid.Resources>
             <TextBlock Text="Selected Owner" Grid.Column="0" Grid.Row="0"/>
-            <editors:SfComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{Binding Owners}" 
+            <editors:SfComboBox Grid.Column="1" Grid.Row="0" ItemsSource="{x:Bind SelectableCollection.View, Mode=OneWay}" 
                                                         SelectionChanged="SfComboBox_SelectionChanged"
                                                         HorizontalAlignment="Stretch"
                                                         TextMemberPath="Name"
                                                         IsTextSearchEnabled="False"
                                                         IsEditable="False"
+                                                        SelectionMode="Multiple"
+                                                        MultiSelectionDisplayMode="Delimiter"
                                                         IsFilteringEnabled="False"
-                                                        Text="{Binding SelectedOwnerName}"
                                                         PlaceholderText="{Binding SelectedOwnerName}"
                                                         ItemTemplate="{StaticResource OwnerItemTemplate}"
                                                         >
 
-                <editors:SfComboBox.LeadingView >
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock
+                                FontWeight="SemiBold"
+                                FontSize="14"
+                                FontFamily="{ThemeResource ContentControlThemeFontFamily}"
+                                VerticalAlignment="Center"
+                                Text="{Binding Key}" />
+                            </Grid>
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+                --><!--<editors:SfComboBox.LeadingView >
                     <Ellipse Height="20" Width="20" StrokeThickness="1"
                                                           Stroke="Black"
                                                         Grid.Column="0"  Fill="{Binding SelectedOwnerColor, Mode=OneWay}"/>
-                </editors:SfComboBox.LeadingView>
+                </editors:SfComboBox.LeadingView>--><!--
 
-            </editors:SfComboBox>
+            </editors:SfComboBox>-->
 
             <!--suggested owner-->
             <TextBlock Text="Suggested Owner" Grid.Column="0" Grid.Row="1"/>

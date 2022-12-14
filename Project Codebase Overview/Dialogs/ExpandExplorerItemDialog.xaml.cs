@@ -155,16 +155,37 @@ namespace Project_Codebase_Overview.Dialogs
         }
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
         {
-            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
+            return; //Not used for now
+            var box = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
+            var item = box.DataContext as ExplorerItem;
+
 
             foreach (var newOwner in e.AddedItems)
             {
-                item.SelectedOwners.Add((IOwner)newOwner);
+                if (newOwner != null && (newOwner.GetType() == typeof(Author) || newOwner.GetType() == typeof(PCOTeam)))
+                {
+                    if (!item.SelectedOwners.Contains(newOwner))
+                    {
+                        item.SelectedOwners.Add((IOwner)newOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(null, (IOwner)newOwner, item, (SfComboBox)sender));
+                    }
+                }
             }
             foreach (var removedOwner in e.RemovedItems)
             {
-                item.SelectedOwners.Remove((IOwner)removedOwner);
+
+                if (removedOwner != null && (removedOwner.GetType() == typeof(Author) || removedOwner.GetType() == typeof(PCOTeam)))
+                {
+                    if (item.SelectedOwners.Contains(removedOwner))
+                    {
+                        item.SelectedOwners.Remove((IOwner)removedOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange((IOwner)removedOwner, null, item, (SfComboBox)sender));
+                    }
+                }
             }
+
+            box.PlaceholderText = item.SelectedOwners.Count > 0 ? "" : "Unselected";
+            item.SelectedOwnerName = null;
 
             Debug.WriteLine("Changed selected owners");
 

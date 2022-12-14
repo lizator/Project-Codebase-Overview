@@ -22,6 +22,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using System.Diagnostics;
 using Microsoft.UI.Xaml.Data;
+using Project_Codebase_Overview.ChangeHistoryFolder;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -155,6 +156,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             var box = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
             var item = box.DataContext as ExplorerItem;
+            var change = false;
 
 
             foreach (var newOwner in e.AddedItems)
@@ -164,6 +166,9 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     if (!item.SelectedOwners.Contains(newOwner))
                     {
                         item.SelectedOwners.Add((IOwner)newOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(null, (IOwner)newOwner, item, (SfComboBox)sender));
+                        PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
+                        change = true;
                     }
                 }
             }
@@ -175,6 +180,9 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     if (item.SelectedOwners.Contains(removedOwner))
                     {
                         item.SelectedOwners.Remove((IOwner)removedOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange((IOwner)removedOwner, null, item, (SfComboBox)sender));
+                        PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
+                        change = true;
                     }
                 }
             }
@@ -182,7 +190,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
             box.PlaceholderText = this.SelectedOwners.Count > 0 ? "" : "Unselected";
             item.SelectedOwnerName = null;
 
-            Debug.WriteLine("Changed selected owners");
+            if (change)
+            {
+                Debug.WriteLine("Changed selected owners");
+            }
         }
 
         public IOrderedEnumerable<IGrouping<string, IOwner>> Owners { get => this.GetOwnerListSorted(); }
