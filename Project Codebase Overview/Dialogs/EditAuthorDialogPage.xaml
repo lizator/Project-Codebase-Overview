@@ -213,8 +213,8 @@
                 <x:String>Active</x:String>
                 <x:String>Inactive</x:String>
             </editors:SfSegmentedControl>
-            <Button Grid.Column="1" Content="Save" Background="ForestGreen" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
-            <Button Grid.Column="2" Content="Cancel" Background="IndianRed" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="1" Content="Save" Background="ForestGreen" Foreground="White" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="2" Content="Cancel" Background="IndianRed" Foreground="White" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
         </Grid>
     </Grid>
 </Page>

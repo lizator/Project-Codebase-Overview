@@ -89,7 +89,7 @@
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Cut Off selection"  VerticalAlignment="Center" />
-            <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="4" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="5" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <x:String>All time</x:String>
                 <x:String>6 months</x:String>
                 <x:String>1 year</x:String>
@@ -127,8 +127,8 @@
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
 
             <Grid Grid.Row="10" Grid.Column="1">
-                <Button HorizontalAlignment="left" Background="IndianRed" Content="Cancel" Click="CancelSettingsChangeClick"/>
-                <Button HorizontalAlignment="Right" Background="ForestGreen" Content="Save" Click="SaveSettingsChangeClick"/>
+                <Button HorizontalAlignment="Left" Background="ForestGreen" Foreground="White" Content="Save" Click="SaveSettingsChangeClick"/>
+                <Button HorizontalAlignment="Right" Background="IndianRed" Foreground="White" Content="Cancel" Click="CancelSettingsChangeClick"/>
             </Grid>
 
             <!-- Import/Export -->
