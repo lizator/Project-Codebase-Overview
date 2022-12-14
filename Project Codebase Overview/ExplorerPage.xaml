@@ -181,8 +181,8 @@
                     <!--selected owner-->
                     <TextBlock Text="Selected Owner" Grid.Column="0" Grid.Row="0"/>
 
-                    <ContentControl Content="{Binding SelectOwnerComboBox}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
-
+                    <ContentControl Content="{Binding SelectOwnerComboBox}" Visibility="{Binding SelectOwnerVisibility}" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                    <TextBlock Grid.Column="1" Grid.Row="0" Text="Inactive" Visibility="{Binding InactiveVisibility}" />
                     <!--suggested owner-->
                     <TextBlock Text="Suggested Owner" Grid.Column="0" Grid.Row="1"/>
                     <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1">
@@ -207,6 +207,7 @@
                                 ShowRowHeader="True"
                                 Grid.Row="1"
                                 ColumnWidthMode="Star"
+                                AllowEditing="True"
                                 AutoGenerateColumnsMode="None"
                                 AllowResizingColumns="False"
                                 GridLinesVisibility="Horizontal"
@@ -223,12 +224,12 @@
             </treeGrid:SfTreeGrid.SortColumnDescriptions>
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" />
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="425"
                                                      AllowSorting="False" AllowFiltering="False" FilterPopupStyle="{StaticResource popupstyleforOwner}">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding SelectOwnerComboBox}" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
+                                <ContentControl Content="{Binding SelectOwnerComboBox}" Visibility="{Binding SelectOwnerVisibility}" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                             </DataTemplate>
                             <!--<DataTemplate>
                                 <editors:SfComboBox ItemsSource="{Binding Owners}" 
@@ -299,7 +300,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###" ShowHeaderToolTip="True">
+                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" AllowEditing="False" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###" ShowHeaderToolTip="True">
                         <treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
                             <DataTemplate>
                                 <Grid RowDefinitions="auto,auto,auto">
@@ -310,7 +311,19 @@
                             </DataTemplate>
                         </treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
                     </treeGrid:TreeGridNumericColumn>
-                    <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###"/>
+                    <treeGrid:TreeGridCheckBoxColumn HeaderText="Active" MappingName="IsActive" Width="60" AllowSorting="False" ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridCheckBoxColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <Grid RowDefinitions="auto,auto,auto,auto">
+                                    <TextBlock Grid.Row="0" Text="Active folders/files" FontSize="14" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="When a folder or file is inactive, it will not let folders" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Text="above it gain its lines. The file/folder will also not" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="3" Text="have a owner in the CODEOWNERS file." HorizontalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </treeGrid:TreeGridCheckBoxColumn.HeaderToolTipTemplate>
+                    </treeGrid:TreeGridCheckBoxColumn>
+                    <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" AllowEditing="False" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###"/>
                     <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowSorting="False">
                         <!-- expand button column-->
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>

@@ -97,6 +97,7 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFolder serialFolder = new SerializerFolder();
             serialFolder.Name = pCOFolder.Name;
+            serialFolder.IsActive = pCOFolder.IsActive;
             serialFolder.Comment = pCOFolder.Comment ?? "";
 
             serialFolder.SelectedTeamNames = pCOFolder.SelectedOwners.Where(owner => owner.GetType() == typeof(PCOTeam)).Select(owner => owner.Name).ToList();
@@ -120,6 +121,7 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
+            serialFile.IsActive = pCOFile.IsActive;
             serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
             serialFile.Comment = pCOFile.Comment ?? "";
 
@@ -212,6 +214,7 @@ namespace Project_Codebase_Overview.SaveState
             
             //create the folder
             PCOFolder pCOFolder = new PCOFolder(serialFolder.Name, parent);
+            pCOFolder.IsActive = serialFolder.IsActive;
             pCOFolder.Comment = serialFolder.Comment ?? "";
             //set owner
             if (serialFolder.SelectedAuthorEmails?.Count > 0)
@@ -244,6 +247,7 @@ namespace Project_Codebase_Overview.SaveState
             foreach(var subFile in serialFolder.SubFiles)
             {
                 PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
+                pCOFile.IsActive = subFile.IsActive;
                 pCOFile.Comment = subFile.Comment ?? "";
 
                 pCOFile.Creator = !subFile.CreatorEmail.Equals("") ? PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail) : null;

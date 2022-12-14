@@ -29,6 +29,20 @@ namespace Project_Codebase_Overview.DataCollection.Model
     public abstract class ExplorerItem : ObservableObject, IComparable
     {
         public string Name { get; set; }
+        public bool IsActive { get => _isActive; set => SetIsActive(value); }
+        private bool _isActive = true;
+
+        private void SetIsActive(bool value)
+        {
+            SetProperty(ref _isActive, value);
+            SelectOwnerVisibility = value ? Visibility.Visible : Visibility.Collapsed;
+            InactiveVisibility = !value ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public Visibility SelectOwnerVisibility { get => _selectOwnerVisibility; set => SetProperty(ref _selectOwnerVisibility, value); }
+        private Visibility _selectOwnerVisibility = Visibility.Visible;
+        public Visibility InactiveVisibility { get => _inactiveVisibility; set => SetProperty(ref _inactiveVisibility, value); }
+        private Visibility _inactiveVisibility = Visibility.Collapsed;
         public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
         public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
         public abstract void CalculateData();
@@ -37,7 +51,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         protected string GetCodeownerLines()
         {
             var builder = new StringBuilder();
-            if (this.SelectedOwners.Count > 0)
+            if (this.SelectedOwners.Count > 0 || !this.IsActive)
             {
                 builder.AppendLine("");
                 if (this.Comment != null && this.Comment.Length > 0)
@@ -57,44 +71,53 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 path = path.Replace(" ", "\\ ");
 
                 var msg = path;
-                var hasError = false;
-                foreach (var owner in this.SelectedOwners) //TODO figure out why load makes selected owners multiply
+                if (this.IsActive)
                 {
-                    if (owner.GetType() == typeof(Author))
+                    var hasError = false;
+                    foreach (var owner in this.SelectedOwners)
                     {
-                        var vCSEmail = ((Author)owner).VCSEmail;
-                        if (vCSEmail != null && vCSEmail.Length > 0)
+                        if (owner.GetType() == typeof(Author))
                         {
-                            msg += " " + vCSEmail;
+                            var vCSEmail = ((Author)owner).VCSEmail;
+                            if (vCSEmail != null && vCSEmail.Length > 0)
+                            {
+                                msg += " " + vCSEmail;
+                            }
+                            else
+                            {
+                                builder.AppendLine("# Path \"" + path + "\" should be owned by user \"" + owner.Name + "\" but it did not have an Email set.");
+                                PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
+                                hasError = true;
+                                break;
+                            }
                         }
                         else
                         {
-                            builder.AppendLine("# Path \"" + path + "\" should be owned by user \"" + owner.Name + "\" but it did not have an Email set.");
-                            PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
-                            hasError = true;
-                            break;
+                            var vCSID = ((PCOTeam)owner).VCSID;
+                            if (vCSID != null && vCSID.Length > 0)
+                            {
+                                msg += " " + vCSID;
+                            }
+                            else
+                            {
+                                builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + owner.Name + "\" but it did not have an ID set.");
+                                PCOState.GetInstance().SetCodeOwnersExportTeamMissingID(true);
+                                hasError = true;
+                                break;
+                            }
                         }
                     }
-                    else
+                    if (!hasError)
                     {
-                        var vCSID = ((PCOTeam)owner).VCSID;
-                        if (vCSID != null && vCSID.Length > 0)
-                        {
-                            msg += " " + vCSID;
-                        }
-                        else
-                        {
-                            builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + owner.Name + "\" but it did not have an ID set.");
-                            PCOState.GetInstance().SetCodeOwnersExportTeamMissingID(true);
-                            hasError = true;
-                            break;
-                        }
+                        builder.AppendLine(msg);
                     }
-                }
-                if (!hasError)
+                } 
+                else
                 {
+                    // Inactive item gets the path in CODEOWNERS without any author or team
                     builder.AppendLine(msg);
                 }
+                
             }
             return builder.ToString();
         }
