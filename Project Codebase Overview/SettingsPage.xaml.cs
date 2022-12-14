@@ -29,6 +29,7 @@ using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState.Model;
+using LibGit2Sharp;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -328,7 +329,34 @@ namespace Project_Codebase_Overview
 
         private async void NewRepoClick(object sender, RoutedEventArgs e)
         {
+            var folderPicker = new FolderPicker();
 
+            MainWindow window = (Application.Current as App)?.MainWindow as MainWindow;
+
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            if (folder == null)
+            {
+                return;
+            }
+
+            try
+            {
+                //test if repo available
+                var testingRepo = new Repository(folder.Path);
+            }
+            catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
+                return;
+            }
+
+            PCOState.GetInstance().ClearState();
+
+            PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
+            window.NavigateToLoadingPage();
         }
     }
 }
