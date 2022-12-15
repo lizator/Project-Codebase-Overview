@@ -115,11 +115,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 {
                     if (this.LineDistribution.ContainsKey(convertedOwner))
                     {
-                        this.LineDistribution[convertedOwner].SelectedLines += childLineDistribution.Value.SuggestedLines;
+                        this.LineDistribution[convertedOwner].SelectedLines += (uint)(childLineDistribution.Value.SuggestedLines / convertedOwners.Count);
                     }
                     else
                     {
-                        this.LineDistribution.Add(convertedOwner, new LineDistUnit(0, childLineDistribution.Value.SuggestedLines));
+                        this.LineDistribution.Add(convertedOwner, new LineDistUnit(0, (uint)(childLineDistribution.Value.SuggestedLines / convertedOwners.Count)));
                     }
                 }
 
