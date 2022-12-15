@@ -23,6 +23,9 @@ namespace Project_Codebase_Overview.FileExplorerView
 {
     public class ExplorerViewModel : ObservableObject
     {
+
+        public delegate void NotifyGraphUpdate();
+        public event NotifyGraphUpdate NotifyGraphUpdateEvent;
         private PCOFolder viewRootFolder;
         public ExplorerItem SelectedGraphItem{
             get => _selectedGraphItem;
@@ -77,6 +80,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(newFolder);
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            NotifyGraphUpdateEvent?.Invoke();
         }
 
         public void NavigateBack()

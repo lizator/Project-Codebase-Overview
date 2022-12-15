@@ -50,9 +50,6 @@ namespace Project_Codebase_Overview
         {
             this.InitializeComponent();
 
-
-            DecayCheckBox.IsChecked = true;
-
             UpdateOwnerList();
 
             ExpanderClick(null,null);
@@ -175,11 +172,6 @@ namespace Project_Codebase_Overview
 
         private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
         {
-            if (!this.InitialOpenDone)
-            {
-                this.InitialOpenDone = true;
-                return;
-            }
             if (e.NewValue.Equals("Users"))
             {
                 PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.USER;
@@ -190,6 +182,13 @@ namespace Project_Codebase_Overview
             }
             //Update settingspanel owner list
             UpdateOwnerList();
+
+            if (!this.InitialOpenDone)
+            {
+                this.InitialOpenDone = true;
+                return;
+            }
+            
             //Reload explorerview
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }

@@ -57,7 +57,7 @@ namespace Project_Codebase_Overview
 
             ViewModel = (ExplorerViewModel)this.DataContext;
 
-            var root = PCOState.GetInstance().GetExplorerState().GetRoot();
+            var root = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder();
 
             ViewModel.SetExplorerItems(root);
             ViewModel.SelectedGraphItem = root;
@@ -77,6 +77,13 @@ namespace Project_Codebase_Overview
             ViewModel.UpdateBreadcrumbBar();
 
             rootTreeGrid.SortColumnsChanged += RootTreeGrid_SortColumnsChanged;
+
+            if (PCOState.GetInstance().GetExplorerState().GraphViewActive)
+            {
+                GraphExplorerSwitch(null, null);
+            }
+
+            ViewModel.NotifyGraphUpdateEvent += UpdateGraphViewIfActive;
         }
 
 
@@ -349,7 +356,6 @@ namespace Project_Codebase_Overview
                 rootTreeGrid.Visibility = Visibility.Visible;
                 if (PCOState.GetInstance().GetExplorerState().GraphViewHasChanges)
                 {
-                    PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
                     PCOState.GetInstance().GetExplorerState().ReloadExplorer();
                 }
 
@@ -363,8 +369,9 @@ namespace Project_Codebase_Overview
                 GraphView.Visibility = Visibility.Visible;
                 //GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
                 GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
-                PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
             }
+            PCOState.GetInstance().GetExplorerState().GraphViewActive = GraphViewActive;
+            PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
 
         }
         private void SunburstOnClickAsync(object sender, PointerRoutedEventArgs e)

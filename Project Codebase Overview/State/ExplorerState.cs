@@ -21,6 +21,7 @@ namespace Project_Codebase_Overview.FileExplorerView
         private static readonly int MAX_HISTORY_SIZE = 20;
         public delegate void NotifyReload();
         public event NotifyReload NotifyReloadEvent;
+        public bool GraphViewActive = false;
         public bool GraphViewHasChanges = false;
 
         public ExplorerState()
