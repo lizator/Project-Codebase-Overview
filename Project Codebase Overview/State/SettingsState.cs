@@ -26,9 +26,9 @@ namespace Project_Codebase_Overview.State
             CurrentMode = PCOExplorerMode.USER;
             IsDecayActive = false;
             IsFilesVisibile = true;
-            DecayDropOffInteval = 0;
-            DecayPercentage = 0;
-            DecayTimeUnit = DecayTimeUnit.DAY;
+            DecayDropOffInteval = 1;
+            DecayPercentage = 25;
+            DecayTimeUnit = DecayTimeUnit.MONTH;
             CutOffSelectionUnit = CutOffSelectionUnit.ALL_TIME;
         }
 
