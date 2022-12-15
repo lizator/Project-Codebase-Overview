@@ -129,7 +129,7 @@ namespace Project_Codebase_Overview
 
         private void DecayChecked(object sender, RoutedEventArgs e)
         {
-            DecayCheckBox.Content = "Enabled";
+            //DecayCheckBox.Content = "Enabled";
             DecayTimerNumberBox.IsEnabled = true;
             DecayTimerComboBox.IsEnabled = true;
             PercentageNumberBox.IsEnabled = true;
@@ -137,7 +137,7 @@ namespace Project_Codebase_Overview
 
         private void DecayUnchecked(object sender, RoutedEventArgs e)
         {
-            DecayCheckBox.Content = "Disabled";
+            //DecayCheckBox.Content = "Disabled";
             DecayTimerNumberBox.IsEnabled = false;
             DecayTimerComboBox.IsEnabled = false;
             PercentageNumberBox.IsEnabled = false;
@@ -145,12 +145,12 @@ namespace Project_Codebase_Overview
 
         private void ShowFilesChecked(object sender, RoutedEventArgs e)
         {
-            ShowFilesCheckBox.Content = "Enabled";
+            //ShowFilesCheckBox.Content = "Enabled";
         }
 
         private void ShowFilesUnchecked(object sender, RoutedEventArgs e)
         {
-            ShowFilesCheckBox.Content = "Disabled";
+            //ShowFilesCheckBox.Content = "Disabled";
         }
 
         private void ExpanderClick(object sender, PointerRoutedEventArgs e)

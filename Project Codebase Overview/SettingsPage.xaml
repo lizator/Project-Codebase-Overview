@@ -99,8 +99,24 @@
             </ComboBox>
 
             <TextBlock Grid.Row="6" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
+            <Button Grid.Row="6" Grid.Column="0" Padding="2" Margin="2" HorizontalAlignment="Right">
+                <Button.Flyout>
+                    <Flyout>
+                        <Grid RowDefinitions="auto, auto, auto, auto, auto, auto, auto">
+                            <TextBlock Grid.Row="0" Text="Decay is a way to make old commits less important than new commits." Margin="0,0,0,8"/>
+                            <TextBlock Grid.Row="1" Text="The Decay timer sets the interval for when old code gets decay-ticks." Margin="0,0,0,8"/>
+                            <TextBlock Grid.Row="2" Text="The Drop off percentage sets the amount of value the old commit"/>
+                            <TextBlock Grid.Row="3" Text="loses per tick." Margin="0,0,0,8"/>
+                            <TextBlock Grid.Row="4" Text="ex: timer = 2 weeks, drop off = 10%. A commit is 5 weeks old:" />
+                            <TextBlock Grid.Row="5" Text="The commit would have 2 ticks and lose 19% of its value." />
+                            <TextBlock Grid.Row="6" Text="(100% * 90% * 90% = 81% => a loss of 19%)" />
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+                <SymbolIcon Symbol="Help"/>
+            </Button>
             <CheckBox Grid.Row="6" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
-                    Checked="DecayChecked" Unchecked="DecayUnchecked"/>
+                Checked="DecayChecked" Unchecked="DecayUnchecked"/>
             
                 <!-- Visibility dependent-->
                 <TextBlock Grid.Row="7" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
@@ -123,7 +139,7 @@
                 </Grid>
 
             <TextBlock Grid.Row="9" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
-            <CheckBox Grid.Row="9" Grid.Column="1"  x:Name="ShowFilesCheckBox" Content="Enabled" IsChecked="True" Width="100"
+            <CheckBox Grid.Row="9" Grid.Column="1"  x:Name="ShowFilesCheckBox" IsChecked="True" Width="100"
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
 
             <Grid Grid.Row="10" Grid.Column="1">
