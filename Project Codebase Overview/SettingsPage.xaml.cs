@@ -30,6 +30,8 @@ using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState.Model;
 using LibGit2Sharp;
+using Syncfusion.UI.Xaml.Gauges;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -46,6 +48,17 @@ namespace Project_Codebase_Overview
         private bool InitialOpenDone = false;
 
 
+        private class Observables : ObservableObject
+        {
+            public bool ExplorerHasChanges { get => _explorerHasChanges; set => SetProperty(ref _explorerHasChanges, value); }
+            private bool _explorerHasChanges = false;
+        }
+        private Observables LocalObservables = new Observables();
+
+        private void SetExplorerHasChanges(bool value)
+        {
+            LocalObservables.ExplorerHasChanges = value;
+        }
         public SettingsPage()
         {
             this.InitializeComponent();
@@ -55,6 +68,13 @@ namespace Project_Codebase_Overview
             ExpanderClick(null,null);
 
             LoadSettingsFromState();
+
+            PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += SettingsPage_NotifyChangeEvent;
+        }
+
+        private void SettingsPage_NotifyChangeEvent()
+        {
+            SetExplorerHasChanges(true);
         }
 
         private void UpdateOwnerList()
@@ -89,6 +109,8 @@ namespace Project_Codebase_Overview
 
             ShowFilesCheckBox.IsChecked = settingsState.IsFilesVisibile;
 
+            var tooltip = "When owners are declared, you can refresh the page to update the changes in the graphs";
+            ToolTipService.SetToolTip(UpdateExplorerBtn, tooltip);
         }
 
         private void CancelSettingsChangeClick(object sender, RoutedEventArgs e)
@@ -356,6 +378,12 @@ namespace Project_Codebase_Overview
 
             PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
             window.NavigateToLoadingPage();
+        }
+
+        private void UpdateExplorerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SetExplorerHasChanges(false);
+            PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }
     }
 }

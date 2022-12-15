@@ -21,6 +21,8 @@ namespace Project_Codebase_Overview.FileExplorerView
         private static readonly int MAX_HISTORY_SIZE = 20;
         public delegate void NotifyReload();
         public event NotifyReload NotifyReloadEvent;
+        public delegate void NotifyChange();
+        public event NotifyChange NotifyChangeEvent;
         public bool GraphViewActive = false;
         public bool GraphViewHasChanges = false;
 
@@ -224,6 +226,11 @@ namespace Project_Codebase_Overview.FileExplorerView
         {
             CalculateData();
             NotifyReloadEvent?.Invoke();
+        }
+
+        public void ExplorerNotifyChange()
+        {
+            NotifyChangeEvent?.Invoke();
         }
     }
 }

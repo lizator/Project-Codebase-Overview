@@ -87,6 +87,8 @@
 
             <!-- Explorer Settings -->
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
+            <Button x:Name="UpdateExplorerBtn" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Content="Update Explorer" IsEnabled="{x:Bind LocalObservables.ExplorerHasChanges, Mode=OneWay}" Click="UpdateExplorerBtn_Click"/>
+
 
             <TextBlock Grid.Row="5" Grid.Column="0" Text="Cut Off selection"  VerticalAlignment="Center" />
             <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="5" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">

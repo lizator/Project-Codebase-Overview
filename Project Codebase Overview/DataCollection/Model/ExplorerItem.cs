@@ -216,6 +216,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             if (change)
             {
                 Debug.WriteLine("Changed selected owners");
+                PCOState.GetInstance().GetExplorerState().ExplorerNotifyChange();
             }
         }
 
