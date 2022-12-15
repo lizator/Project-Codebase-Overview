@@ -47,11 +47,12 @@ namespace Project_Codebase_Overview
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            s_window = new TestStartWindow();
+            s_window = new StartWindow();
 
             IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(s_window);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
             AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
 
             DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
             if (displayArea is not null)
