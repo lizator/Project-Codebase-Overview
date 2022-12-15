@@ -9,7 +9,7 @@
   <Identity
     Name="PCOPackage"
     Publisher="CN=PCOPublish"
-    Version="1.0.1.0" />
+    Version="1.0.2.0" />
 
   <Properties>
     <DisplayName>Project Codebase Overview</DisplayName>
