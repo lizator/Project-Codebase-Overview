@@ -225,7 +225,7 @@
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
                     <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False"/>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="425"
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="325"
                                                      AllowSorting="False" AllowFiltering="False" FilterPopupStyle="{StaticResource popupstyleforOwner}">
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>

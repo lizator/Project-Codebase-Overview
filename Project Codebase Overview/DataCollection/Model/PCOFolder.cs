@@ -53,16 +53,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
             foreach (var child in Children)
             {
                 child.Value.CalculateData();
-                if(child.Value.SelectedOwners.Count > 0)
+                if (child.Value.IsActive)
                 {
-                    this.GraphModel.AddLineDistributions_SelectedOwner(child.Value.GraphModel.LineDistribution, child.Value.SelectedOwners.ToList());   
+                    if (child.Value.SelectedOwners.Count > 0)
+                    {
+                        this.GraphModel.AddLineDistributions_SelectedOwner(child.Value.GraphModel.LineDistribution, child.Value.SelectedOwners.ToList());
+                    }
+                    else
+                    {
+                        this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
+                    }
+                    this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
+                    this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
                 }
-                else
-                {
-                    this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
-                }
-                this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
-                this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
                 if (PCOState.GetInstance().GetSettingsState().IsFilesVisibile || child.Value.GetType() == typeof(PCOFolder))
                 {
                     ViewChildren.Add(child.Key, child.Value);

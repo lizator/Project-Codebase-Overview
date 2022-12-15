@@ -37,6 +37,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             SetProperty(ref _isActive, value);
             SelectOwnerVisibility = value ? Visibility.Visible : Visibility.Collapsed;
             InactiveVisibility = !value ? Visibility.Visible : Visibility.Collapsed;
+            PCOState.GetInstance().GetExplorerState().ExplorerNotifyChange();
         }
 
         public Visibility SelectOwnerVisibility { get => _selectOwnerVisibility; set => SetProperty(ref _selectOwnerVisibility, value); }
