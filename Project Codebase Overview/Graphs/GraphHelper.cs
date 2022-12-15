@@ -38,16 +38,16 @@ namespace Project_Codebase_Overview.Graphs
             //Creator is only given for files
             var distributions = graphModel.LineDistribution;
             //var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
-            var linesTotal = graphModel.LineDistribution.Sum(x => x.Value);
+            var linesTotal = graphModel.LineDistribution.Sum(x => x.Value.LineSum());
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
             var distributionAmount = distributions.Count();
             uint lineCount = 0;
             var blockCount = 0;
 
-            foreach (var dist in distributions.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value))
+            foreach (var dist in distributions.OrderByDescending(x => x.Value.LineSum()).ToDictionary(x => x.Key, x => x.Value))
             {
-                var blockSize = ((double)dist.Value / (double)linesTotal) * 100;
+                var blockSize = ((double)dist.Value.LineSum() / (double)linesTotal) * 100;
                 if (
                     blockCount < distributionAmount - 1 &&  //If there is only one block left, just show its color.
                     (currentStartPos > GRAPH_CUT_OFF_POINT || // if more blocks after the cut off point, make them one grey block
@@ -104,7 +104,7 @@ namespace Project_Codebase_Overview.Graphs
 
                     currentStartPos = block.EndValue;
 
-                    lineCount += dist.Value;
+                    lineCount += dist.Value.LineSum();
 
                     blockList.Add(block);
                 }

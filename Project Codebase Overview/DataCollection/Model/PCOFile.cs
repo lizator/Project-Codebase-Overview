@@ -63,7 +63,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
                 foreach (var owner in owners)
                 {
-                    this.GraphModel.LineDistribution.TryAdd(owner, 0);
+                    this.GraphModel.LineDistribution.TryAdd(owner, new GraphModel.LineDistUnit(0,0));
                 }
 
                 foreach (var commit in groupedComm)
@@ -77,7 +77,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
                     foreach(var owner in owners)
                     {
-                        this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
+                        this.GraphModel.LineDistribution[owner].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
                     }
                 }
             }

@@ -122,7 +122,7 @@ namespace Project_Codebase_Overview.Dialogs
                         teamName = author.Teams[0].Name;
                     }
                     
-                    TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value,(double) dist.Value / (double) totalLines));
+                    TopContributors.Add(new TopContributor(author.Name, teamName, dist.Value.LineSum(),(double) dist.Value.LineSum() / (double) totalLines));
                 }
                 
             }
@@ -139,7 +139,7 @@ namespace Project_Codebase_Overview.Dialogs
                 foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
                 {
                     PCOTeam team = dist.Key as PCOTeam;
-                    TopContributors.Add(new TopContributor("", team.Name, dist.Value, (double) dist.Value / (double) totalLines));
+                    TopContributors.Add(new TopContributor("", team.Name, dist.Value.LineSum(), (double) dist.Value.LineSum() / (double) totalLines));
                 }
             }
             
