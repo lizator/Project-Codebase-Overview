@@ -50,7 +50,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
                 else
                 {
-                    this.LineDistribution.Add(childLineDistribution.Key, childLineDistribution.Value);
+                    this.LineDistribution.Add(childLineDistribution.Key, new LineDistUnit(childLineDistribution.Value.SuggestedLines, childLineDistribution.Value.SelectedLines));
                 }
             }
         }
