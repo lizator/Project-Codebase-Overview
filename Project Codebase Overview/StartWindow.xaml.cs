@@ -49,6 +49,7 @@ namespace Project_Codebase_Overview
             var folderPicker = new FolderPicker();
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix the crash
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var folder = await folderPicker.PickSingleFolderAsync();
