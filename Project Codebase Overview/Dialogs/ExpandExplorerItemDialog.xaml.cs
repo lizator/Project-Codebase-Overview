@@ -94,7 +94,7 @@ namespace Project_Codebase_Overview.Dialogs
 
             //set Top Contributors
             uint totalLines = ExplorerItem.GraphModel.LinesTotal;
-            if(PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.USER)
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.AUTHOR)
             {
                 DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Name", 
                     TextTrimming = TextTrimming.CharacterEllipsis});

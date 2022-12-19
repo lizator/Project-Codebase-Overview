@@ -59,8 +59,8 @@ namespace Project_Codebase_Overview.Dialogs
 
         private bool IsTeamNew = false;
 
-        private ObservableCollection<Author> _unselectedAuthorList;
-        public ObservableCollection<Author> UnselectedAuthorList
+        private ObservableCollection<ViewAuthor> _unselectedAuthorList;
+        public ObservableCollection<ViewAuthor> UnselectedAuthorList
         {
             get => _unselectedAuthorList;
             set => _unselectedAuthorList = value;
@@ -102,7 +102,7 @@ namespace Project_Codebase_Overview.Dialogs
             NameBox.Text = Team.Name;
             VCSIDBox.Text = Team.VCSID;
 
-            UnselectedAuthorList = new ObservableCollection<Author>();
+            UnselectedAuthorList = new ObservableCollection<ViewAuthor>();
             SelectedAuthorList = new ObservableCollection<Author>();
             UnselectedAuthors.Source = new ObservableCollection<GroupInfoList>();
 
@@ -128,7 +128,7 @@ namespace Project_Codebase_Overview.Dialogs
             {
                 foreach(var item in UnselectedListView.SelectedItems)
                 {
-                    var author = item as Author;
+                    var author = item as ViewAuthor;
                     IsAuthorInTeam[author.Email] = true;
                 }
             }
@@ -148,6 +148,12 @@ namespace Project_Codebase_Overview.Dialogs
             }
         }
 
+        public class ViewAuthor
+        {
+            public string Name { get; set; }
+            public string Email { get; set; }
+            public string TeamName { get; set; }
+        }
         private void UpdateAuthorLists(string searchString = "")
         {
             var isSearching = searchString.Length > 0;
@@ -155,6 +161,9 @@ namespace Project_Codebase_Overview.Dialogs
             ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Clear();
 
             UnselectedAuthorList.Clear();
+
+
+
             AuthorList.Where(pair =>
                 !IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
                 (!isSearching || (
@@ -167,10 +176,30 @@ namespace Project_Codebase_Overview.Dialogs
                     )
                 ))
             )
-            .Select(pair => pair.Value).OrderBy(author => author.Name).ForEach(author => UnselectedAuthorList.Add(author));
+            .Select(pair => pair.Value).ForEach(author => { 
+                if (author.Teams.Count == 0)
+                {
+                    UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = NO_TEAM_HEADER_TEXT });
+                } else
+                {
+                    author.Teams.ForEach(team => {
+                        if (team.Name.Equals(Team.Name))
+                        {
+                            if (author.Teams.Count == 1)
+                            {
+                                UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = NO_TEAM_HEADER_TEXT });
+                            }
+                        }
+                        else
+                        {
+                            UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = team.Name });
+                        }
+                    });
+                }
+            });
 
             //simple grouping
-            var groups = UnselectedAuthorList.GroupBy(item => (item.Teams.Count == 0 ? NO_TEAM_HEADER_TEXT : item.Teams[0].Name));
+            var groups = UnselectedAuthorList.GroupBy(item => item.TeamName);
             //add extras 
             
 
@@ -181,28 +210,28 @@ namespace Project_Codebase_Overview.Dialogs
 
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
-            //Add "doubles" of users that are in multiple teams
-            foreach (var author in UnselectedAuthorList)
-            {
-                if (author.Teams.Count > 1)
-                {
-                    for (int i = 0; i < author.Teams.Count; i++)
-                    {
-                        var team = author.Teams[i];
-                        foreach (var group in ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source))
-                        {
-                            if (group.Key.Equals(team.Name))
-                            {
-                                if (!group.Contains(author))
-                                {
-                                    group.Add(author);
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            //Add "doubles" of author that are in multiple teams
+            //foreach (var author in UnselectedAuthorList)
+            //{
+            //    if (author.Teams.Count > 1)
+            //    {
+            //        for (int i = 0; i < author.Teams.Count; i++)
+            //        {
+            //            var team = author.Teams[i];
+            //            foreach (var group in ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source))
+            //            {
+            //                if (group.Key.Equals(team.Name))
+            //                {
+            //                    if (!group.Contains(author))
+            //                    {
+            //                        group.Add(author);
+            //                    }
+            //                    break;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
 
             SelectedAuthorList.Clear();
             AuthorList.Where(pair =>

@@ -113,7 +113,7 @@ namespace Project_Codebase_Overview.Dialogs
             dialog.XamlRoot = xamlRoot;
 
             var manager = PCOState.GetInstance().GetContributorState();
-            dialog.Title = "Edit User";
+            dialog.Title = "Edit Author";
 
             manager.SetSelectedAuthor(author);
             manager.SetCurrentAuthorDialog(dialog);

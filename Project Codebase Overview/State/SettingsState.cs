@@ -23,7 +23,7 @@ namespace Project_Codebase_Overview.State
 
         public SettingsState()
         {
-            CurrentMode = PCOExplorerMode.USER;
+            CurrentMode = PCOExplorerMode.AUTHOR;
             IsDecayActive = false;
             IsFilesVisibile = true;
             DecayDropOffInteval = 1;

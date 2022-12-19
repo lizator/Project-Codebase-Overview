@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.LocalSettings;
 using Project_Codebase_Overview.State;
@@ -60,12 +61,13 @@ namespace Project_Codebase_Overview
 
             try
             {
-                //test if repo available
-                var testingRepo = new Repository(folder.Path);
+                //test if repo available and nondirty
+                GitDataCollector collector = new GitDataCollector();
+                collector.GetRepoStatus(folder.Path);
             }
             catch (Exception ex)
             {
-                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
                 return;
             }
 

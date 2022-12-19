@@ -57,10 +57,10 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public void AddLineDistributions_SelectedOwner(Dictionary<IOwner, LineDistUnit> childLineDistributions, List<IOwner> selectedOwners)
         {
             var convertedOwners = new List<IOwner>();
-            //convert selected owners to current mode (teams or users)
-            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.USER)
+            //convert selected owners to current mode (teams or authors)
+            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.AUTHOR)
             {
-                //user mode
+                //author mode
                 foreach (var selectedOwner in selectedOwners)
                 {
                     if (selectedOwner.GetType() == typeof(Author))
@@ -69,11 +69,11 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     }
                     else
                     {
-                        foreach (var user in ((PCOTeam)selectedOwner).Members)
+                        foreach (var author in ((PCOTeam)selectedOwner).Members)
                         {
-                            if (!convertedOwners.Contains(user))
+                            if (!convertedOwners.Contains(author))
                             {
-                                convertedOwners.Add(user);
+                                convertedOwners.Add(author);
                             }
                         }
                     }
@@ -86,7 +86,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 {
                     if(selectedOwner.GetType() == typeof(Author))
                     {
-                        //handle user to team convert
+                        //handle author to team convert
                         foreach(var team in ((Author)selectedOwner).Teams)
                         {
                             if (!convertedOwners.Contains(team))

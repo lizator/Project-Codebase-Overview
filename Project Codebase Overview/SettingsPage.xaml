@@ -50,19 +50,19 @@
             
             <!-- owner title + manage  (row 0)  -->
             <TextBlock  Grid.Row="0" Grid.Column="0" Text="General" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
-            <Button Grid.Row="0" Grid.Column="0"  Click="ManageClicked"  VerticalAlignment="Center" HorizontalAlignment="Right" Grid.ColumnSpan="2">Manage users/teams</Button>
+            <Button Grid.Row="0" Grid.Column="0"  Click="ManageClicked"  VerticalAlignment="Center" HorizontalAlignment="Right" Grid.ColumnSpan="2">Manage authors/teams</Button>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Repository branch:"/>
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="BranchNameBlock"/>
 
-            <!--team/users mode-->
+            <!--team/authors mode-->
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Mode" VerticalAlignment="Center"/>
             <editors:SfSegmentedControl Grid.Row="2" Grid.Column="1"
                                         SelectedIndex="0"
                                         SelectionAnimationType="Slide"
                                         SelectionChanged="OwnerModeChanged"
                                         >
-                <x:String>Users</x:String>
+                <x:String>Authors</x:String>
                 <x:String>Teams</x:String>
             </editors:SfSegmentedControl>
 

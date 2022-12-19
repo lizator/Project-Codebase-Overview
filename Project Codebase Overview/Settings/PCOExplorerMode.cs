@@ -8,7 +8,7 @@ namespace Project_Codebase_Overview.Settings
 {
     public enum PCOExplorerMode
     {
-        USER,
+        AUTHOR,
         TEAMS
     }
 }

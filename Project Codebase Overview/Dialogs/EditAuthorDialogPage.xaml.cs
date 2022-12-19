@@ -166,7 +166,7 @@ namespace Project_Codebase_Overview.Dialogs
             }
             if (VCSEmailBox.Text.Length > 0 && !VCSEmailBox.Text.ToLower().Equals(CurrentAuthor.VCSEmail) && !manager.CheckTeamVCSEmailAvailable(VCSEmailBox.Text))
             {
-                LocalObservables.EmailFlyoutMsg = "The user can not have the same VCS Email as another user.";
+                LocalObservables.EmailFlyoutMsg = "The author can not have the same VCS Email as another author.";
                 ShowEmailFlyout();
                 return;
             }
