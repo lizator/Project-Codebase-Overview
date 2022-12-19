@@ -355,6 +355,7 @@ namespace Project_Codebase_Overview
             MainWindow window = (Application.Current as App)?.MainWindow as MainWindow;
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix crashing of packaged app
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var folder = await folderPicker.PickSingleFolderAsync();

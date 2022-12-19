@@ -263,6 +263,7 @@ namespace Project_Codebase_Overview
             folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle( (Application.Current as App)?.window as MainWindow);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix crashing of packaged app
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var selectedFolder = await folderPicker.PickSingleFolderAsync();
