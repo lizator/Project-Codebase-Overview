@@ -100,7 +100,7 @@ namespace Project_Codebase_Overview.ContributorManagement
         }
         public List<IOwner> GetAllOwnersInMode()
         {
-            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.AUTHOR)
             {
                 return GetAllAuthors().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }

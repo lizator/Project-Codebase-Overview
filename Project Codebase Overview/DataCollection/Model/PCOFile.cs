@@ -40,8 +40,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             foreach (var groupedComm in groupedCommits)
             {
-                List<IOwner>  owners = new List<IOwner>();//commit can have multiple owners if user is in multiple teams
-                if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
+                List<IOwner>  owners = new List<IOwner>();//commit can have multiple owners if author is in multiple teams
+                if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.AUTHOR)
                 {
                     owners.Add(groupedComm.First().GetAuthor()); 
                 }

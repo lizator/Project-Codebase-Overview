@@ -33,19 +33,19 @@ namespace Project_Codebase_Overview
     public sealed partial class ManagementPage : Page
     {
         private ObservableCollection<PCOTeam> Teams;
-        private ObservableCollection<Author> Users;
+        private ObservableCollection<Author> Authors;
         public ManagementPage()
         {
             this.InitializeComponent();
        
             Teams = new ObservableCollection<PCOTeam>();
-            Users = new ObservableCollection<Author>();
+            Authors = new ObservableCollection<Author>();
 
 
             //DUMMY
             if (false)
             {
-                SetDummyUsers();
+                SetDummyAuthors();
             } else
             {
                 //Not dummy
@@ -53,15 +53,15 @@ namespace Project_Codebase_Overview
 
                 foreach (var author in authorList)
                 {
-                    Users.Add(author);
+                    Authors.Add(author);
                 }
             }
             UpdateTeams();
         }
         
-        private void SetDummyUsers()
+        private void SetDummyAuthors()
         {
-            Users = new ObservableCollection<Author>();
+            Authors = new ObservableCollection<Author>();
             PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0]);
             var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
             var parentAuth = authorList.First();
@@ -74,7 +74,7 @@ namespace Project_Codebase_Overview
                     parentAuth.ConnectAuthor(author);
                 }
                 if (author.OverAuthor == null) {
-                    Users.Add(author);
+                    Authors.Add(author);
                 }
             }
             PCOState.GetInstance().GetContributorState().AddTeam(team);
@@ -104,11 +104,11 @@ namespace Project_Codebase_Overview
 
         private void UpdateAuthors()
         {
-            Users.Clear();
+            Authors.Clear();
             var manager = PCOState.GetInstance().GetContributorState();
             foreach (var author in manager.GetAllAuthors())
             {
-                Users.Add(author);
+                Authors.Add(author);
             }
             PCOState.GetInstance().GetExplorerState().CalculateData();
         }
@@ -156,7 +156,7 @@ namespace Project_Codebase_Overview
             }
         }
 
-        private async void EditUserClick(object sender, RoutedEventArgs e)
+        private async void EditAuthorClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var author = button.DataContext as Author;

@@ -38,7 +38,7 @@
                         <Grid RowDefinitions="auto, auto, auto, auto">
                             <TextBlock Grid.Row="0" Text="The VCS Email is used in CodeOwners to give users in"/>
                             <TextBlock Grid.Row="1" Text="Github/Gitlab ownership" Margin="0,0,0,8"/>
-                            <TextBlock Grid.Row="2" Text="Make sure the user has the same Email as its "/>
+                            <TextBlock Grid.Row="2" Text="Make sure the author has the same Email as its "/>
                             <TextBlock Grid.Row="3" Text="Github/Gitlab user"/>
                         </Grid>
                     </Flyout>
@@ -47,9 +47,9 @@
             </Button>
         </Grid>
         
-        <!--user color & Teams-->
+        <!--author color & Teams-->
         <Grid Grid.Row="2" ColumnDefinitions="auto, auto, auto, *, auto">
-            <TextBlock Grid.Column="0" Text="User color:" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="0" Text="Author color:" VerticalAlignment="Center"/>
             <Button Grid.Column="1" Margin="4,4,0,0" HorizontalAlignment="Left" >
                 <Button.Flyout>
                     <Flyout>

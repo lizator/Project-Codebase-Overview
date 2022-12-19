@@ -86,7 +86,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                             }
                             else
                             {
-                                builder.AppendLine("# Path \"" + path + "\" should be owned by user \"" + owner.Name + "\" but it did not have an Email set.");
+                                builder.AppendLine("# Path \"" + path + "\" should be owned by Author \"" + owner.Name + "\" but it did not have an Email set.");
                                 PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
                                 hasError = true;
                                 break;

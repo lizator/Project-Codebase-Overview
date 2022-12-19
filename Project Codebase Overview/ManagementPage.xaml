@@ -52,11 +52,11 @@
                 </CommandBar>
             </Pivot.RightHeader>
             
-            <!--User Management page-->
-            <PivotItem Header="User management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                <treeGrid:SfTreeGrid x:Name="UserTreeGrid"
+            <!--Author Management page-->
+            <PivotItem Header="Author management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <treeGrid:SfTreeGrid x:Name="AuthorTreeGrid"
                                 ChildPropertyName="SubAuthors"
-                                ItemsSource="{x:Bind Users}"
+                                ItemsSource="{x:Bind Authors}"
                                 ShowRowHeader="True"
                                 ColumnWidthMode="Star"
                                 AutoGenerateColumnsMode="None"
@@ -73,7 +73,7 @@
                             <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
                             <!-- Email -->
                             <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350"/>
-                            <!-- User Color -->
+                            <!-- Author Color -->
                             <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -116,7 +116,7 @@
                             <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button  Background="Transparent" BorderThickness="0" Click="EditUserClick">
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick">
                                             <Image Source="Assets/Expand.png"></Image>
                                         </Button>
                                     </DataTemplate>

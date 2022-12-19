@@ -194,9 +194,9 @@ namespace Project_Codebase_Overview
 
         private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
         {
-            if (e.NewValue.Equals("Users"))
+            if (e.NewValue.Equals("Authors"))
             {
-                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.USER;
+                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.AUTHOR;
             }
             else if (e.NewValue.Equals("Teams"))
             {
@@ -240,7 +240,7 @@ namespace Project_Codebase_Overview
 
                 if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID() && PCOState.GetInstance().GetCodeOwnersExportAuthorMissingEmail())
                 {
-                    await DialogHandler.ShowOkDialog("Missing Info", "One or more teams and users were missing their VCS info and their ownership was skipped.", XamlRoot);
+                    await DialogHandler.ShowOkDialog("Missing Info", "One or more teams and authors were missing their VCS info and their ownership was skipped.", XamlRoot);
                 }
                 else if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID())
                 {

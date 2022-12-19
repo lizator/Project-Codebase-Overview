@@ -181,7 +181,7 @@ namespace Project_Codebase_Overview.Dialogs
 
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
-            //Add "doubles" of users that are in multiple teams
+            //Add "doubles" of author that are in multiple teams
             foreach (var author in UnselectedAuthorList)
             {
                 if (author.Teams.Count > 1)
