@@ -91,6 +91,11 @@ namespace Project_Codebase_Overview
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
 
+            if (settingsState.CurrentMode == PCOExplorerMode.TEAMS)
+            {
+                ModeSwitch.SelectedIndex = 1;
+            }
+
             CutOffSelectionComboBox.SelectedIndex = ((int)settingsState.CutOffSelectionUnit)-1;
 
             BranchNameBlock.Text = PCOState.GetInstance().GetBranchName();

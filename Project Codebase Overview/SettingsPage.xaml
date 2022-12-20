@@ -61,6 +61,7 @@
                                         SelectedIndex="0"
                                         SelectionAnimationType="Slide"
                                         SelectionChanged="OwnerModeChanged"
+                                        x:Name="ModeSwitch"
                                         >
                 <x:String>Authors</x:String>
                 <x:String>Teams</x:String>
