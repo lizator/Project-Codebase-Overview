@@ -51,30 +51,32 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         private PCOColorPicker()
         {
-            GenerateColorPalette(20);
+            GenerateColorPalette(50);
         }
 
         public Color AssignAuthorColor()
         {
-            if (AuthorCounter >= HardcodedColors.Count)
+            if (AuthorCounter >= ColorPalette.Count)
             {
-                return Color.FromArgb(255, 0, 0, 0); //Return black as default
+                AuthorCounter = 0; //Return black as default
             }
-            var col = HardcodedColors[AuthorCounter];
+            var col = ColorPalette[AuthorCounter];
             AuthorCounter++;
             return col;
         }
 
         public Color AssignTeamColor()
         {
-            if (TeamCounter >= HardcodedColors.Count)
+            if (TeamCounter >= ColorPalette.Count)
             {
-                return Color.FromArgb(255, 0, 0, 0); //Return black as default
+                TeamCounter = 0;
             }
-            var col = HardcodedColors[TeamCounter];
+            var col = ColorPalette[TeamCounter];
             TeamCounter++;
             return col;
         }
+
+
 
         private void GenerateColorPalette(int n)
         {
