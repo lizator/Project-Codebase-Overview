@@ -154,6 +154,31 @@ namespace Project_Codebase_Overview.Dialogs
             public string Email { get; set; }
             public string TeamName { get; set; }
         }
+
+        private bool NotSelectedFilter(KeyValuePair<string, Author> pair, string searchString)
+        {
+            if (!IsAuthorInTeam.GetValueOrDefault(pair.Key))
+            {
+                var isSearching = searchString.Length > 0;
+                if (!isSearching)
+                {
+                    return true;
+                }
+
+                var nameFound = pair.Value.Name.ToLower().Contains(searchString.ToLower());
+                var emailFound = pair.Value.Email.ToLower().Contains(searchString.ToLower());
+                bool teamFound;
+                if (pair.Value.Teams.Count == 0)
+                {
+                    teamFound = NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower());
+                } else
+                {
+                    teamFound = pair.Value.Teams.Where(x => x.Name.ToLower().Contains(searchString.ToLower())).Any();
+                }
+                return nameFound || emailFound || teamFound;
+            }
+            return false;
+        }
         private void UpdateAuthorLists(string searchString = "")
         {
             var isSearching = searchString.Length > 0;
@@ -164,18 +189,7 @@ namespace Project_Codebase_Overview.Dialogs
 
 
 
-            AuthorList.Where(pair =>
-                !IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
-                (!isSearching || (
-                    pair.Value.Name.ToLower().Contains(searchString.ToLower()) ||
-                    pair.Value.Email.ToLower().Contains(searchString.ToLower()) ||
-                    (
-                        pair.Value.Teams.Count == 0 ?
-                            NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) :
-                            pair.Value.Teams.Select(x => x.Name.ToLower().Contains(searchString.ToLower())).Any()
-                    )
-                ))
-            )
+            AuthorList.Where(pair => NotSelectedFilter(pair, searchString))
             .Select(pair => pair.Value).ForEach(author => { 
                 if (author.Teams.Count == 0)
                 {
@@ -234,11 +248,8 @@ namespace Project_Codebase_Overview.Dialogs
             //}
 
             SelectedAuthorList.Clear();
-            AuthorList.Where(pair =>
-                IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
-                (!isSearching || (pair.Value.Name.ToLower().Contains(searchString.ToLower()) || pair.Value.Email.ToLower().Contains(searchString.ToLower())))
-            )
-            .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
+            AuthorList.Where(pair => IsAuthorInTeam.GetValueOrDefault(pair.Key))
+                .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
 
         }
 
