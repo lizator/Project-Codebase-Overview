@@ -115,7 +115,8 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             List<IOwner> owners = new List<IOwner>();
             owners.AddRange(GetAllAuthors());
-            owners.AddRange(GetAllTeams().Where(x => x.IsActive));
+            owners.AddRange(GetAllTeams());
+            //owners.AddRange(GetAllTeams().Where(x => x.IsActive));
 
             return owners;
         }
