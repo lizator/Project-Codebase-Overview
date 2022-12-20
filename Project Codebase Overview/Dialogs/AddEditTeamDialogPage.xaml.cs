@@ -287,13 +287,9 @@ namespace Project_Codebase_Overview.Dialogs
             Team.Name = NameBox.Text;
             Team.VCSID = newVCSID;
             Team.EmptyMembers();
-            foreach (var pair in IsAuthorInTeam)
-            {
-                if (pair.Value)
-                {
-                    Team.ConnectMember(AuthorList[pair.Key]);
-                }
-            }
+
+            IsAuthorInTeam.Where(x => x.Value).ForEach(x => Team.ConnectMember(AuthorList[x.Key]));
+
             Team.Color = LocalObservables.Brush.Color;
 
 

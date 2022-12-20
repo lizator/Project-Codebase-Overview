@@ -99,7 +99,6 @@ namespace Project_Codebase_Overview
                 TeamsGridView.Visibility = Visibility.Visible;
                 NoTeamsMessage.Visibility = Visibility.Collapsed;
             }
-            PCOState.GetInstance().GetExplorerState().CalculateData();
         }
 
         private void UpdateAuthors()
