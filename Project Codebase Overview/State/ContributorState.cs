@@ -231,5 +231,27 @@ namespace Project_Codebase_Overview.ContributorManagement
             Teams.Remove(origName);
             Teams.Add(newName, tmpTeam);
         }
+
+        public void ReColorAuthors()
+        {
+            Random rand = new Random();
+            List<Author> scrambled = GetAllAuthors().OrderBy(x => rand.Next()).ToList();
+            
+            foreach(Author author in scrambled)
+            {
+                author.Color = PCOColorPicker.GetInstance().AssignAuthorColor();
+            }
+        }
+
+        public void ReColorTeams()
+        {
+            Random rand = new Random();
+            List<PCOTeam> scrambled = GetAllTeams().OrderBy(x => rand.Next()).ToList();
+            
+            foreach (PCOTeam team in scrambled)
+            {
+                team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
+            }
+        }
     }
 }

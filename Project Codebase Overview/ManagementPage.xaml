@@ -46,7 +46,10 @@
         </Grid>
         <Pivot Grid.Row="1">
             <Pivot.RightHeader>
-                <AppBarButton Icon="Add" Click="AddTeamClick" Label="Add team"/>
+                <StackPanel Orientation="Horizontal" >
+                    <AppBarButton Icon="Add" Click="AddTeamClick" Label="Add team"/>
+                    <AppBarButton Icon="Shuffle" Label="Shuffle colors" Click="ShuffleColorsClick"/>
+                </StackPanel>
                 <!--<AppBarButton Icon="Globe"  Label="Import"/>-->
             </Pivot.RightHeader>
             

@@ -164,5 +164,52 @@ namespace Project_Codebase_Overview
 
             CheckAuthorChangeAndStartUpdate();
         }
+
+        private async void ShuffleColorsClick(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = XamlRoot;
+            dialog.Title = "Shuffle Colors";
+            dialog.PrimaryButtonText = "Shuffle";
+            dialog.SecondaryButtonText = "Cancel";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+
+            StackPanel content = new StackPanel();
+            content.Spacing = 10;
+            content.Children.Add(new TextBlock() {
+                Text = "Shuffling colors will give all authors/teams a new color. Also ones with a manually set color.",
+                TextWrapping = TextWrapping.WrapWholeWords
+            });
+
+            RadioButtons radioButtons = new RadioButtons();
+            radioButtons.Header = "Select what you want colors shuffled for:";
+            radioButtons.Items.Add("All");
+            radioButtons.Items.Add("Authors");
+            radioButtons.Items.Add("Teams");
+            radioButtons.SelectedItem = "All";
+            
+            content.Children.Add(radioButtons);
+
+            dialog.Content = content;
+
+            var result = await dialog.ShowAsync();
+            if(result == ContentDialogResult.Primary)
+            {
+                var cState = PCOState.GetInstance().GetContributorState();
+                if (radioButtons.SelectedItem.Equals("All"))
+                {
+                    cState.ReColorAuthors();
+                    cState.ReColorTeams();
+                }
+                else if (radioButtons.SelectedItem.Equals("Authors"))
+                {
+                    cState.ReColorAuthors();
+                }
+                else if (radioButtons.SelectedItem.Equals("Teams"))
+                {
+                    cState.ReColorTeams();
+                }
+            }
+        }
     }
 }

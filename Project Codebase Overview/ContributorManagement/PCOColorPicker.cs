@@ -52,6 +52,8 @@ namespace Project_Codebase_Overview.ContributorManagement
         private PCOColorPicker()
         {
             GenerateColorPalette(50);
+            Random rand = new Random();
+            ColorPalette = ColorPalette.OrderBy(x => rand.Next()).ToList();
         }
 
         public Color AssignAuthorColor()
