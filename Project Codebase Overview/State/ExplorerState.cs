@@ -36,7 +36,15 @@ namespace Project_Codebase_Overview.FileExplorerView
             this.RootPath = newRootPath;
             this.RootFolder = newRoot;
             ResetHistory(newRoot);
-            ReloadExplorer();
+            try
+            {
+
+                ReloadExplorer();
+            }
+            catch(Exception e)
+            {
+
+            }
         }
 
         public void AddFolderHistory(PCOFolder addedFolder)

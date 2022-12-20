@@ -1,0 +1,17 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.LoadingSavePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel Spacing="10" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <TextBlock Style="{StaticResource HeaderTextBlockStyle}" Text="Loading saved file: " HorizontalAlignment="Center"/>
+        <TextBlock Style="{StaticResource SubheaderTextBlockStyle}" Text="{x:Bind FileName, Mode=OneWay}" HorizontalAlignment="Center"/>
+        <ProgressRing IsActive="True" HorizontalAlignment="Center" />
+        <TextBlock Text="This might take a minute" HorizontalAlignment="Center"/>
+    </StackPanel>
+</Page>

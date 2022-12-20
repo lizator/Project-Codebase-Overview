@@ -90,6 +90,13 @@ namespace Project_Codebase_Overview
             mainWindow.NavigateToLoadingPage();
             Close();
         }
+        private void NavigateToLoadingSavePage(StorageFile file)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Activate();
+            mainWindow.NavigateToLoadingSavePage(new LoadingSavePageParameters(file));
+            Close();
+        }
 
         private async void LoadFileClick(object sender, RoutedEventArgs e)
         {
@@ -106,65 +113,24 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
-
-            if (repoChangesAvailable)
-            {
-                bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
-                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                if (loadNewData)
-                {
-                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                    //goto loading page
-                    NavigateToLoadingPage();
-                }
-                else
-                {
-                    NavigateToExplorerPage();
-                }
-            }
-            else
-            {
-                NavigateToExplorerPage();
-            }
+            NavigateToLoadingSavePage(file);
 
         }
 
         private async void RecentFileClick(object sender, ItemClickEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
             var fileInfo = e.ClickedItem as RecentFileInfo;
+            StorageFile file = null;
             try
             {
-                var file = await StorageFile.GetFileFromPathAsync(fileInfo.FilePath);
-                
-                bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
-
-                if (repoChangesAvailable)
-                {
-                    bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
-                        "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                    if (loadNewData)
-                    {
-                        PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                        //goto loading page
-                        NavigateToLoadingPage();
-                    }
-                    else
-                    {
-                        NavigateToExplorerPage();
-                    }
-                }
-                else
-                {
-                    NavigateToExplorerPage();
-                }
+                file = await StorageFile.GetFileFromPathAsync(fileInfo.FilePath);
             }
             catch (Exception ex)
             {
                 await DialogHandler.ShowErrorDialog(ex.Message, Content.XamlRoot);
             }
-           
-            
+            NavigateToLoadingSavePage(file);
         }
     }
 }

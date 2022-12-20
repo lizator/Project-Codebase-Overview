@@ -57,7 +57,14 @@ namespace Project_Codebase_Overview
 
         private void SetExplorerHasChanges(bool value)
         {
-            LocalObservables.ExplorerHasChanges = value;
+            try
+            { 
+                LocalObservables.ExplorerHasChanges = value;
+            }
+            catch(Exception e)
+            {
+                
+            }
         }
         public SettingsPage()
         {
@@ -335,22 +342,8 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            ((Application.Current as App)?.MainWindow as MainWindow).NavigateToLoadingSavePage(new LoadingSavePageParameters(file));
 
-            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast("Loaded file: " + file.Name);
-
-            if (repoChangesAvailable)
-            {
-                bool loadNewData = await DialogHandler.ShowYesNoDialog(XamlRoot, "Load", 
-                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                if (loadNewData)
-                {
-                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                    //goto loading page
-                    ((Application.Current as App)?.MainWindow as MainWindow).NavigateToLoadingPage();
-
-                }
-            }
         }
 
         private async void NewRepoClick(object sender, RoutedEventArgs e)

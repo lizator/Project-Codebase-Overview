@@ -34,9 +34,16 @@ namespace Project_Codebase_Overview
 
         public async void NavigateToExplorerPage()
         {
-            var rootFrame = new Frame();
-            this.MainFrame.Content = rootFrame;
-            rootFrame.Navigate(typeof(ExplorerPage));
+            try
+            {
+                var rootFrame = new Frame();
+                this.MainFrame.Content = rootFrame;
+                rootFrame.Navigate(typeof(ExplorerPage));
+            }
+            catch(Exception e)
+            {
+
+            }
         }
     }
 }

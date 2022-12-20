@@ -27,6 +27,7 @@
     <None Remove="Dialogs\ExpandExplorerItemDialog.xaml" />
     <None Remove="ExplorerNavigationPage.xaml" />
     <None Remove="ExplorerPage.xaml" />
+    <None Remove="LoadingSavePage.xaml" />
     <None Remove="ManagementPage.xaml" />
     <None Remove="SettingsPage.xaml" />
     <None Remove="StartWindow.xaml" />
@@ -67,6 +68,11 @@
   -->
   <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="LoadingSavePage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Dialogs\ExpandExplorerItemDialog.xaml">
