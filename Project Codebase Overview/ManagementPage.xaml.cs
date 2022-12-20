@@ -21,6 +21,7 @@ using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
+using Syncfusion.UI.Xaml.TreeGrid;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -209,6 +210,16 @@ namespace Project_Codebase_Overview
                     cState.ReColorTeams();
                 }
             }
+        }
+
+      
+
+        private async void TreeGridDoubleTap(object sender, TreeGridCellDoubleTappedEventArgs e)
+        {
+            var author = e.Record as Author;
+            await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+
+            CheckAuthorChangeAndStartUpdate();
         }
     }
 }

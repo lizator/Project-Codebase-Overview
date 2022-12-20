@@ -58,15 +58,17 @@
                 <treeGrid:SfTreeGrid x:Name="AuthorTreeGrid"
                                 ChildPropertyName="SubAuthors"
                                 ItemsSource="{x:Bind Authors}"
-                                ShowRowHeader="True"
+                                ShowRowHeader="False"
                                 ColumnWidthMode="Star"
                                 AutoGenerateColumnsMode="None"
                                 AllowResizingColumns="False"
                                 GridLinesVisibility="Horizontal"
                                 SelectionMode="Single"
-                                RowHeaderWidth="0"
                                 NavigationMode="Row"
-                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White">
+                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White"
+                                     
+                                     CellDoubleTapped="TreeGridDoubleTap"
+                                >
 
                     <treeGrid:SfTreeGrid.Columns>
                         <treeGrid:TreeGridColumns>
@@ -118,7 +120,7 @@
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick">
-                                            <Image Source="Assets/Expand.png"></Image>
+                                            <SymbolIcon Symbol="Edit"/>
                                         </Button>
                                     </DataTemplate>
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
