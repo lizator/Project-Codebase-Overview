@@ -67,8 +67,8 @@
                 <x:String>Teams</x:String>
             </editors:SfSegmentedControl>
 
-            <!-- author list -->
-            <ListView Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2"
+            <!-- owner list -->
+            <ListView Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
                     ItemsSource="{x:Bind OwnersList}"
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
@@ -85,6 +85,12 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            
+            <!-- No teams msg -->
+            <StackPanel Orientation="Vertical" Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoTeamsMsg" >
+                <TextBlock FontSize="18" Text="No teams" Margin="0,6,0,0" HorizontalAlignment="Center"/>
+                <TextBlock FontSize="14" Text="Open the management page to create teams." HorizontalAlignment="Center"/>
+            </StackPanel>
 
             <!-- Explorer Settings -->
             <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>

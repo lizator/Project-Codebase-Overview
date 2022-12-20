@@ -87,11 +87,20 @@ namespace Project_Codebase_Overview
         private void UpdateOwnerList()
         {
             OwnersList.Clear();
+            OwnerListView.Visibility = Visibility.Visible;
+            NoTeamsMsg.Visibility = Visibility.Collapsed;
             var list = PCOState.GetInstance().GetContributorState().GetAllOwnersInMode();
             foreach (var owner in list)
             {
                 OwnersList.Add(owner);
             }
+
+            if (OwnersList.Count == 0)
+            {
+                OwnerListView.Visibility = Visibility.Collapsed;
+                NoTeamsMsg.Visibility = Visibility.Visible;
+            }
+            
         }
 
         private void LoadSettingsFromState()
