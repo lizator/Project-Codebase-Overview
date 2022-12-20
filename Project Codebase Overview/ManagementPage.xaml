@@ -46,10 +46,8 @@
         </Grid>
         <Pivot Grid.Row="1">
             <Pivot.RightHeader>
-                <CommandBar ClosedDisplayMode="Compact">
-                    <AppBarButton Icon="Add" Label="Add team" Click="AddTeamClick"/>
-                    <AppBarButton Icon="Globe"  Label="Import"/>
-                </CommandBar>
+                <AppBarButton Icon="Add" Click="AddTeamClick" Label="Add team"/>
+                <!--<AppBarButton Icon="Globe"  Label="Import"/>-->
             </Pivot.RightHeader>
             
             <!--Author Management page-->
