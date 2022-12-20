@@ -73,7 +73,7 @@
 
             <!-- owner list -->
             <ListView Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
-                    ItemsSource="{x:Bind OwnersList}"
+                    ItemsSource="{x:Bind OwnersList}" SelectionMode="None"
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
                     <!-- TODO: FIX TEMPLATE SHIT!-->
