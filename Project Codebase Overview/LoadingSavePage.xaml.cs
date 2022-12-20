@@ -66,7 +66,6 @@ namespace Project_Codebase_Overview
             {
                 try
                 {
-                    Thread.Sleep(3000);
                     bool repoChangesAvailable = await state.LoadFile(File);
                     dispatcherQueue?.TryEnqueue(async () =>
                     {
