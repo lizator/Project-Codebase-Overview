@@ -33,6 +33,7 @@
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -67,8 +68,11 @@
                 <x:String>Teams</x:String>
             </editors:SfSegmentedControl>
 
+
+            <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Owner list" FontSize="16"/>
+
             <!-- owner list -->
-            <ListView Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
+            <ListView Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
                     ItemsSource="{x:Bind OwnersList}"
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
@@ -87,18 +91,18 @@
             </ListView>
             
             <!-- No teams msg -->
-            <StackPanel Orientation="Vertical" Grid.Row="3"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoTeamsMsg" >
+            <StackPanel Orientation="Vertical" Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoTeamsMsg" >
                 <TextBlock FontSize="18" Text="No teams" Margin="0,6,0,0" HorizontalAlignment="Center"/>
                 <TextBlock FontSize="14" Text="Open the management page to create teams." HorizontalAlignment="Center"/>
             </StackPanel>
 
             <!-- Explorer Settings -->
-            <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
-            <Button x:Name="UpdateExplorerBtn" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right" Content="Update Explorer" IsEnabled="{x:Bind LocalObservables.ExplorerHasChanges, Mode=OneWay}" Click="UpdateExplorerBtn_Click"/>
+            <TextBlock Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2"  Style="{StaticResource TitleTextBlockStyle}" Text="Explorer"  VerticalAlignment="Center"/>
+            <Button x:Name="UpdateExplorerBtn" Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right" Content="Update Explorer" IsEnabled="{x:Bind LocalObservables.ExplorerHasChanges, Mode=OneWay}" Click="UpdateExplorerBtn_Click"/>
 
 
-            <TextBlock Grid.Row="5" Grid.Column="0" Text="Cut Off selection"  VerticalAlignment="Center" />
-            <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="5" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Cut Off selection"  VerticalAlignment="Center" />
+            <ComboBox x:Name="CutOffSelectionComboBox" Grid.Row="6" Grid.Column="1" SelectedIndex="0" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <x:String>All time</x:String>
                 <x:String>6 months</x:String>
                 <x:String>1 year</x:String>
@@ -107,8 +111,8 @@
                 <x:String>5 years</x:String>
             </ComboBox>
 
-            <TextBlock Grid.Row="6" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
-            <Button Grid.Row="6" Grid.Column="0" Padding="2" Margin="2" HorizontalAlignment="Right">
+            <TextBlock Grid.Row="7" Grid.Column="0" Text="Line decay"  VerticalAlignment="Center"/>
+            <Button Grid.Row="7" Grid.Column="0" Padding="2" Margin="2" HorizontalAlignment="Right">
                 <Button.Flyout>
                     <Flyout>
                         <Grid RowDefinitions="auto, auto, auto, auto, auto, auto, auto">
@@ -124,12 +128,12 @@
                 </Button.Flyout>
                 <SymbolIcon Symbol="Help"/>
             </Button>
-            <CheckBox Grid.Row="6" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
+            <CheckBox Grid.Row="7" Grid.Column="1" x:Name="DecayCheckBox"  VerticalAlignment="Center"  Width="100"
                 Checked="DecayChecked" Unchecked="DecayUnchecked"/>
             
                 <!-- Visibility dependent-->
-                <TextBlock Grid.Row="7" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
-                <Grid Grid.Row="7" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                <TextBlock Grid.Row="8" Grid.Column="0" Text="Decay timer" x:Name="DecayTimerTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
+                <Grid Grid.Row="8" Grid.Column="1" ColumnDefinitions="auto, auto" Visibility="Visible"  VerticalAlignment="Center" HorizontalAlignment="Right">
                     <editors:SfNumberBox Grid.Column="0" x:Name="DecayTimerNumberBox"  Width="50" MinWidth="1"
                                          Maximum="99" Minimum="0" VerticalAlignment="Center" HorizontalContentAlignment="Right" CustomFormat="0" ShowClearButton="False"/>
                     <ComboBox Grid.Column="1" x:Name="DecayTimerComboBox" Width="100"  VerticalAlignment="Center" PlaceholderText="Select">
@@ -140,28 +144,28 @@
                     </ComboBox>
                 </Grid>
 
-                <TextBlock Grid.Row="8" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
-                <Grid x:Name="DropOffNumberBox" Grid.Row="8" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
+                <TextBlock Grid.Row="9" Grid.Column="0" Text="Drop off percentage" x:Name="DropOffTextBlock" Visibility="Visible" Margin="20,0,0,0"  VerticalAlignment="Center"/>
+                <Grid x:Name="DropOffNumberBox" Grid.Row="9" Grid.Column="1"  ColumnDefinitions="*, auto"  VerticalAlignment="Center" HorizontalAlignment="Right">
                     <editors:SfNumberBox Grid.Column="0" Maximum="99" Minimum="0" CustomFormat="0" HorizontalContentAlignment="Right"
                                          Visibility="Visible" Width="35" x:Name="PercentageNumberBox" HorizontalAlignment="Right"  VerticalAlignment="Center" ShowClearButton="False"/>
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>
 
-            <TextBlock Grid.Row="9" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
-            <CheckBox Grid.Row="9" Grid.Column="1"  x:Name="ShowFilesCheckBox" IsChecked="True" Width="100"
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
+            <CheckBox Grid.Row="10" Grid.Column="1"  x:Name="ShowFilesCheckBox" IsChecked="True" Width="100"
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
 
-            <Grid Grid.Row="10" Grid.Column="1">
+            <Grid Grid.Row="11" Grid.Column="1">
                 <Button HorizontalAlignment="Left" Background="ForestGreen" Foreground="White" Content="Save" Click="SaveSettingsChangeClick"/>
                 <Button HorizontalAlignment="Right" Background="IndianRed" Foreground="White" Content="Cancel" Click="CancelSettingsChangeClick"/>
             </Grid>
 
             <!-- Import/Export -->
-            <TextBlock Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
-            <Button Grid.Row="12" Grid.Column="0" Click="ExportCodeownersClick">Export CodeOwners file</Button>
-            <Button Grid.Row="13" Grid.Column="0" Click="SaveClick">Save</Button>
-            <Button Grid.Row="14" Grid.Column="0" Click="LoadClick">Load</Button>
-            <Button Grid.Row="15" Grid.Column="0" Click="NewRepoClick">Open new repository</Button>
+            <TextBlock Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
+            <Button Grid.Row="13" Grid.Column="0" Click="ExportCodeownersClick">Export CodeOwners file</Button>
+            <Button Grid.Row="14" Grid.Column="0" Click="SaveClick">Save</Button>
+            <Button Grid.Row="15" Grid.Column="0" Click="LoadClick">Load</Button>
+            <Button Grid.Row="16" Grid.Column="0" Click="NewRepoClick">Open new repository</Button>
             
         </Grid>
         
