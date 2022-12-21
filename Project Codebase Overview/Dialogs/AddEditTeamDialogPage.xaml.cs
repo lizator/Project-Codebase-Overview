@@ -40,6 +40,7 @@ namespace Project_Codebase_Overview.Dialogs
         private PCOTeam Team;
         private Dictionary<string, bool> IsAuthorInTeam;
         private Dictionary<string, Author> AuthorList;
+        private bool IsVCSIDSet;
 
         private static string NO_TEAM_HEADER_TEXT = "No team";
         private class Observables: ObservableObject
@@ -85,8 +86,10 @@ namespace Project_Codebase_Overview.Dialogs
                 IsTeamNew = true;
                 Team = new PCOTeam();
                 Team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
+                IsVCSIDSet = false;
             } else
             {
+                IsVCSIDSet = Team.VCSID.Length > 0;
                 LocalObservables.DeleteVisibility = Visibility.Visible;
                 LocalObservables.ConfirmDeleteMsg = "Confirm deleting team \"" + Team.Name + "\"";
             }
@@ -342,6 +345,24 @@ namespace Project_Codebase_Overview.Dialogs
             manager.SetSelectedTeam(null);
             manager.GetCurrentTeamDialog().Hide();
             manager.SetCurrentTeamDialog(null);
+        }
+
+        private void VCSIDBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var vcsidbox = ((TextBox)sender);
+            var state = vcsidbox.FocusState;
+            if (state != FocusState.Unfocused)
+            {
+                IsVCSIDSet = true;
+            }
+        }
+
+        private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!IsVCSIDSet)
+            {
+                VCSIDBox.Text = NameBox.Text.Length > 0 ? "@" + NameBox.Text.ToLower().Replace(' ', '_') : "";
+            }
         }
     }
     public class GroupInfoList : ObservableCollection<object>

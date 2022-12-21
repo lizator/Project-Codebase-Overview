@@ -34,7 +34,7 @@
         <Grid Grid.Row="0" ColumnDefinitions="*" Padding="2,2,2,6">
             <Grid Grid.Column="0" ColumnDefinitions="auto, *" >
                 <TextBlock Text="Name:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="NameBox" Grid.Column="1">
+                <TextBox x:Name="NameBox" Grid.Column="1" TextChanged="NameBox_TextChanged">
                     <FlyoutBase.AttachedFlyout>
                         <Flyout>
                             <TextBlock Text="{x:Bind LocalObservables.NameFlyoutMsg, Mode=OneWay}"  />
@@ -46,7 +46,7 @@
         <Grid Grid.Row="1" ColumnDefinitions="3*, 2*" Padding=" 0,0,0,10">
             <Grid Grid.Column="0" ColumnDefinitions="auto, *, auto"  Padding="0,0,10,0">
                 <TextBlock Grid.Column="0" Text="VCS ID:" Padding="0,0,4,0" VerticalAlignment="Center"/>
-                <TextBox x:Name="VCSIDBox" Grid.Column="1" VerticalContentAlignment="Center">
+                <TextBox x:Name="VCSIDBox" Grid.Column="1" VerticalContentAlignment="Center" TextChanged="VCSIDBox_TextChanged">
                     <FlyoutBase.AttachedFlyout>
                         <Flyout>
                             <TextBlock Text="The team cannot have the same ID as another team!"  />
