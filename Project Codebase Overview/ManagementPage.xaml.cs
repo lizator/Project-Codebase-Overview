@@ -86,7 +86,7 @@ namespace Project_Codebase_Overview
         {
             Teams.Clear();
             var manager = PCOState.GetInstance().GetContributorState();
-            foreach (var team in manager.GetAllTeams())
+            foreach (var team in manager.GetAllTeams().OrderBy(x => x.Name))
             {
                 Teams.Add(team);
             }
