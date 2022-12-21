@@ -62,6 +62,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             if (!member.Teams.Contains(this))
             {
                 member.Teams.Add(this);
+                member.UpdateTeamsString();
             }
 
             if (!this.Members.Contains(member))

@@ -73,11 +73,11 @@
                     <treeGrid:SfTreeGrid.Columns>
                         <treeGrid:TreeGridColumns>
                             <!-- Name -->
-                            <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
+                            <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" ShowToolTip="True" />
                             <!-- Email -->
-                            <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350"/>
+                            <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                             <!-- Author Color -->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100" AllowFiltering="False" AllowSorting="False">
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" ColumnWidthMode="SizeToHeader" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Ellipse Height="20" Width="20" StrokeThickness="1"  Stroke="Black">
@@ -89,24 +89,9 @@
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
                             <!--Sub author count-->
-                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" Width="120"/>
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" ColumnWidthMode="SizeToHeader"/>
                             <!-- Team -->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
-                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
-                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                              Stroke="Black"
-                                            Grid.Column="0">
-                                                <Ellipse.Fill>
-                                                    <SolidColorBrush Color="{Binding Team.Color}"/>
-                                                </Ellipse.Fill>
-                                            </Ellipse>
-                                            <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Team.Name}" Grid.Column="1"></TextBlock>
-                                        </Grid>
-                                    </DataTemplate>
-                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
-                            </treeGrid:TreeGridTemplateColumn>
+                            <treeGrid:TreeGridTextColumn MappingName="TeamsString" HeaderText="Teams" Width="225" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                             <!--Active Column-->
                             <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>

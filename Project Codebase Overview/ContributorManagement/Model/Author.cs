@@ -49,6 +49,8 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         private Visibility _editButtonVisibility;
         public Visibility EditButtonVisibility { get => _editButtonVisibility; set => SetProperty(ref _editButtonVisibility, value); }
+        private string _teamsString;
+        public string TeamsString { get => _teamsString; set => SetProperty(ref _teamsString, value); }
 
         public Author(string email, string name)
         {
@@ -134,6 +136,16 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             team.RemoveMember(this);
             this.Teams.Remove(team);
+        }
+        public void UpdateTeamsString()
+        {
+            string ts = "";
+            foreach(var team in Teams)
+            {
+                ts += team.Name + ", ";
+            }
+            ts = ts.Substring(0, ts.Length - 2);
+            this.TeamsString = ts;
         }
     }
 }
