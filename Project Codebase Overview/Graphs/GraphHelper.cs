@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.FileExplorerView;
@@ -219,7 +220,7 @@ namespace Project_Codebase_Overview.Graphs
             //add data from current explorer 
             dataLists[depth].Add(
                         new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesTotal, 
-                        explorerItem.GraphModel.SuggestedOwner.Color, Visibility.Visible, explorerItem));
+                        explorerItem.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black, Visibility.Visible, explorerItem));
 
             if (explorerItem.GetType() == typeof(PCOFile))
             {
