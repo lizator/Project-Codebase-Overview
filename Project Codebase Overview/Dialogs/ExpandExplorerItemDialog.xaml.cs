@@ -35,13 +35,13 @@ namespace Project_Codebase_Overview.Dialogs
     public class TopContributor
     {
         public string Name { get; set; }
-        public string Team { get; set; }
+        public string Teams { get; set; }
         public double Lines { get; set; }
         public double Percent { get; set; }
-        public TopContributor(string name, string team, double lines, double percent)
+        public TopContributor(string name, string teams, double lines, double percent)
         {
             Name = name;
-            Team = team;
+            Teams = teams;
             Lines = lines;
             Percent = percent;
         }
@@ -96,11 +96,15 @@ namespace Project_Codebase_Overview.Dialogs
             uint totalLines = ExplorerItem.GraphModel.LinesTotal;
             if(PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.AUTHOR)
             {
+                //author mode
                 DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Name", 
-                    TextTrimming = TextTrimming.CharacterEllipsis});
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                ShowToolTip = true});
 
-                DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Team", 
-                    TextTrimming = TextTrimming.CharacterEllipsis });
+                DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Teams", 
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    HeaderText="Team(s)",
+                    ShowToolTip = true});
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Lines",
                     ColumnWidthMode = Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells });
@@ -109,7 +113,7 @@ namespace Project_Codebase_Overview.Dialogs
                     DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
 
                 
-                foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
+                foreach (var dist in ExplorerItem.GraphModel.LineDistribution.OrderByDescending(x => x.Value.LineSum()))
                 {
                     Author author = dist.Key as Author;
                     string teamName = "";
@@ -128,18 +132,20 @@ namespace Project_Codebase_Overview.Dialogs
             }
             else
             {
-                DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Team", 
-                    TextTrimming = TextTrimming.CharacterEllipsis });
+                //Teams mode
+                DataGrid.Columns.Add(new GridTextColumn() { MappingName = "Name", 
+                    TextTrimming = TextTrimming.CharacterEllipsis ,
+                    HeaderText="Team name"});
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Lines",
                     ColumnWidthMode = Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells });
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Percent", HeaderText = "%", 
                     DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
-                foreach (var dist in ExplorerItem.GraphModel.LineDistribution)
+                foreach (var dist in ExplorerItem.GraphModel.LineDistribution.OrderByDescending(x => x.Value.LineSum()))
                 {
                     PCOTeam team = dist.Key as PCOTeam;
-                    TopContributors.Add(new TopContributor("", team.Name, dist.Value.LineSum(), (double) dist.Value.LineSum() / (double) totalLines));
+                    TopContributors.Add(new TopContributor(team.Name, "", dist.Value.LineSum(), (double) dist.Value.LineSum() / (double) totalLines));
                 }
             }
             

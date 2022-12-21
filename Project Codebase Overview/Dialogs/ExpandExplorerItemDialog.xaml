@@ -103,8 +103,40 @@
             </Button>
         </Grid>
 
-          
-        
+        <!-- Selected owners and comment row -->
+        <Grid ColumnDefinitions="*, *" ColumnSpacing="5">
+            <!--selected owners-->
+            <StackPanel Grid.Column="0" Orientation="Vertical" Spacing="5">
+                <TextBlock FontSize="20" Text="Selected owners" HorizontalAlignment="Center"/>
+                <ListView Height="100" ItemsSource="{x:Bind ExplorerItem.SelectedOwners}" SelectionMode="None"
+                      BorderThickness="1" BorderBrush="DarkGray" Background="White">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                                <Ellipse Grid.Column="0"  Width="20" Height="20" VerticalAlignment="Center" Stroke="Black" StrokeThickness="1">
+                                    <Ellipse.Fill>
+                                        <SolidColorBrush Color="{Binding Color}"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                                <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0" 
+                                       ToolTipService.ToolTip="{Binding Name}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </StackPanel>
+            
+            <!--comment-->
+            <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Spacing="5">
+                <TextBlock FontSize="20" Text="Comment" HorizontalAlignment="Center"/>
+                <TextBox x:Name="CommentBox" AcceptsReturn="True" TextWrapping="Wrap" 
+                     HorizontalAlignment="Stretch" 
+                     VerticalAlignment="Stretch" Height="100" 
+                     TextChanged="CommentChanged"
+                     PlaceholderText="Write a comment here... Comments will be shown in exported CODEOWNERS-files"
+                     />
+            </StackPanel>
+        </Grid>
 
         <!--top contributors-->
         <TextBlock Text="Top Contributors" FontSize="20" HorizontalAlignment="Center"/>
@@ -117,16 +149,7 @@
                              AllowResizingColumns="True" MaxHeight="300">
             
         </dataGrid:SfDataGrid>
-        <!--comment-->
-        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Spacing="5">
-            <TextBlock FontSize="20" Text="Comment" HorizontalAlignment="Center"/>
-            <TextBox x:Name="CommentBox" AcceptsReturn="True" TextWrapping="Wrap" 
-                     HorizontalAlignment="Stretch" 
-                     VerticalAlignment="Stretch" Height="100" 
-                     TextChanged="CommentChanged"
-                     PlaceholderText="Write a comment here... Comments will be shown in exported CODEOWNERS-files"
-                     />
-        </StackPanel>
+       
 
         <Grid ColumnDefinitions="auto, auto" HorizontalAlignment="Right">
             <Button x:Name="SaveButton" Grid.Column="0" IsEnabled="false" Content="Save" Background="ForestGreen" Click="SaveClick"/>
