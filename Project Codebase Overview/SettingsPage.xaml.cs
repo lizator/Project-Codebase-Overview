@@ -139,7 +139,7 @@ namespace Project_Codebase_Overview
             LoadSettingsFromState();
         }
 
-        private void SaveSettingsChangeClick(object sender, RoutedEventArgs e)
+        private void UpdateSettingsChangeClick(object sender, RoutedEventArgs e)
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
 

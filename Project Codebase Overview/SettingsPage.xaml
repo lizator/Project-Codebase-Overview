@@ -156,7 +156,7 @@
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
 
             <Grid Grid.Row="11" Grid.Column="1">
-                <Button HorizontalAlignment="Left" Background="ForestGreen" Foreground="White" Content="Save" Click="SaveSettingsChangeClick"/>
+                <Button HorizontalAlignment="Left" Background="ForestGreen" Foreground="White" Content="Update" Click="UpdateSettingsChangeClick"/>
                 <Button HorizontalAlignment="Right" Background="IndianRed" Foreground="White" Content="Cancel" Click="CancelSettingsChangeClick"/>
             </Grid>
 
