@@ -124,28 +124,18 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void AddClicked(object sender, RoutedEventArgs e)
         {
-            if (UnselectedListView.SelectedItems.Count() > 0)
-            {
-                foreach(var item in UnselectedListView.SelectedItems)
-                {
-                    var author = item as ViewAuthor;
-                    IsAuthorInTeam[author.Email] = true;
-                }
-            }
+            var item = ((Button)sender).DataContext as ViewAuthor;
+            IsAuthorInTeam[item.Email] = true;
+
             UpdateAuthorLists(SearchBox.Text);
         }
 
         private void RemoveClicked(object sender, RoutedEventArgs e)
         {
-            if (SelectedListView.SelectedItems.Count() > 0)
-            {
-                foreach(var item in SelectedListView.SelectedItems)
-                {
-                    var author = item as Author;
-                    IsAuthorInTeam[author.Email] = false;
-                }
-                UpdateAuthorLists(SearchBox.Text);
-            }
+            var item = ((Button)sender).DataContext as Author;
+            IsAuthorInTeam[item.Email] = false;
+            UpdateAuthorLists(SearchBox.Text);
+            
         }
 
         public class ViewAuthor
