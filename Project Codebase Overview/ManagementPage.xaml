@@ -119,7 +119,7 @@
                             <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick">
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick" Visibility="{Binding EditButtonVisibility}">
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button>
                                     </DataTemplate>

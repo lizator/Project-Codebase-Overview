@@ -160,9 +160,11 @@ namespace Project_Codebase_Overview
         {
             var button = sender as Button;
             var author = button.DataContext as Author;
-            await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
-
-            CheckAuthorChangeAndStartUpdate();
+            if(author.OverAuthor == null)
+            {
+                await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+                CheckAuthorChangeAndStartUpdate();
+            }
         }
 
         private async void ShuffleColorsClick(object sender, RoutedEventArgs e)
@@ -217,9 +219,11 @@ namespace Project_Codebase_Overview
         private async void TreeGridDoubleTap(object sender, TreeGridCellDoubleTappedEventArgs e)
         {
             var author = e.Record as Author;
-            await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
-
-            CheckAuthorChangeAndStartUpdate();
+            if(author.OverAuthor == null)
+            {
+                await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+                CheckAuthorChangeAndStartUpdate();
+            }
         }
     }
 }

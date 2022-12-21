@@ -82,6 +82,8 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         private void GenerateColorPalette(int n)
         {
+            //get colors from https://mokole.com/palette.html
+
             List<Color> colors = new List<Color>();
             List<string> palette;
             if(n <= 20)

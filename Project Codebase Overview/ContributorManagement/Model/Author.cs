@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,9 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         private Symbol _activeSymbol;
         public Symbol ActiveSymbol { get => _activeSymbol; set => SetProperty(ref _activeSymbol, value); }
 
+        private Visibility _editButtonVisibility;
+        public Visibility EditButtonVisibility { get => _editButtonVisibility; set => SetProperty(ref _editButtonVisibility, value); }
+
         public Author(string email, string name)
         {
             Teams = new ObservableCollection<PCOTeam>();
@@ -89,6 +93,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             }
 
             otherAuthor.OverAuthor = this;
+            otherAuthor.EditButtonVisibility = Visibility.Collapsed;
             this.SubAuthors.Add(otherAuthor);
             SubAuthorCount++;
 
@@ -108,6 +113,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.OverAuthor.SubAuthorCount--;
             this.OverAuthor.SubAuthors.Remove(this);
             this.OverAuthor = null;
+            this.EditButtonVisibility = Visibility.Visible;
         }
 
         public void EmptySubAuthors()

@@ -56,7 +56,7 @@
                         <editors:SfColorPicker
                             SelectedBrushChanged="SfColorPicker_SelectedBrushChanged"
                             BrushTypeOptions = "SolidColorBrush"
-                            ColorSpectrumComponents = "HueSaturation"
+                            ColorSpectrumComponents = "SaturationValue"
                             ColorSpectrumShape = "Box"
                             AxisInputOption = "Simple"
                             SelectedBrush = "{x:Bind LocalObservables.Brush, Mode=OneWay}"
