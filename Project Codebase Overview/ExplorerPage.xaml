@@ -196,7 +196,7 @@
                 
                 
             </StackPanel>
-            <ContentControl x:Name="GraphHolder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1"></ContentControl>
+            <ContentControl x:Name="GraphHolder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Padding="10"></ContentControl>
 
         </Grid>
 
