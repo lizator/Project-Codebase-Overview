@@ -541,7 +541,15 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            bool repoChangesAvailable = false;
+            try
+            {
+                repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            } catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
 
             if (repoChangesAvailable)
             {

@@ -28,6 +28,7 @@ namespace Project_Codebase_Overview.SaveState
             serialState.Settings = GetSerializerSettings(pCOState.GetSettingsState());
             serialState.RepositoryRootPath = pCOState.GetExplorerState().GetRootPath();
             serialState.LatestCommitSHA = pCOState.GetLatestCommitSha();
+            serialState.BranchName = pCOState.GetBranchName();
 
             return serialState;
         }
@@ -145,6 +146,7 @@ namespace Project_Codebase_Overview.SaveState
             // MAIN METHOD FOR CONVERTING (AND LOADING) FROM SERIALIZERSTATE TO PCOSTATE
             PCOState.GetInstance().ClearState();
 
+            PCOState.GetInstance().SetBranchName(serializerState.BranchName);
             SetPCOAuthors(serializerState);
             SetPCOTeams(serializerState);
             SetPCOSettings(serializerState.Settings);

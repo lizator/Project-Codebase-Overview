@@ -1,4 +1,5 @@
 ﻿using LibGit2Sharp;
+using Markdig.Extensions.Tables;
 using Microsoft.UI.Xaml;
 using Newtonsoft.Json;
 using Project_Codebase_Overview.ChangeHistoryFolder;
@@ -170,11 +171,42 @@ namespace Project_Codebase_Overview.State
             var path =  file.Path;
             var jsonString = File.ReadAllText(path);
             SerializerState serializerState = JsonConvert.DeserializeObject<SerializerState>(jsonString);
+            //Check branch is the same
+            Repository repo;
+            try
+            {
+                repo = new Repository(serializerState.RepositoryRootPath);
+            } catch
+            {
+                throw new Exception("Could not find a repository at \"" + serializerState.RepositoryRootPath + "\"");
+            }
+
+            var branchName = repo.Head.FriendlyName;
+            if (serializerState.BranchName == null)
+            {
+                serializerState.BranchName = branchName;
+            }
+
+            if (!serializerState.BranchName.Equals(branchName))
+            {
+                throw new Exception(String.Format("The current repository branch \"{0}\" is not the same as the save files branch \"{1}\"", branchName, serializerState.BranchName));
+            }
+
+            RepositoryStatus gitStatus = repo.RetrieveStatus(new StatusOptions() { IncludeUnaltered = true });
+            if (gitStatus.IsDirty)
+            {
+                throw new Exception("Repository contains dirty files. Commit all changes and retry.");
+            }
+
+            if (!repo.Commits.Where(x => x.Sha.Equals(serializerState.LatestCommitSHA)).Any())
+            {
+                throw new Exception("The last loaded commit was not found in the repository. Check out a commit later than commit \" " + serializerState.LatestCommitSHA + "\"");
+            }
+
             //setup state for old root
             SerializerHelper.SetPCOStateFromInitializerState(serializerState);
             LatestCommitSha = serializerState.LatestCommitSHA;
-            //TODO: handle branching???
-
+            
             //check if any new commits to load
             GitDataCollector gitDataCollector = new GitDataCollector();
             var repoChangesAvailable = gitDataCollector.IsRepoChangesAvailable(serializerState.RepositoryRootPath, serializerState.LatestCommitSHA);

@@ -24,6 +24,7 @@ namespace Project_Codebase_Overview.Dialogs
         {
             TextBlock contentText = new TextBlock();
             contentText.Text = errorText;
+            contentText.TextWrapping = TextWrapping.WrapWholeWords;
 
             ContentDialog dialog = new ContentDialog();
 
