@@ -393,5 +393,10 @@ namespace Project_Codebase_Overview
             SetExplorerHasChanges(false);
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
         }
+
+        private async void HelpClicked(object sender, RoutedEventArgs e)
+        {
+            await DialogHandler.ShowHelpDialog(XamlRoot);
+        }
     }
 }

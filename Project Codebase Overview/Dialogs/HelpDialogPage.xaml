@@ -1,0 +1,23 @@
+﻿<Page
+    x:Class="Project_Codebase_Overview.Dialogs.HelpDialogPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project_Codebase_Overview.Dialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <StackPanel Orientation="Vertical" Spacing="10">
+        <Image x:Name="Image" Height="200" Width="300" Source="{x:Bind Path=CurrentElement.Source, Mode=OneWay}" Stretch="UniformToFill"></Image>
+        <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="WrapWholeWords" Text="{x:Bind Path=CurrentElement.Description, Mode=OneWay}"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Click="PreviousClick">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+            <Button Click="NextClick">
+                <SymbolIcon Symbol="Forward"/>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</Page>

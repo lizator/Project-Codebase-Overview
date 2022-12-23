@@ -127,6 +127,24 @@ namespace Project_Codebase_Overview.Dialogs
             var result = await dialog.ShowAsync();
             return result;
         }
+        public static async Task<ContentDialogResult> ShowHelpDialog(XamlRoot xamlRoot)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = xamlRoot;
+
+            dialog.Title = "Help";
+            dialog.IsPrimaryButtonEnabled = false;
+            dialog.IsSecondaryButtonEnabled = true;
+            dialog.SecondaryButtonText = "Close";
+
+            var frame = new Frame();
+            frame.Navigate(typeof(HelpDialogPage));
+            dialog.Content = frame;
+
+
+            var result = await dialog.ShowAsync();
+            return result;
+        }
 
         private static void LineDistSeries_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
