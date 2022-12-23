@@ -58,7 +58,7 @@ namespace Project_Codebase_Overview.Graphs
                     GraphBlock block = new GraphBlock();
                     block.StartValue = currentStartPos;
                     block.EndValue = 100;
-                    block.Color = Color.FromArgb(255, 150, 150, 150);
+                    block.Color = PCOColorPicker.Black;
                     block.Name = String.Format("{0} others", distributionAmount - blockCount);
                     block.Percentage = (1 - (double)lineCount / (double)linesTotal) * 100;
                     block.ToolTip = string.Format("{0} others: {1:N2}%", distributionAmount - blockCount, (1 - (double)lineCount / (double)linesTotal) * 100);
