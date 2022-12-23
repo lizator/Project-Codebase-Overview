@@ -256,7 +256,7 @@ namespace Project_Codebase_Overview.Dialogs
             {
                 IsActive = true;
             }
-            else if (e.NewValue.Equals("Deactive"))
+            else if (e.NewValue.Equals("Inactive"))
             {
                 IsActive = false;
             }
