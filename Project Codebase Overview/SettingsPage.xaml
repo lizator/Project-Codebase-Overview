@@ -58,6 +58,21 @@
 
             <!--team/authors mode-->
             <TextBlock Grid.Row="2" Grid.Column="0" Text="Mode" VerticalAlignment="Center"/>
+            <Button Grid.Row="2" Grid.Column="0" Padding="2" Margin="2" HorizontalAlignment="Right">
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Padding="5" Width="400">
+                            <TextBlock Text="Author mode:" FontWeight="Bold"/>
+                            <TextBlock Text="Line distribution bar graph shows distribution between authors and suggested owners are authors." TextWrapping="WrapWholeWords" />
+                            <TextBlock Text="If any teams are selected as owners, the lines of that file/folder is divided evenly among each team member." TextWrapping="WrapWholeWords"/>
+                            <TextBlock Text="Teams mode:" FontWeight="Bold" />
+                            <TextBlock Text="Line distribution bar graph shows distribution between teams and suggested owners are teams." TextWrapping="WrapWholeWords" />
+                            <TextBlock Text="If any authors are selected as owners, the lines of that file/folder goes to the teams that the author is a member of." TextWrapping="WrapWholeWords"/>
+                        </StackPanel>
+                    </Flyout>
+                </Button.Flyout>
+                <SymbolIcon Symbol="Help"/>
+            </Button>
             <editors:SfSegmentedControl Grid.Row="2" Grid.Column="1"
                                         SelectedIndex="0"
                                         SelectionAnimationType="Slide"

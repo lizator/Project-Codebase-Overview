@@ -224,9 +224,14 @@
             </treeGrid:SfTreeGrid.SortColumnDescriptions>
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False"/>
+                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False" />
                     <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="325"
-                                                     AllowSorting="False" AllowFiltering="False" FilterPopupStyle="{StaticResource popupstyleforOwner}">
+                                                     AllowSorting="False" AllowFiltering="False" FilterPopupStyle="{StaticResource popupstyleforOwner}" ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="WrapWholeWords" Text="Select authors or teams as owners. All lines within the file/folder will propagate upwards as the selected owners' lines. Update Explorer to see changes in the parent bargraph." />
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ContentControl Content="{Binding SelectOwnerComboBox}" Visibility="{Binding SelectOwnerVisibility}" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
@@ -280,7 +285,19 @@
                             </DataTemplate>-->
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested owner" MappingName="SuggestedOwnerName" Width="225" AllowSorting="False" AllowFiltering="True" FilterPopupStyle="{StaticResource popupstyleforOwner}">
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Suggested owner" 
+                                                     MappingName="SuggestedOwnerName" 
+                                                     Width="225" 
+                                                     AllowSorting="False" 
+                                                     AllowFiltering="True" 
+                                                     FilterPopupStyle="{StaticResource popupstyleforOwner}"
+                                                     ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="WrapWholeWords"
+                                           Text="The suggested owner is the author/team with the most written lines in a file/folder (including its sub-elements)"/>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center" Margin="6,0,0,0">
@@ -293,7 +310,12 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridTemplateColumn MappingName="BarGraph" HeaderText="Line distribution" Width="300" AllowSorting="False">
+                    <treeGrid:TreeGridTemplateColumn MappingName="BarGraph" HeaderText="Line distribution" Width="300" AllowSorting="False" ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="WrapWholeWords" Text="Shows the amount of lines written by each auther/team in a file/folder (including its sub-elements)"/>
+                            </DataTemplate>
+                        </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
@@ -323,12 +345,18 @@
                             </DataTemplate>
                         </treeGrid:TreeGridCheckBoxColumn.HeaderToolTipTemplate>
                     </treeGrid:TreeGridCheckBoxColumn>
-                    <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" AllowEditing="False" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###"/>
+                    <treeGrid:TreeGridNumericColumn MappingName="LinesTotalNumber" AllowEditing="False" HeaderText="Lines" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,###" ShowHeaderToolTip="True">
+                        <treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="WrapWholeWords" Text="The total amount of lines contained in the file or folder."/>
+                            </DataTemplate>
+                        </treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
+                    </treeGrid:TreeGridNumericColumn>
                     <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowSorting="False">
                         <!-- expand button column-->
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Click="ExpandClick" Background="Transparent" BorderThickness="0">
+                                <Button Click="ExpandClick" Background="Transparent" BorderThickness="0" ToolTipService.ToolTip="Show detailed view">
                                     <Image Source="Assets/Expand.png"></Image>
                                 </Button>
                             </DataTemplate>

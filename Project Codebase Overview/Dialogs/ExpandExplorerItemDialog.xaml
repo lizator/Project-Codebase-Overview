@@ -93,7 +93,8 @@
         <!--bargraphline-->
         <Grid ColumnDefinitions="*, auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <ContentControl Grid.Column="0" Content="{x:Bind ExplorerItem.BarGraph}"/>
-            <Button Grid.Column="1">
+            <Button Grid.Column="1"
+                    ToolTipService.ToolTip="Show pie graph">
                 <Image Source="../Assets/Graph.png" Height="20" Width="20"></Image>
                 <Button.Flyout>
                     <Flyout>

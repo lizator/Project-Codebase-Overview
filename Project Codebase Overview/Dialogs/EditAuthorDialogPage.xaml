@@ -68,7 +68,7 @@
                     Fill="{x:Bind LocalObservables.Brush, Mode=OneWay}">
                 </Ellipse>
             </Button>
-            <TextBlock Grid.Column="2" Text="Teams:" Margin="12,0,4,0" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="2" Text="Team(s):" Margin="12,0,4,0" VerticalAlignment="Center"/>
             <TextBlock Grid.Column="3" Text="{x:Bind LocalObservables.SelectedTeamsString, Mode=OneWay}" 
                        VerticalAlignment="Center"
                        TextTrimming="CharacterEllipsis" />
@@ -76,17 +76,22 @@
                 <SymbolIcon Symbol="Edit"/>
                 <Button.Flyout>
                     <Flyout>
-                        <datagrid:SfDataGrid ItemsSource="{x:Bind Teams}" 
+                        <StackPanel Width="400" Height="200" Orientation="Vertical" Spacing="10">
+                            <TextBlock FontSize="20" Text="Select teams" HorizontalAlignment="Center"/>
+                            <datagrid:SfDataGrid ItemsSource="{x:Bind Teams}" 
                                              SelectionMode="Multiple" 
                                              SelectionChanged="TeamSelectionChanged"
                                              AutoGenerateColumns="False"
-                                             x:Name="TeamsDataGrid">
-                            <datagrid:SfDataGrid.Columns>
-                                <datagrid:GridCheckBoxSelectorColumn MappingName="x"/>
-                                <datagrid:GridTextColumn MappingName="Name"/>
+                                             x:Name="TeamsDataGrid"
+                                                 ColumnWidthMode="AutoLastColumnFill">
+                                <datagrid:SfDataGrid.Columns>
+                                    <datagrid:GridCheckBoxSelectorColumn MappingName="x"/>
+                                    <datagrid:GridTextColumn MappingName="Name" HeaderText="Team"/>
 
-                            </datagrid:SfDataGrid.Columns>
-                        </datagrid:SfDataGrid>
+                                </datagrid:SfDataGrid.Columns>
+                            </datagrid:SfDataGrid>
+                        </StackPanel>
+                        
                     </Flyout>
                 </Button.Flyout>
             </Button>
@@ -212,7 +217,7 @@
             </datagrid:SfDataGrid>
         </Grid>
         <!--Active/inactive & save/close-->
-        <Grid Grid.Row="5" ColumnDefinitions="*, auto, auto">
+        <Grid Grid.Row="5" ColumnDefinitions="auto, *, auto, auto">
             <editors:SfSegmentedControl Grid.Column="0"
                                         SelectionAnimationType="Slide"
                                         SelectionChanged="ActivityChanged"
@@ -220,6 +225,7 @@
                                         HorizontalAlignment="Left"  
                                         x:Name="ActiveSlider"
                                         Margin="0,4,0,4"
+                                        ToolTipService.ToolTip="Active authors can be selected as owners for files and folders. Inactive users cannot."
                                         >
                 <editors:SfSegmentedControl.Resources>
                     <ResourceDictionary>
@@ -233,8 +239,8 @@
                 <x:String>Active</x:String>
                 <x:String>Inactive</x:String>
             </editors:SfSegmentedControl>
-            <Button Grid.Column="1" Content="Save" Background="ForestGreen" Foreground="White" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
-            <Button Grid.Column="2" Content="Cancel" Background="IndianRed" Foreground="White" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="2" Content="Save" Background="ForestGreen" Foreground="White" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="3" Content="Cancel" Background="IndianRed" Foreground="White" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
         </Grid>
     </Grid>
 </Page>

@@ -89,11 +89,22 @@
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
                             <!--Sub author count-->
-                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" ColumnWidthMode="SizeToHeader"/>
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" ColumnWidthMode="SizeToHeader" ShowHeaderToolTip="True">
+                                <treeGrid:TreeGridTextColumn.HeaderToolTipTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextWrapping="WrapWholeWords" Text="Number of subauthors. Subauthors can be added to a user in the edit user dialog."/>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTextColumn.HeaderToolTipTemplate>
+                            </treeGrid:TreeGridTextColumn>
                             <!-- Team -->
-                            <treeGrid:TreeGridTextColumn MappingName="TeamsString" HeaderText="Teams" Width="225" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                            <treeGrid:TreeGridTextColumn MappingName="TeamsString" HeaderText="Team(s)" Width="225" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                             <!--Active Column-->
-                            <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader">
+                            <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader" ShowHeaderToolTip="True">
+                                <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextWrapping="WrapWholeWords" Text="Active authors can be selected as owners for files and folders. Inactive users cannot."/>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <SymbolIcon Symbol="{Binding ActiveSymbol}"/>
@@ -104,7 +115,8 @@
                             <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick" Visibility="{Binding EditButtonVisibility}">
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick" Visibility="{Binding EditButtonVisibility}"
+                                                 ToolTipService.ToolTip="Edit author">
                                             <SymbolIcon Symbol="Edit"/>
                                         </Button>
                                     </DataTemplate>
