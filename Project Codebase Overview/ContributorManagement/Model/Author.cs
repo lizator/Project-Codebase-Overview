@@ -71,6 +71,11 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             return Email.Equals(email) || SubAuthors.Where(sub => sub.Email.Equals(email)).Any();
         }
 
+        public bool FilterEmail(string emailSearch)
+        {
+            return Email.Contains(emailSearch)|| SubAuthors.Where(sub => sub.Email.Contains(emailSearch)).Any();
+        }
+
         public void AddAlias(string alias)
         {
             if (!Aliases.Contains(alias))
