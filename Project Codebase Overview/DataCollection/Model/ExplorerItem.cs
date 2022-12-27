@@ -159,7 +159,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 box.SelectedItems.Add(owner);
             }
 
-            box.FilterBehavior = new OwnerFilteringBehavior();
             box.TokenItemTemplate = Application.Current.Resources["OwnerTokenTemplate"] as DataTemplate;
             box.ItemsSource = viewSource.View;
             box.SelectionChanged += SfComboBox_SelectionChanged;
@@ -174,26 +173,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             box.GroupStyle.Add(Application.Current.Resources["OwnerGroupHeader"] as GroupStyle);
             box.TextSearchMode = ComboBoxTextSearchMode.Contains;
 
-
             return box;
-        }
-        public class OwnerFilteringBehavior : IComboBoxFilterBehavior
-        {
-            /// <summary>
-            /// Returned suggestion list based on the city or country name entered in the ComboBox control.
-            /// </summary>
-            public List<int> GetMatchingIndexes(SfComboBox source, ComboBoxFilterInfo filterInfo)
-            {
-                List<int> filteredlist = new List<int>();
-                List<IOwner> Items = source.Items.OfType<IOwner>().ToList();
-
-                filteredlist.AddRange(from IOwner item in Items
-                                      where item.Name.Contains(filterInfo.Text, StringComparison.CurrentCultureIgnoreCase) ||
-                                            item.GetType() == typeof(Author) ? ((Author)item).FilterEmail(filterInfo.Text) : false
-                                      select Items.IndexOf(item));
-
-                return filteredlist;
-            }
         }
 
         private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)

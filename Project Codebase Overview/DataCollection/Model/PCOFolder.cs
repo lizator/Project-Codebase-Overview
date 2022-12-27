@@ -111,11 +111,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
         {
             return Children.ContainsKey(child.Name);
         }
-        public void AddChildren(ExplorerItem[] child)
-        {
-            throw new NotImplementedException();
-            //children.AddRange(child);
-        }
 
         public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
 
@@ -152,28 +147,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
 
                 return ((PCOFolder)Children[list[index]]).AddChildRecursive(list, index + 1);
-            }
-        }
-
-        public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
-        {
-            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-            var explorerGroups = filePaths.GroupBy(path => path[index]);
-
-            foreach (var group in explorerGroups)
-            {
-                if (group.Count() == 1)
-                { // a file
-                    var file = new PCOFile(group.Key, this);
-                    GitDataCollector.AddFileCommitsAlt(file, String.Join("/", group.First()));
-                    this.AddChild(file);
-                } else
-                { // a folder
-                    var folder = new PCOFolder(group.Key, this);
-                    folder.AddChildrenAlternativly(group.ToList(), index + 1);
-                    this.AddChild(folder);
-                }
-
             }
         }
 
