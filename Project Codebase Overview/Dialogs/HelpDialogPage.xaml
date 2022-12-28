@@ -9,13 +9,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <StackPanel Orientation="Vertical" Spacing="10">
-        <Image x:Name="Image" Height="200" Width="300" Source="{x:Bind Path=CurrentElement.Source, Mode=OneWay}" Stretch="UniformToFill"></Image>
-        <TextBlock HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="WrapWholeWords" Text="{x:Bind Path=CurrentElement.Description, Mode=OneWay}"/>
+        <Image x:Name="Image" Height="400" Width="500" Source="{x:Bind CurrentElement.Source, Mode=OneWay}" Stretch="Uniform" ></Image>
+        <TextBlock Height="100" HorizontalAlignment="Stretch" TextAlignment="Center" TextWrapping="WrapWholeWords" Padding="5" Text="{x:Bind CurrentElement.Description, Mode=OneWay}"/>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Click="PreviousClick">
+            <Button x:Name="PrevButton" Click="PreviousClick" IsEnabled="False">
                 <SymbolIcon Symbol="Back"/>
             </Button>
-            <Button Click="NextClick">
+            <Button x:Name="NextButton" Click="NextClick">
                 <SymbolIcon Symbol="Forward"/>
             </Button>
         </StackPanel>

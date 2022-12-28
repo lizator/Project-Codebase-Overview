@@ -14,6 +14,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.NetworkOperators;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -42,21 +43,63 @@ namespace Project_Codebase_Overview.Dialogs
 
             //load all the images
             string dir = "../Assets/";
-            Elements.Add(new HelpDialogElement()
-            {
-                Source = dir + "Monkey.png",
-                Description = "This is a beatuiful monkey \n I likes all the bananas and so on :))))"
-            });
+          
             Elements.Add(new HelpDialogElement()
             {
                 Source = dir + "Explorer.png",
                 Description = "This is the explorer. Here you will see the data for the entire git repository.\n" +
-                "Hover your mouse over the headers to see information about each column."
+                "This is the main view, where you will navigate the file structure to select owners for files and folders.\n" +
+                "Hover your mouse over the headers in the grid to see information about each column."
             });
-
-
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Explorer1.png",
+                Description = "Use these arrows to expand or collapse folders to toggle showing their content."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Explorer2.png",
+                Description = "You can right click a folder and navigate to it to only show the contents of that folder."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Explorer3.png",
+                Description = "Select owners for a folder or file in this drop down. You can select teams and/or authors."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Settings1.png",
+                Description = "Open up the settings panel by clicking the bar on the left side of the window."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Settings2.png",
+                Description = "From here you can change the settings of the explorer, access team management, save state etc."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Settings3.png",
+                Description = "After changing selected owners in the explorer click this update button to update the line distribution bar graphs of the explorer."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Explorer4.png",
+                Description = "Here you see that after selecting Bob as owner for a subfolder and updating, the suggested owner and the graph changes for the parent folder."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Management1.png",
+                Description = "To begin setting up teams and authors go the management page by clicking here."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Management2.png",
+                Description = "This is the management page. You can switch between viewing and editing authors or teams with the tabs in the top left corner.\n" +
+                "Click the button marked with red to create a team."
+            });
             //set current element
-            CurrentElement = Elements[0];
+            CurrentElement = new HelpDialogElement() ;
+            SetCurrentElement();
         }
 
         private void PreviousClick(object sender, RoutedEventArgs e)
@@ -64,7 +107,12 @@ namespace Project_Codebase_Overview.Dialogs
             if(CurrentIndex > 0)
             {
                 CurrentIndex--;
-                CurrentElement = Elements[CurrentIndex];
+                SetCurrentElement();
+                NextButton.IsEnabled = true;
+            }
+            if(CurrentIndex == 0)
+            {
+                PrevButton.IsEnabled = false;
             }
         }
 
@@ -73,8 +121,23 @@ namespace Project_Codebase_Overview.Dialogs
             if (CurrentIndex < Elements.Count() - 1)
             {
                 CurrentIndex++;
-                CurrentElement = Elements[CurrentIndex];
+                SetCurrentElement();
+                PrevButton.IsEnabled = true;
             }
+            if(CurrentIndex == Elements.Count - 1)
+            {
+                NextButton.IsEnabled = false;
+            }
+        }
+        private void SetCurrentElement()
+        {
+            CurrentElement.Source = Elements[CurrentIndex].Source;
+            CurrentElement.Description = Elements[CurrentIndex].Description;
+        }
+
+        private void PipChangedIndex(PipsPager sender, PipsPagerSelectedIndexChangedEventArgs args)
+        {
+            SetCurrentElement();
         }
     }
 }
