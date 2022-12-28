@@ -97,6 +97,23 @@ namespace Project_Codebase_Overview.Dialogs
                 Description = "This is the management page. You can switch between viewing and editing authors or teams with the tabs in the top left corner.\n" +
                 "Click the button marked with red to create a team."
             });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Save.png",
+                Description = "After creating teams and selecting owners remember to save the state using this button.\n" +
+                "Saved states load much faster than opening a new repository and scanning it again."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "CodeOwners.png",
+                Description = "You can also export a CodeOwners file with the ownership you have set in the program.\n" +
+                "The file is then ready to use in GitHub, GitLab etc."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "CodeOwners1.png",
+                Description = "This is an example of a CodeOwners file from two selected owners"
+            });
             //set current element
             CurrentElement = new HelpDialogElement() ;
             SetCurrentElement();
