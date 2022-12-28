@@ -85,7 +85,7 @@ namespace Project_Codebase_Overview.State
 
         public void ClearState()
         {
-            //TODO: make a reset state for all the other shit (aldready done for explorerState
+            this.ExplorerState = new ExplorerState();
             LoadingState = new LoadingState();
             TestState = new TestState();
             SettingsState = new SettingsState();
