@@ -46,12 +46,15 @@ namespace Project_Codebase_Overview
         ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
         private bool IsExpanded = true;
         private bool InitialOpenDone = false;
-
+        
 
         private class Observables : ObservableObject
         {
             public bool ExplorerHasChanges { get => _explorerHasChanges; set => SetProperty(ref _explorerHasChanges, value); }
             private bool _explorerHasChanges = false;
+           
+            public bool DecayChangesMade { get => _decayChangesMade; set => SetProperty(ref _decayChangesMade, value); }
+            private bool _decayChangesMade = false;
         }
         private Observables LocalObservables = new Observables();
 
@@ -116,7 +119,17 @@ namespace Project_Codebase_Overview
 
             BranchNameBlock.Text = PCOState.GetInstance().GetBranchName();
 
-            DecayCheckBox.IsChecked = settingsState.IsDecayActive;
+            
+            if (settingsState.IsDecayActive)
+            {
+                DecayCheckBox.IsChecked = true;
+                DecayChecked(null, null);
+            }
+            else
+            {
+                DecayCheckBox.IsChecked = false;
+                DecayUnchecked(null, null);
+            }
 
             DecayTimerNumberBox.Value = settingsState.DecayDropOffInteval;
             if (settingsState.DecayTimeUnit != DecayTimeUnit.UNDEFINED)
@@ -137,6 +150,7 @@ namespace Project_Codebase_Overview
         private void CancelSettingsChangeClick(object sender, RoutedEventArgs e)
         {
             LoadSettingsFromState();
+            LocalObservables.DecayChangesMade = false;
         }
 
         private void UpdateSettingsChangeClick(object sender, RoutedEventArgs e)
@@ -160,6 +174,7 @@ namespace Project_Codebase_Overview
             LoadSettingsFromState();
 
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            LocalObservables.DecayChangesMade = false;
         }
 
         private void ManageClicked(object sender, RoutedEventArgs e)
@@ -173,6 +188,10 @@ namespace Project_Codebase_Overview
             DecayTimerNumberBox.IsEnabled = true;
             DecayTimerComboBox.IsEnabled = true;
             PercentageNumberBox.IsEnabled = true;
+            if (DecayCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsDecayActive)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void DecayUnchecked(object sender, RoutedEventArgs e)
@@ -181,16 +200,28 @@ namespace Project_Codebase_Overview
             DecayTimerNumberBox.IsEnabled = false;
             DecayTimerComboBox.IsEnabled = false;
             PercentageNumberBox.IsEnabled = false;
+            if(DecayCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsDecayActive)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ShowFilesChecked(object sender, RoutedEventArgs e)
         {
             //ShowFilesCheckBox.Content = "Enabled";
+            if (ShowFilesCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsFilesVisibile)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ShowFilesUnchecked(object sender, RoutedEventArgs e)
         {
             //ShowFilesCheckBox.Content = "Disabled";
+            if(ShowFilesCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsFilesVisibile)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ExpanderClick(object sender, PointerRoutedEventArgs e)
@@ -397,6 +428,52 @@ namespace Project_Codebase_Overview
         private async void HelpClicked(object sender, RoutedEventArgs e)
         {
             await DialogHandler.ShowHelpDialog(XamlRoot);
+        }
+
+        private void PercentageNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(PCOState.GetInstance().GetSettingsState().DecayPercentage != ((int?)PercentageNumberBox.Value))
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+            
+        }
+
+        private void DecayTimerNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(DecayTimerNumberBox.Value != PCOState.GetInstance().GetSettingsState().DecayDropOffInteval)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+        }
+
+        private void DecayTimerComboChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
+            if (settingsState.DecayTimeUnit != DecayTimeUnit.UNDEFINED)
+            {
+                if(DecayTimerComboBox.SelectedIndex != ((int)settingsState.DecayTimeUnit) - 1)
+                {
+                    LocalObservables.DecayChangesMade = true;
+                }
+            }
+            else
+            {
+                if(DecayTimerComboBox.SelectedItem != null)
+                {
+                    LocalObservables.DecayChangesMade = true;
+                }
+                
+            }
+        }
+
+        private void CutoffChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(CutOffSelectionComboBox.SelectedIndex != ((int)PCOState.GetInstance().GetSettingsState().CutOffSelectionUnit) - 1)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+            
         }
     }
 }
