@@ -83,13 +83,14 @@ namespace Project_Codebase_Overview
                 var sizes = new List<int> { 30, 30, 30 };
                 if (plusTest) sizes = new List<int> { 50, 20, 20 };
                 var curr = 0;
+                
                 for (int i = 0; i < 3; i++)
                 {
                     var block = new GraphBlock();
                     block.StartValue = curr;
                     curr += sizes[i];
                     block.EndValue = curr;
-                    block.Color = PCOColorPicker.HardcodedColors[i];
+                    block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
                     blocks.Add(block);
                 }
 
@@ -151,7 +152,7 @@ namespace Project_Codebase_Overview
                 block.StartValue = curr;
                 curr += sizes[i];
                 block.EndValue = curr;
-                block.Color = PCOColorPicker.HardcodedColors[i];
+                block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
             }
 
 

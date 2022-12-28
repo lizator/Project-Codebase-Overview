@@ -42,44 +42,14 @@ namespace Project_Codebase_Overview
             Teams = new ObservableCollection<PCOTeam>();
             Authors = new ObservableCollection<Author>();
 
-
-            //DUMMY
-            if (false)
-            {
-                SetDummyAuthors();
-            } else
-            {
-                //Not dummy
-                var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
-
-                foreach (var author in authorList)
-                {
-                    Authors.Add(author);
-                }
-            }
-            UpdateTeams();
-        }
-        
-        private void SetDummyAuthors()
-        {
-            Authors = new ObservableCollection<Author>();
-            PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0]);
             var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
-            var parentAuth = authorList.First();
 
-            foreach(var author in authorList)
+            foreach (var author in authorList)
             {
-                author.ConnectToTeam(team);
-                if (!parentAuth.ContainsEmail(author.Email))
-                {
-                    parentAuth.ConnectAuthor(author);
-                }
-                if (author.OverAuthor == null) {
-                    Authors.Add(author);
-                }
+                Authors.Add(author);
             }
-            PCOState.GetInstance().GetContributorState().AddTeam(team);
-            PCOColorPicker.GetInstance();
+            
+            UpdateTeams();
         }
 
         private void UpdateTeams()
