@@ -514,7 +514,7 @@ namespace Project_Codebase_Overview.DataCollection
                                 DateTime date = DateTime.ParseExact(datestring, "yyyy-MM-dd", provider);
                                 CurrentCommits.Add(key, new PCOCommit(email, date));
                             }
-                            CurrentCommits[key].AddLine(PCOCommit.LineType.NORMAL);
+                            CurrentCommits[key].AddLine();
 
                         }
                     }

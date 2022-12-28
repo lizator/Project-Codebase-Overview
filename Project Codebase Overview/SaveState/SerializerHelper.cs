@@ -276,7 +276,7 @@ namespace Project_Codebase_Overview.SaveState
                 foreach (var serialCommit in subFile.Commits)
                 {
                     PCOCommit pCOCommit = new PCOCommit(serialCommit.AuthorEmail, serialCommit.Date);
-                    pCOCommit.AddLine(PCOCommit.LineType.NORMAL, serialCommit.LineCount);
+                    pCOCommit.AddLine(serialCommit.LineCount);
                     pCOFile.commits.Add(pCOCommit);
                 }
                 pCOFolder.AddChild(pCOFile);
