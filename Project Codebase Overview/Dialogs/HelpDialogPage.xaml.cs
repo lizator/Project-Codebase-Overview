@@ -64,7 +64,7 @@ namespace Project_Codebase_Overview.Dialogs
             Elements.Add(new HelpDialogElement()
             {
                 Source = dir + "Explorer3.png",
-                Description = "Select owners for a folder or file in this drop down. You can select teams and/or authors."
+                Description = "You can select owners for folders and files in this drop down.\nYou can select both teams and authors at the same time."
             });
             Elements.Add(new HelpDialogElement()
             {
