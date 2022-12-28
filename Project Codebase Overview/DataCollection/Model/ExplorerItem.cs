@@ -29,9 +29,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
 {
     public abstract class ExplorerItem : ObservableObject, IComparable
     {
-        public string Name { get; set; }
-        public bool IsActive { get => _isActive; set => SetIsActive(value); }
+        private string _name;
+        public string Name { get => _name; set => SetProperty(ref _name, value); } 
+
+        private string _comment;
+        public string Comment { get => _comment; set => SetProperty(ref _comment, value); }
+
+        public GraphModel GraphModel { get; set; }
+        public PCOFolder Parent { get; set; }
+
         private bool _isActive = true;
+        public bool IsActive { get => _isActive; set => SetIsActive(value); }
 
         private void SetIsActive(bool value)
         {
@@ -41,15 +49,29 @@ namespace Project_Codebase_Overview.DataCollection.Model
             PCOState.GetInstance().GetExplorerState().ExplorerNotifyChange();
         }
 
+       
+        public abstract void CalculateData();
+        public abstract int CompareTo(object obj);
+        public abstract string ToCodeowners();
+       
+
+        
+
+        #region UI_Parameters
+        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
+        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
+        public ObservableCollection<IOwner> SelectedOwners = new ObservableCollection<IOwner>();
+        public SfLinearGauge BarGraph {get => GetBarGraph();}
+        public SfComboBox SelectOwnerComboBox {get => GetSelectOwnerComboBox();}
         public Visibility SelectOwnerVisibility { get => _selectOwnerVisibility; set => SetProperty(ref _selectOwnerVisibility, value); }
         private Visibility _selectOwnerVisibility = Visibility.Visible;
         public Visibility InactiveVisibility { get => _inactiveVisibility; set => SetProperty(ref _inactiveVisibility, value); }
         private Visibility _inactiveVisibility = Visibility.Collapsed;
         public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
         public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
-        public abstract void CalculateData();
-        public abstract int CompareTo(object obj);
-        public abstract string ToCodeowners();
+
+        #endregion
+
         protected string GetCodeownerLines()
         {
             var builder = new StringBuilder();
@@ -124,28 +146,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
             return builder.ToString();
         }
 
-        public GraphModel GraphModel { get; set; }
-        public PCOFolder Parent { get; set; }
-
-        public string Comment { get => _comment; set => SetProperty(ref _comment, value); }
-        private string _comment;
-
-        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
-        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
-
-        public string SelectedOwnerName { get => this.SelectedOwners.Count == 0 ? "Unselected" : ""; set => SetProperty(ref selectedOwnerName, this.SelectedOwners.Count == 0 ? "Unselected" : ""); }
-        private string selectedOwnerName;
-
-        public ObservableCollection<IOwner> SelectedOwners = new ObservableCollection<IOwner>();
-        public SfLinearGauge BarGraph
-        {
-            get => GetBarGraph();
-        }
-        public SfComboBox SelectOwnerComboBox
-        {
-            get => GetSelectOwnerComboBox();
-        }
-
         private SfComboBox GetSelectOwnerComboBox()
         {
             var viewSource = new CollectionViewSource();
@@ -212,8 +212,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
 
             box.PlaceholderText = this.SelectedOwners.Count > 0 ? "" : "Unselected";
-            item.SelectedOwnerName = null;
-
+            
             if (change)
             {
                 Debug.WriteLine("Changed selected owners");
@@ -224,16 +223,12 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public IOrderedEnumerable<IGrouping<string, IOwner>> Owners { get => this.GetOwnerListSorted(); }
         private IOrderedEnumerable<IGrouping<string,IOwner>> GetOwnerListSorted()
         {
-            
-            //create "Unselected" entry
             var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwners().OrderBy(x => x.Name).GroupBy(x => x.GetType() == typeof(Author) ? "Authors" : "Teams").OrderBy(g => g.Key);
 
             if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.TEAMS)
             {
                 ownerlist = ownerlist.OrderByDescending(g => g.Key);
             }
-
-            //ownerlist.Add(new Author("Unselected", "Unselected"));
             return ownerlist;
         }
         protected SfLinearGauge GetBarGraph()
@@ -317,15 +312,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 sfLinearGauge.Axis.Ranges.Add(gaugeRange);
             }
-            _bargraph = sfLinearGauge;
             return sfLinearGauge;
-        }
-
-        protected SfLinearGauge _bargraph { get; set; }
-
-        public void GenerateBarGraph()
-        {
-            this.GetBarGraph();
         }
 
         public string GetRelativePath(bool useForwardSlashes = false)

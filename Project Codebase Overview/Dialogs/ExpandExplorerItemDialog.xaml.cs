@@ -168,65 +168,6 @@ namespace Project_Codebase_Overview.Dialogs
         {
             DialogRef.Hide();
         }
-        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
-        {
-            return; //Not used for now
-            var box = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
-            var item = box.DataContext as ExplorerItem;
-
-
-            foreach (var newOwner in e.AddedItems)
-            {
-                if (newOwner != null && (newOwner.GetType() == typeof(Author) || newOwner.GetType() == typeof(PCOTeam)))
-                {
-                    if (!item.SelectedOwners.Contains(newOwner))
-                    {
-                        item.SelectedOwners.Add((IOwner)newOwner);
-                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(null, (IOwner)newOwner, item, (SfComboBox)sender));
-                    }
-                }
-            }
-            foreach (var removedOwner in e.RemovedItems)
-            {
-
-                if (removedOwner != null && (removedOwner.GetType() == typeof(Author) || removedOwner.GetType() == typeof(PCOTeam)))
-                {
-                    if (item.SelectedOwners.Contains(removedOwner))
-                    {
-                        item.SelectedOwners.Remove((IOwner)removedOwner);
-                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange((IOwner)removedOwner, null, item, (SfComboBox)sender));
-                    }
-                }
-            }
-
-            box.PlaceholderText = item.SelectedOwners.Count > 0 ? "" : "Unselected";
-            item.SelectedOwnerName = null;
-
-            Debug.WriteLine("Changed selected owners");
-
-            //if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
-            //{
-            //    ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
-            //    if (previousOwner != null && !previousOwner.Name.Equals("Unselected"))
-            //    {
-            //        item.SelectedOwner = null;
-            //        //item.SelectedOwnerColor = null;
-            //        item.SelectedOwnerName = null;
-            //        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, null, item, (SfComboBox)sender));
-            //    }
-
-            //    return;
-            //}
-            //Debug.WriteLine("Changed selected owner");
-            //var newOwner = (IOwner)e.AddedItems[0];
-            //if (!newOwner.Equals(previousOwner))
-            //{
-            //    item.SelectedOwner = newOwner;
-            //    //item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
-            //    item.SelectedOwnerName = null;
-            //    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, newOwner, item, (SfComboBox)sender));
-            //}
-
-        }
+        
     }
 }
