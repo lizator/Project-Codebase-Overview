@@ -20,8 +20,6 @@ namespace Project_Codebase_Overview.DataCollection
                 return null;
             }
 
-            //Debug.WriteLine("Merge ran");
-
             return Merge(folderA, folderB);
         }
 

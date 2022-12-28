@@ -27,9 +27,6 @@ using Windows.Foundation.Collections;
 using Windows.Globalization.NumberFormatting;
 using Windows.UI;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Project_Codebase_Overview.Dialogs
 {
     public class TopContributor
@@ -51,9 +48,7 @@ namespace Project_Codebase_Overview.Dialogs
         public ExplorerItem Item;
         public ContentDialog Dialog;
     }
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
+
     public sealed partial class ExpandExplorerItemDialog : Page
     {
         public ObservableCollection<TopContributor> TopContributors;

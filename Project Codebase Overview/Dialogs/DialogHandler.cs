@@ -146,11 +146,6 @@ namespace Project_Codebase_Overview.Dialogs
             return result;
         }
 
-        private static void LineDistSeries_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
-
         public static async Task<bool> ShowYesNoDialog(XamlRoot xamlRoot, string title, string description)
         {
             ContentDialog dialog = new ContentDialog();

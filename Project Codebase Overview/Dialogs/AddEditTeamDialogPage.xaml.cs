@@ -141,12 +141,19 @@ namespace Project_Codebase_Overview.Dialogs
             
         }
 
-        public class ViewAuthor
+        private void DeleteTeam(object sender, RoutedEventArgs e)
         {
-            public string Name { get; set; }
-            public string Email { get; set; }
-            public string TeamName { get; set; }
+            var manager = PCOState.GetInstance().GetContributorState();
+
+            manager.DeleteTeam(Team);
+
+            manager.SetTeamUpdated(true);
+            manager.SetSelectedTeam(null);
+            manager.GetCurrentTeamDialog().Hide();
+            manager.SetCurrentTeamDialog(null);
         }
+
+        
 
         private bool NotSelectedFilter(KeyValuePair<string, Author> pair, string searchString)
         {
@@ -217,39 +224,13 @@ namespace Project_Codebase_Overview.Dialogs
 
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
-            //Add "doubles" of author that are in multiple teams
-            //foreach (var author in UnselectedAuthorList)
-            //{
-            //    if (author.Teams.Count > 1)
-            //    {
-            //        for (int i = 0; i < author.Teams.Count; i++)
-            //        {
-            //            var team = author.Teams[i];
-            //            foreach (var group in ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source))
-            //            {
-            //                if (group.Key.Equals(team.Name))
-            //                {
-            //                    if (!group.Contains(author))
-            //                    {
-            //                        group.Add(author);
-            //                    }
-            //                    break;
-            //                }
-            //            }
-            //        }
-            //    }
-            //}
-
             SelectedAuthorList.Clear();
             AuthorList.Where(pair => IsAuthorInTeam.GetValueOrDefault(pair.Key))
                 .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
 
         }
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            UpdateAuthorLists(SearchBox.Text);
-        }
+       
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
@@ -319,7 +300,10 @@ namespace Project_Codebase_Overview.Dialogs
         {
             FlyoutBase.ShowAttachedFlyout((FrameworkElement)VCSIDBox);
         }
-
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateAuthorLists(SearchBox.Text);
+        }
         private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)
         {
             LocalObservables.Brush = (SolidColorBrush)e.NewBrush;
@@ -333,18 +317,6 @@ namespace Project_Codebase_Overview.Dialogs
         private void DeleteConfirm_Unchecked(object sender, RoutedEventArgs e)
         {
             ConfirmDeleteBtn.IsEnabled = false;
-        }
-
-        private void DeleteTeam(object sender, RoutedEventArgs e)
-        {
-            var manager = PCOState.GetInstance().GetContributorState();
-
-            manager.DeleteTeam(Team);
-
-            manager.SetTeamUpdated(true);
-            manager.SetSelectedTeam(null);
-            manager.GetCurrentTeamDialog().Hide();
-            manager.SetCurrentTeamDialog(null);
         }
 
         private void VCSIDBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -371,5 +343,11 @@ namespace Project_Codebase_Overview.Dialogs
         {
         }
         public object Key { get; set; }
+    }
+    public class ViewAuthor
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string TeamName { get; set; }
     }
 }

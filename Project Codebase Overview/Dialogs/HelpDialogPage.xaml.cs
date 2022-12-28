@@ -16,8 +16,6 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Networking.NetworkOperators;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Project_Codebase_Overview.Dialogs
 {
@@ -28,9 +26,6 @@ namespace Project_Codebase_Overview.Dialogs
         private string _description;
         public string Description { get => _description; set => SetProperty(ref _description, value); }
     }
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class HelpDialogPage : Page
     {
         private List<HelpDialogElement> Elements = new List<HelpDialogElement>();
@@ -160,11 +155,6 @@ namespace Project_Codebase_Overview.Dialogs
         {
             CurrentElement.Source = Elements[CurrentIndex].Source;
             CurrentElement.Description = Elements[CurrentIndex].Description;
-        }
-
-        private void PipChangedIndex(PipsPager sender, PipsPagerSelectedIndexChangedEventArgs args)
-        {
-            SetCurrentElement();
         }
     }
 }

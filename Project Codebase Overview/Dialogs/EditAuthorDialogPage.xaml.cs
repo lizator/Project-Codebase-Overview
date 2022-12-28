@@ -25,14 +25,8 @@ using Syncfusion.UI.Xaml.Data;
 using System.Reflection.Metadata;
 using Syncfusion.UI.Xaml.DataGrid;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Project_Codebase_Overview.Dialogs
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class EditAuthorDialogPage : Page
     {
         public ObservableCollection<string> Aliases;
@@ -235,11 +229,6 @@ namespace Project_Codebase_Overview.Dialogs
         private void ShowEmailFlyout()
         {
             FlyoutBase.ShowAttachedFlyout((FrameworkElement)VCSEmailBox);
-        }
-
-        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
-        {
-            //var co = 2;
         }
 
         private void ActivityChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
