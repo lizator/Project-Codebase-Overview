@@ -63,6 +63,16 @@ namespace Project_Codebase_Overview.Dialogs
             });
             Elements.Add(new HelpDialogElement()
             {
+                Source = dir + "Explorer5.png",
+                Description = "For more details about a file or folder and access to comments you can click the expand buttons."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
+                Source = dir + "Explorer6.png",
+                Description = "If you want a graphical representation of the currently navigated folder, click the graph overview button."
+            });
+            Elements.Add(new HelpDialogElement()
+            {
                 Source = dir + "Explorer3.png",
                 Description = "You can select owners for folders and files in this drop down.\nYou can select both teams and authors at the same time."
             });
@@ -112,7 +122,7 @@ namespace Project_Codebase_Overview.Dialogs
             Elements.Add(new HelpDialogElement()
             {
                 Source = dir + "CodeOwners1.png",
-                Description = "This is an example of a CodeOwners file from two selected owners"
+                Description = "This is an example of a CodeOwners file from two selected owners."
             });
             //set current element
             CurrentElement = new HelpDialogElement() ;
