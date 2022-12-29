@@ -152,8 +152,8 @@
                                 ItemsSource="{x:Bind OtherAuthors}"
                                 SelectionMode="None">
                                 <datagrid:SfDataGrid.Columns>
-                                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name"/>
-                                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email"/>
+                                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                                     <datagrid:GridTemplateColumn HeaderText="Color" MappingName="Color" AllowSorting="False" Width="60">
                                         <datagrid:GridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -168,7 +168,8 @@
                                     <datagrid:GridTemplateColumn HeaderText="" MappingName="Color" AllowSorting="False" Width="30">
                                         <datagrid:GridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Padding="3" VerticalAlignment="Center" Click="AddClicked">
+                                                <Button Padding="3" VerticalAlignment="Center" Click="AddClicked"
+                                                        ToolTipService.ToolTip="Add sub-authors">
                                                     <SymbolIcon Symbol="Add"/>
                                                 </Button>
                                             </DataTemplate>
@@ -191,8 +192,8 @@
                 ItemsSource="{x:Bind SubAuthors}"
                 SelectionMode="None">
                 <datagrid:SfDataGrid.Columns>
-                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name"/>
-                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" Width="250"/>
+                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" Width="250" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                     <datagrid:GridTemplateColumn HeaderText="Color" MappingName="Color" AllowSorting="False" Width="60">
                         <datagrid:GridTemplateColumn.CellTemplate>
                             <DataTemplate>
