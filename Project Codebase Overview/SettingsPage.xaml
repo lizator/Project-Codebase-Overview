@@ -27,7 +27,7 @@
     
     <Grid ColumnDefinitions="*, 16">
         <!-- SettingsPanel -->
-        <Grid Grid.Column="0" ColumnDefinitions="*, 150" x:Name="SettingsPanelGrid" Padding="10" RowSpacing="5">
+        <Grid Grid.Column="0" ColumnDefinitions="150, 150" x:Name="SettingsPanelGrid" Padding="10" RowSpacing="5">
             
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -51,7 +51,7 @@
             
             <!-- owner title + manage  (row 0)  -->
             <TextBlock  Grid.Row="0" Grid.Column="0" Text="General" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center"/>
-            <Button Grid.Row="0" Grid.Column="1" Content="Help"  Click="HelpClicked" />
+            <Button Grid.Row="0" Grid.Column="1" Content="Help"  Click="HelpClicked" HorizontalAlignment="Right"/>
 
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Repository branch:"/>
             <TextBlock Grid.Row="1" Grid.Column="1" x:Name="BranchNameBlock"/>
@@ -99,7 +99,9 @@
                                     <SolidColorBrush Color="{Binding Color}"/>
                                 </Ellipse.Fill>
                             </Ellipse>
-                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0" 
+                                       ToolTipService.ToolTip="{Binding Name}"
+                                       TextTrimming="CharacterEllipsis"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
