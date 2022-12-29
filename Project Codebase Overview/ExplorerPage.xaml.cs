@@ -258,7 +258,15 @@ namespace Project_Codebase_Overview
 
         private async void OpenFileExplorer(object sender, RoutedEventArgs e)
         {
-            var selectedItem = rootTreeGrid.SelectedItem as ExplorerItem;
+            ExplorerItem selectedItem;
+            if (GraphViewActive)
+            {
+                selectedItem = ((ExplorerViewModel)((MenuFlyoutItem)sender).DataContext).SelectedGraphItem as ExplorerItem;
+            } else
+            {
+                selectedItem = rootTreeGrid.SelectedItem as ExplorerItem;
+            }
+
             PCOFolder foundFolder;
             if (selectedItem.GetType() == typeof(PCOFolder))
             {
@@ -373,7 +381,7 @@ namespace Project_Codebase_Overview
                 var tag = source.Tag as ChartSegment;
                 var clickedItem = (dynamic)tag.Item;
 
-                if (clickedItem.ExplorerItem == null) return;
+                if (clickedItem.ExplorerItem == null || (!PCOState.GetInstance().GetSettingsState().IsFilesVisibile && clickedItem.ExplorerItem.GetType() == typeof(PCOFile))) return;
                 
                 ViewModel.SelectedGraphItem = clickedItem.ExplorerItem;
 
@@ -382,22 +390,36 @@ namespace Project_Codebase_Overview
                     var dc = ((FrameworkElement)e.OriginalSource).DataContext as ExplorerViewModel;
 
                     MenuFlyout flyout = new MenuFlyout();
-                    MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
-                    flyoutItem.Text = "Navigate to: " + clickedItem.Name;
-                    flyoutItem.Click += async delegate (object sender, RoutedEventArgs e)
+                    if (dc.GetType() == typeof(PCOFolder))
                     {
-                        if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
+                        MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
+                        flyoutItem.Text = "Navigate to: " + clickedItem.Name;
+                        flyoutItem.Click += async delegate (object sender, RoutedEventArgs e)
                         {
-                            ViewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
-                            GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
-                        }
-                        else
-                        {
-                            await DialogHandler.ShowErrorDialog("Navigation not possible. Selected item is a file", this.XamlRoot);
-                        }
-                    };
+                            if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
+                            {
+                                ViewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
+                                GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
+                            }
+                            else
+                            {
+                                await DialogHandler.ShowErrorDialog("Navigation not possible. Selected item is a file", this.XamlRoot);
+                            }
+                        };
 
-                    flyout.Items.Add(flyoutItem);
+                        flyout.Items.Add(flyoutItem);
+
+                        MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open in File explorer" };
+                        openFolderItem.Click += this.OpenFileExplorer;
+                        flyout.Items.Add(openFolderItem);
+                    } 
+                    else
+                    {
+
+                        MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open location in File explorer" };
+                        openFolderItem.Click += this.OpenFileExplorer;
+                        flyout.Items.Add(openFolderItem);
+                    }
 
                     Microsoft.UI.Input.PointerPoint pointerPoint = e.GetCurrentPoint((UIElement)sender);
                     Point ptElement = new Point(pointerPoint.Position.X, pointerPoint.Position.Y);
