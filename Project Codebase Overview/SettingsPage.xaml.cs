@@ -32,6 +32,8 @@ using Project_Codebase_Overview.SaveState.Model;
 using LibGit2Sharp;
 using Syncfusion.UI.Xaml.Gauges;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Windowing;
+using Microsoft.UI;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -474,6 +476,36 @@ namespace Project_Codebase_Overview
                 LocalObservables.DecayChangesMade = true;
             }
             
+        }
+
+        private void ReturnToStartClick(object sender, RoutedEventArgs e)
+        {
+            var currentWindow = (Application.Current as App)?.MainWindow as MainWindow;
+
+            //return to home :) 
+
+            PCOState.GetInstance().ClearState();
+            StartWindow window = new();
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+            OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
+
+            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
+            presenter.IsResizable = false;
+
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
+            if (displayArea is not null)
+            {
+                var CenteredPosition = appWindow.Position;
+                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
+                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
+                appWindow.Move(CenteredPosition);
+            }
+
+            window.Activate();
+
+            currentWindow.Close();
         }
     }
 }
