@@ -105,7 +105,7 @@ namespace Project_Codebase_Overview.Dialogs
                     ColumnWidthMode = Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells });
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Percent", HeaderText = "%", 
-                    DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
+                    DisplayNumberFormat="P2", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
 
                 
                 foreach (var dist in ExplorerItem.GraphModel.LineDistribution.OrderByDescending(x => x.Value.LineSum()))
@@ -136,7 +136,7 @@ namespace Project_Codebase_Overview.Dialogs
                     ColumnWidthMode = Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells });
 
                 DataGrid.Columns.Add(new GridNumericColumn() { MappingName = "Percent", HeaderText = "%", 
-                    DisplayNumberFormat="P0", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
+                    DisplayNumberFormat="P2", ColumnWidthMode=Syncfusion.UI.Xaml.Grids.ColumnWidthMode.SizeToCells }) ;
                 foreach (var dist in ExplorerItem.GraphModel.LineDistribution.OrderByDescending(x => x.Value.LineSum()))
                 {
                     PCOTeam team = dist.Key as PCOTeam;
