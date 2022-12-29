@@ -38,6 +38,7 @@ using System.ComponentModel;
 using Syncfusion.UI.Xaml.Data;
 using Windows.Devices.Printers.Extensions;
 using Project_Codebase_Overview.LocalSettings;
+using System.Threading;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -50,6 +51,9 @@ namespace Project_Codebase_Overview
     public sealed partial class ExplorerPage : Page
     {
         ExplorerViewModel ViewModel;
+
+        public delegate void NotifyInitialStart();
+        public event NotifyInitialStart NotifyInitialStartEvent;
 
 
         bool GraphViewActive = false;
@@ -88,6 +92,31 @@ namespace Project_Codebase_Overview
             ViewModel.NotifyGraphUpdateEvent += UpdateGraphViewIfActive;
 
             PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += NotifyExplorerUpdate;
+
+            NotifyInitialStartEvent += NotifyInitialStartFunc;
+
+            if (!LocalSettingsHelper.GetIsInitialTutorialShown())
+            {
+                var queue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(1000);
+                    queue.TryEnqueue(() =>
+                    {
+                        NotifyInitialStartEvent?.Invoke();
+                    });
+                });
+            }
+        }
+
+        private async void NotifyInitialStartFunc()
+        {
+            var result = await DialogHandler.ShowYesNoDialog(XamlRoot, "Welcome to PCO!", "Would you like to view the tutorial?");
+            if (result)
+            {
+                await DialogHandler.ShowHelpDialog(XamlRoot);
+            }
+            LocalSettingsHelper.SetIsInitialTutorialShown();
         }
 
         private async void NotifyExplorerUpdate()
