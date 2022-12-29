@@ -300,6 +300,8 @@ namespace Project_Codebase_Overview
                 rootTreeGrid.Visibility = Visibility.Visible;
                 if (PCOState.GetInstance().GetExplorerState().GraphViewHasChanges)
                 {
+                    PCOState.GetInstance().GetExplorerState().GraphViewActive = GraphViewActive;
+                    PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
                     PCOState.GetInstance().GetExplorerState().ReloadExplorer();
                 }
 
