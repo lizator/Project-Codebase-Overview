@@ -36,6 +36,7 @@ using Syncfusion.UI.Xaml.Editors;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using System.ComponentModel;
 using Syncfusion.UI.Xaml.Data;
+using Windows.Devices.Printers.Extensions;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -191,10 +192,16 @@ namespace Project_Codebase_Overview
                 MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to folder" };
                 setRootItem.Click += this.SetRoot;
                 menuFlyout.Items.Add(setRootItem);
+
+                MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open in File explorer" };
+                openFolderItem.Click += this.OpenFileExplorer;
+                menuFlyout.Items.Add(openFolderItem);
             }
             else
             {
-                //any right click functions for FILES
+                MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open location in File explorer" };
+                openFolderItem.Click += this.OpenFileExplorer;
+                menuFlyout.Items.Add(openFolderItem);
             }
             rootTreeGrid.ContextFlyout = menuFlyout;
         }
@@ -246,6 +253,44 @@ namespace Project_Codebase_Overview
             {
                 Debug.WriteLine("this is file");
             }
+
+        }
+
+        private async void OpenFileExplorer(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = rootTreeGrid.SelectedItem as ExplorerItem;
+            PCOFolder foundFolder;
+            if (selectedItem.GetType() == typeof(PCOFolder))
+            {
+                foundFolder = (PCOFolder)selectedItem;
+            } else
+            {
+                foundFolder = selectedItem.Parent as PCOFolder;
+            }
+            var path = PCOState.GetInstance().GetExplorerState().GetRootPath() + "\\" + foundFolder.GetRelativePath();
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        Arguments = path,
+                        FileName = "explorer.exe"
+                    };
+
+                    Process.Start(startInfo);
+
+                }
+                else
+                {
+                    await DialogHandler.ShowErrorDialog("Could not find the path \"" + path + "\"", XamlRoot);
+                }
+            }
+            catch
+            {
+                await DialogHandler.ShowErrorDialog("Could not access \"" + path + "\"", XamlRoot);
+            }
+            
 
         }
 
