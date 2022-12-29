@@ -218,9 +218,11 @@ namespace Project_Codebase_Overview.Graphs
             }
 
             //add data from current explorer 
+            Visibility vis = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Visibility.Collapsed : Visibility.Visible;
+            Color col = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Colors.White : explorerItem.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black;
             dataLists[depth].Add(
                         new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesTotal, 
-                        explorerItem.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black, Visibility.Visible, explorerItem));
+                        col, vis, explorerItem));
 
             if (explorerItem.GetType() == typeof(PCOFile))
             {
