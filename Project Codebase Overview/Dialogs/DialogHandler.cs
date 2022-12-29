@@ -44,6 +44,7 @@ namespace Project_Codebase_Overview.Dialogs
         {
             TextBlock contentText = new TextBlock();
             contentText.Text = text;
+            contentText.TextWrapping = TextWrapping.WrapWholeWords;
 
             ContentDialog dialog = new ContentDialog();
 

@@ -38,6 +38,7 @@ namespace Project_Codebase_Overview.State
         public Repository TempGitRepo;
         private bool CodeOwnersExportTeamMissingID;
         private bool CodeOwnersExportAuthorMissingEmail;
+        public bool IsExplorerUpdateExplained = false;
 
 
 

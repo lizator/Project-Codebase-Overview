@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using LibGit2Sharp;
+using Newtonsoft.Json;
+using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace Project_Codebase_Overview.LocalSettings
     public class LocalSettingsHelper
     {
         readonly static string TAG_RECENT_LIST = "recent";
+        readonly static string TAG_EXPLORER_UPDATE_EXPLAINED = "explorer_explained";
 
         public static void AddRecentFile(string fileName, string repoName, string filePath)
         {
@@ -54,6 +57,23 @@ namespace Project_Codebase_Overview.LocalSettings
                 recentList = JsonConvert.DeserializeObject<List<RecentFileInfo>>(jsonRecentList);
             }
             return recentList;
+        }
+
+        public static void SetIsExplorerUpdateExplained(bool value = true)
+        {
+            PCOState.GetInstance().IsExplorerUpdateExplained = value;
+            ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[TAG_EXPLORER_UPDATE_EXPLAINED] = value;
+        }
+
+        public static bool GetIsExplorerUpdateExplained()
+        {
+            if (!PCOState.GetInstance().IsExplorerUpdateExplained)
+            {
+                ApplicationDataContainer localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                PCOState.GetInstance().IsExplorerUpdateExplained = ((bool?)localSettings.Values[TAG_EXPLORER_UPDATE_EXPLAINED]) ?? false;
+            }
+            return PCOState.GetInstance().IsExplorerUpdateExplained;
         }
 
     }

@@ -37,6 +37,7 @@ using Project_Codebase_Overview.ChangeHistoryFolder;
 using System.ComponentModel;
 using Syncfusion.UI.Xaml.Data;
 using Windows.Devices.Printers.Extensions;
+using Project_Codebase_Overview.LocalSettings;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -85,8 +86,18 @@ namespace Project_Codebase_Overview
             }
 
             ViewModel.NotifyGraphUpdateEvent += UpdateGraphViewIfActive;
+
+            PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += NotifyExplorerUpdate;
         }
 
+        private async void NotifyExplorerUpdate()
+        {
+            if (!LocalSettingsHelper.GetIsExplorerUpdateExplained())
+            {
+                LocalSettingsHelper.SetIsExplorerUpdateExplained();
+                await DialogHandler.ShowOkDialog("Explorer updater", "You just updated an explorer item!\n\nTo view the changes this has caused, click the \"Update explorer\"-button in the settings-panel", XamlRoot);
+            }
+        }
 
         public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
         private ObservableCollection<IOwner> GetOwnerListSorted()
