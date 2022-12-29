@@ -193,7 +193,7 @@
                 <Button Grid.Column="1" Click="LoadClick" 
                         ToolTipService.ToolTip="Locate a Codebase Overview save file to load it and continue where you left off">
                     <StackPanel Orientation="Vertical">
-                        <SymbolIcon Symbol="Folder" HorizontalAlignment="Center"/>
+                        <SymbolIcon Symbol="Page2" HorizontalAlignment="Center"/>
                         <TextBlock Text="Load" HorizontalAlignment="Center"/>
                     </StackPanel>
                 </Button>
