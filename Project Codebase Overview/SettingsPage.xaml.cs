@@ -34,18 +34,21 @@ using Syncfusion.UI.Xaml.Gauges;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.UI.Windowing;
 using Microsoft.UI;
+using Windows.UI;
+using Project_Codebase_Overview.DataCollection.Model;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Project_Codebase_Overview
 {
+    
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
+        ObservableCollection<OwnerListElement> OwnersList = new ObservableCollection<OwnerListElement>();
         private bool IsExpanded = true;
         private bool InitialOpenDone = false;
         
@@ -59,6 +62,12 @@ namespace Project_Codebase_Overview
             private bool _decayChangesMade = false;
         }
         private Observables LocalObservables = new Observables();
+        private class OwnerListElement : ObservableObject
+        {
+            public string Name { get; set; }
+            public Color Color { get; set; }
+            public uint Lines { get; set; }
+        }
 
         private void SetExplorerHasChanges(bool value)
         {
@@ -82,6 +91,7 @@ namespace Project_Codebase_Overview
             LoadSettingsFromState();
 
             PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += SettingsPage_NotifyChangeEvent;
+            PCOState.GetInstance().GetExplorerState().NavigateEvent += UpdateOwnerList;
         }
 
         private void SettingsPage_NotifyChangeEvent()
@@ -95,9 +105,28 @@ namespace Project_Codebase_Overview
             OwnerListView.Visibility = Visibility.Visible;
             NoTeamsMsg.Visibility = Visibility.Collapsed;
             var list = PCOState.GetInstance().GetContributorState().GetAllOwnersInMode();
+            var rootDist = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder().GraphModel.LineDistribution;
             foreach (var owner in list)
             {
-                OwnersList.Add(owner);
+                GraphModel.LineDistUnit distUnit = null;
+                if(rootDist.TryGetValue(owner, out distUnit))
+                {
+                    OwnersList.Add(new OwnerListElement()
+                    {
+                        Name = owner.Name,
+                        Color = owner.Color,
+                        Lines = distUnit.LineSum()
+                    }); 
+                }
+                else
+                {
+                    OwnersList.Add(new OwnerListElement()
+                    {
+                        Name = owner.Name,
+                        Color = owner.Color,
+                        Lines = 0
+                    });
+                }
             }
 
             if (OwnersList.Count == 0)
@@ -256,8 +285,7 @@ namespace Project_Codebase_Overview
             {
                 PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.TEAMS;
             }
-            //Update settingspanel owner list
-            UpdateOwnerList();
+            
 
             if (!this.InitialOpenDone)
             {
@@ -267,6 +295,8 @@ namespace Project_Codebase_Overview
             
             //Reload explorerview
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            //Update settingspanel owner list
+            UpdateOwnerList();
         }
 
         private async void ExportCodeownersClick(object sender, RoutedEventArgs e)
@@ -425,6 +455,7 @@ namespace Project_Codebase_Overview
         {
             SetExplorerHasChanges(false);
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            this.UpdateOwnerList();
         }
 
         private async void HelpClicked(object sender, RoutedEventArgs e)

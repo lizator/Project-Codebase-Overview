@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    xmlns:datagrid="using:Syncfusion.UI.Xaml.DataGrid"
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors">
 
     <!-- Author list item view template-->
@@ -87,13 +88,36 @@
             <TextBlock Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Text="Owner list" FontSize="16"/>
             <Button Grid.Row="3" Grid.Column="0"  Click="ManageClicked"  VerticalAlignment="Center" HorizontalAlignment="Right" Grid.ColumnSpan="2">Manage authors/teams</Button>
             <!-- owner list -->
-            <ListView Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
+            <datagrid:SfDataGrid
+                Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
+                Background="White"
+                AutoGenerateColumns="False"
+                ColumnWidthMode="Star"
+                ItemsSource="{x:Bind OwnersList}"
+                SelectionMode="None">
+                <datagrid:SfDataGrid.Columns>
+                    <datagrid:GridTemplateColumn HeaderText="" MappingName="Color" AllowSorting="False" ColumnWidthMode="Auto">
+                        <datagrid:GridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse Height="20" Width="20" StrokeThickness="1" Stroke="Black">
+                                    <Ellipse.Fill>
+                                        <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </DataTemplate>
+                        </datagrid:GridTemplateColumn.CellTemplate>
+                    </datagrid:GridTemplateColumn>
+                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                    <datagrid:GridNumericColumn HeaderText="Lines" MappingName="Lines" ColumnWidthMode="Auto"/>
+                </datagrid:SfDataGrid.Columns>
+            </datagrid:SfDataGrid>
+            <!--<ListView Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="OwnerListView"
                     ItemsSource="{x:Bind OwnersList}" SelectionMode="None"
                       BorderThickness="1" BorderBrush="DarkGray" Background="White">
                 <ListView.ItemTemplate>
-                    <!-- TODO: FIX TEMPLATE SHIT!-->
+                    --><!-- TODO: FIX TEMPLATE SHIT!--><!--
                     <DataTemplate>
-                        <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
+                        <Grid ColumnDefinitions="auto, *, auto" VerticalAlignment="Center">
                             <Ellipse Grid.Column="0"  Width="20" Height="20" VerticalAlignment="Center" Stroke="Black" StrokeThickness="1">
                                 <Ellipse.Fill>
                                     <SolidColorBrush Color="{Binding Color}"/>
@@ -102,10 +126,11 @@
                             <TextBlock Grid.Column="1" Text="{Binding Name}" VerticalAlignment="Center" Margin="5,0,0,0" 
                                        ToolTipService.ToolTip="{Binding Name}"
                                        TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Grid.Column="2" Text="{Binding Lines}"/>
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ListView>-->
             
             <!-- No teams msg -->
             <StackPanel Orientation="Vertical" Grid.Row="4"  Grid.Column="0" Grid.ColumnSpan="2" x:Name="NoTeamsMsg" >

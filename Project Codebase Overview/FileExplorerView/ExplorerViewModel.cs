@@ -81,6 +81,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
             NotifyGraphUpdateEvent?.Invoke();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateBack()
@@ -88,6 +89,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetBackHistoryFolder());
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateForward()
@@ -95,6 +97,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetForwardHistoryFolder());
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateUp()

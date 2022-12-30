@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Project_Codebase_Overview.FileExplorerView.ExplorerViewModel;
 
 namespace Project_Codebase_Overview.FileExplorerView
 {
@@ -25,6 +26,8 @@ namespace Project_Codebase_Overview.FileExplorerView
         public event NotifyChange NotifyChangeEvent;
         public bool GraphViewActive = false;
         public bool GraphViewHasChanges = false;
+        public delegate void NavigateEventListener();
+        public event NavigateEventListener NavigateEvent;
 
         public ExplorerState()
         {
@@ -239,6 +242,11 @@ namespace Project_Codebase_Overview.FileExplorerView
         public void ExplorerNotifyChange()
         {
             NotifyChangeEvent?.Invoke();
+        }
+
+        public void InvokeNavigateEvent()
+        {
+            NavigateEvent.Invoke();
         }
     }
 }
