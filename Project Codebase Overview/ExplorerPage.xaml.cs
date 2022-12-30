@@ -40,14 +40,8 @@ using Windows.Devices.Printers.Extensions;
 using Project_Codebase_Overview.LocalSettings;
 using System.Threading;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace Project_Codebase_Overview
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class ExplorerPage : Page
     {
         ExplorerViewModel ViewModel;
@@ -430,7 +424,7 @@ namespace Project_Codebase_Overview
                     var dc = ((FrameworkElement)e.OriginalSource).DataContext as ExplorerViewModel;
 
                     MenuFlyout flyout = new MenuFlyout();
-                    if (dc.GetType() == typeof(PCOFolder))
+                    if (dc.SelectedGraphItem.GetType() == typeof(PCOFolder))
                     {
                         MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
                         flyoutItem.Text = "Navigate to: " + clickedItem.Name;
