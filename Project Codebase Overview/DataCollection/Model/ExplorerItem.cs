@@ -24,6 +24,8 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Data;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using System.Runtime;
+using Microsoft.UI;
+using System.Drawing.Printing;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -61,7 +63,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
         public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
         public ObservableCollection<IOwner> SelectedOwners = new ObservableCollection<IOwner>();
-        public SfLinearGauge BarGraph {get => GetBarGraph();}
+        public Grid BarGraph {get => GetBarGraphAlt();}
         public SfComboBox SelectOwnerComboBox {get => GetSelectOwnerComboBox();}
         public Visibility SelectOwnerVisibility { get => _selectOwnerVisibility; set => SetProperty(ref _selectOwnerVisibility, value); }
         private Visibility _selectOwnerVisibility = Visibility.Visible;
@@ -230,6 +232,88 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 ownerlist = ownerlist.OrderByDescending(g => g.Key);
             }
             return ownerlist;
+        }
+
+        protected Grid GetBarGraphAlt()
+        {
+            Grid grid = new Grid();
+            grid.HorizontalAlignment = HorizontalAlignment.Stretch;
+            grid.Background = new SolidColorBrush(PCOColorPicker.Black);
+            grid.Padding = new Thickness(2);
+            grid.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+
+            var blocks = new List<GraphBlock>();
+            if (this.GraphModel.LinesTotal > 0)
+            {
+                if (this.GetType() == typeof(PCOFile))
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel, ((PCOFile)this).Creator);
+                }
+                else
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel);
+                }
+            }
+            else
+            {
+                this.GraphModel.SuggestedOwner = null;
+            }
+
+            var index = 0;
+            foreach (var block in blocks)
+            {
+                ColumnDefinition colDef = new ColumnDefinition() { Width = new GridLength(block.EndValue - block.StartValue, GridUnitType.Star) };
+                grid.ColumnDefinitions.Add(colDef);
+
+                Grid subgrid = new Grid();
+                subgrid.Background = new SolidColorBrush(block.Color);
+                subgrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                subgrid.Height = 25;
+
+                if (block.EndValue - block.StartValue > 10)
+                {
+                    var panel = new StackPanel();
+                    panel.Orientation = Orientation.Horizontal;
+                    panel.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+
+                    if (block.IsCreator)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    if (!block.IsActive)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/noBW.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    subgrid.Children.Add(panel);
+                }
+
+                var tooltip = new ToolTip();
+                var tooltipMsg = new TextBlock();
+                tooltipMsg.Text = block.ToolTip;
+                tooltipMsg.HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center;
+                tooltip.Content = tooltipMsg;
+
+                ToolTipService.SetToolTip(subgrid, tooltip);
+
+
+                grid.Children.Add(subgrid);
+                Grid.SetColumn(subgrid, index++);
+            }
+
+            return grid;
+
         }
         protected SfLinearGauge GetBarGraph()
         {

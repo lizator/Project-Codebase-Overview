@@ -63,9 +63,50 @@ namespace Project_Codebase_Overview
 
             public TestObservableClass()
             {
-                test(); 
+                test();
+                test2();
             }
+            public void test2()
+            {
+                Grid grid = new Grid();
+                grid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                grid.Background = new SolidColorBrush(PCOColorPicker.Black);
+                grid.Padding = new Thickness(2);
+                grid.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+                //grid.Width = 100;
 
+                var blocks = new List<GraphBlock>(); 
+                var sizes = new List<int> { 30, 30, 30 };
+                if (true) sizes = new List<int> { 50, 20, 20 };
+                var curr = 0;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var block = new GraphBlock();
+                    block.StartValue = curr;
+                    curr += sizes[i];
+                    block.EndValue = curr;
+                    block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
+                    blocks.Add(block);
+                }
+
+                var index = 0;
+                foreach (var block in blocks)
+                {
+                    ColumnDefinition colDef = new ColumnDefinition() { Width = new GridLength(block.EndValue - block.StartValue, GridUnitType.Star) };
+                    grid.ColumnDefinitions.Add(colDef);
+
+                    Grid subgrid = new Grid();
+                    subgrid.Background = new SolidColorBrush(block.Color);
+                    subgrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    subgrid.Height = 25;
+
+                    grid.Children.Add(subgrid);
+                    Grid.SetColumn(subgrid, index++);
+                }
+
+                BarGraph2 = grid;
+            }
             public void test()
             {
                 SfLinearGauge sfLinearGauge = new SfLinearGauge();
@@ -113,6 +154,9 @@ namespace Project_Codebase_Overview
             public SfLinearGauge BarGraph { get => _barGraph; set => SetProperty(ref _barGraph, value); }
 
             public SfLinearGauge _barGraph;
+            public Grid BarGraph2 { get => _barGraph2; set => SetProperty(ref _barGraph2, value); }
+
+            public Grid _barGraph2;
         }
 
 

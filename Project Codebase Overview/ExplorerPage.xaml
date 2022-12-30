@@ -174,7 +174,7 @@
                 <!--line distribution bar graph-->
                 <Grid ColumnDefinitions="auto, *" ColumnSpacing="20">
                     <TextBlock Text="Line Distribution" HorizontalAlignment="Center" Grid.Column="0"/>
-                    <ContentControl Content="{Binding SelectedGraphItem.BarGraph}" Grid.Column="1"/>
+                    <ContentControl Content="{Binding SelectedGraphItem.BarGraph}" Grid.Column="1" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                 </Grid>
                 
                 <Grid ColumnDefinitions="auto, *" RowDefinitions="auto,auto" RowSpacing="40" ColumnSpacing="20" DataContext="{Binding SelectedGraphItem}">
@@ -318,7 +318,7 @@
                         </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                         <treeGrid:TreeGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                                <ContentControl Content="{Binding BarGraph}" VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"/>
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
