@@ -54,7 +54,7 @@ namespace Project_Codebase_Overview.Graphs
                 block.Color = PCOColorPicker.Black;
                 block.Name = "No lines";
                 block.ToolTip = "This is empty";
-                block.Percentage = 100;
+                block.Percentage = 0;
                 block.IsActive = true;
                 blockList.Add(block);
                 return blockList;
@@ -90,6 +90,12 @@ namespace Project_Codebase_Overview.Graphs
                     block.Color = dist.Key.Color;
                     block.Name = dist.Key.Name;
                     block.Percentage = blockSize;
+                    
+                    if(block.EndValue == double.NaN)
+                    {
+                        block.EndValue = 100;
+                        block.Percentage = 0;
+                    }
 
                     block.IsCreator = creator != null && dist.Key.ContainsEmail(creator.Email);
                     block.IsActive = dist.Key.IsActive;

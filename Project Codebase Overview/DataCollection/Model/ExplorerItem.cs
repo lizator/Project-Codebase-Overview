@@ -262,6 +262,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             var index = 0;
             foreach (var block in blocks)
             {
+                
                 ColumnDefinition colDef = new ColumnDefinition() { Width = new GridLength(block.EndValue - block.StartValue, GridUnitType.Star) };
                 grid.ColumnDefinitions.Add(colDef);
 

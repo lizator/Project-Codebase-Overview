@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using static Project_Codebase_Overview.DataCollection.Model.GraphModel;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -40,31 +41,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             foreach (var groupedComm in groupedCommits)
             {
-                List<IOwner>  owners = new List<IOwner>();//commit can have multiple owners if author is in multiple teams
-                if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.AUTHOR)
-                {
-                    owners.Add(groupedComm.First().GetAuthor()); 
-                }
-                else
-                {
-                    //Mode.TEAMS
-                    if(groupedComm.First().GetAuthor().Teams.Count != 0)
-                    {
-                        foreach(var team in groupedComm.First().GetAuthor().Teams)
-                        {
-                            owners.Add(team);
-                        }
-                    }
-                    else
-                    {
-                        //not in team
-                        owners.Add(PCOState.GetInstance().GetContributorState().GetNoTeam());
-                    }
-                }
-                foreach (var owner in owners)
-                {
-                    this.GraphModel.LineDistribution.TryAdd(owner, new GraphModel.LineDistUnit(0,0));
-                }
+                
+                var author = groupedComm.First().GetAuthor();
 
                 foreach (var commit in groupedComm)
                 {
@@ -75,12 +53,47 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
                     this.GraphModel.LinesAfterDecay += linesAfterDecay;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
-                    foreach(var owner in owners)
-                    {
-                        this.GraphModel.LineDistribution[owner].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
-                    }
+
+                    this.GraphModel.LineDistribution.TryAdd(author, new LineDistUnit(0, 0));
+                    this.GraphModel.LineDistribution[author].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
                 }
             }
+
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.TEAMS)
+            {
+                //Mode.TEAMS so convert to teams
+                var teamDist = new Dictionary<IOwner, LineDistUnit>();
+
+                foreach(var dist in this.GraphModel.LineDistribution)
+                {
+                    var teams = new List<IOwner>();
+                    if (((Author)dist.Key).Teams.Count != 0)
+                    {
+                        foreach (var team in ((Author)dist.Key).Teams)
+                        {
+                            teams.Add(team);
+                        }
+                    }
+                    else
+                    {
+                        //not in team
+                        teams.Add(PCOState.GetInstance().GetContributorState().GetNoTeam());
+                    }
+
+                    uint lines = (uint) Math.Ceiling((double) dist.Value.SuggestedLines / teams.Count());
+                    //add lines
+                    foreach (var team in teams)
+                    {
+                        
+                        if(!teamDist.TryAdd(team, new GraphModel.LineDistUnit(lines, 0))){
+                            teamDist[team].SuggestedLines += lines;
+                        }
+                    }
+                }
+                this.GraphModel.LineDistribution = teamDist; 
+            }
+
+
             if (this.GraphModel.LinesTotal > 0)
             {
                 this.GraphModel.UpdateSuggestedOwner();

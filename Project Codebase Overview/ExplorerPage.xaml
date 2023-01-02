@@ -326,7 +326,7 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" AllowEditing="False" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="SizeToCells" DisplayNumberFormat="#,##0" ShowHeaderToolTip="True">
+                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" AllowEditing="False" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="Auto" DisplayNumberFormat="#,##0" ShowHeaderToolTip="True">
                         <treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
                             <DataTemplate>
                                 <Grid RowDefinitions="auto,auto,auto">
