@@ -46,6 +46,20 @@ namespace Project_Codebase_Overview.Graphs
             uint lineCount = 0;
             var blockCount = 0;
 
+            if (graphModel.LinesAfterDecay == 0)
+            {
+                GraphBlock block = new GraphBlock();
+                block.StartValue = 0;
+                block.EndValue = 100;
+                block.Color = PCOColorPicker.Black;
+                block.Name = "No lines";
+                block.ToolTip = "This is empty";
+                block.Percentage = 100;
+                block.IsActive = true;
+                blockList.Add(block);
+                return blockList;
+            }
+
             foreach (var dist in distributions.OrderByDescending(x => x.Value.LineSum()).ToDictionary(x => x.Key, x => x.Value))
             {
                 var blockSize = ((double)dist.Value.LineSum() / (double)linesTotal) * 100;
