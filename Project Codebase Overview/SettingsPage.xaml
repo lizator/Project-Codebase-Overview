@@ -236,7 +236,7 @@
             
             <Button Grid.Row="14" Grid.Column="0" Click="ExportCodeownersClick"
                     ToolTipService.ToolTip="Export a CODEOWNERS file from the current state">Export CodeOwners file</Button>
-            <Button Grid.Row="15" Grid.Column="0" Click="ReturnToStartClick"
+            <Button Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="2" Click="ReturnToStartClick"
                     ToolTipService.ToolTip="Close this window and open the start window.">Return to start window</Button>
         </Grid>
         
