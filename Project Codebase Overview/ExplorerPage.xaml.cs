@@ -95,7 +95,7 @@ namespace Project_Codebase_Overview
                 var queue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
                 Task.Factory.StartNew(() =>
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(1000);//wait for xaml root to avoid crash
                     queue.TryEnqueue(() =>
                     {
                         NotifyInitialStartEvent?.Invoke();

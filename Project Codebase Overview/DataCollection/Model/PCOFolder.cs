@@ -73,6 +73,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             this.GraphModel.UpdateSuggestedOwner();
             //this.GenerateBarGraph();
+            this.UpdateSelectedOwners();
         }
 
         public override string ToCodeowners()

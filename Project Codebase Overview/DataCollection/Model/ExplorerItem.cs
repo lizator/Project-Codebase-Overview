@@ -418,6 +418,17 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             return relativePath;
         }
-        
+
+        protected void UpdateSelectedOwners()
+        {
+            foreach (var owner in SelectedOwners.ToList())
+            {
+                if (owner.GetType() == typeof(Author) && ((Author)owner).OverAuthor != null)
+                {
+                    SelectedOwners.Remove(owner);
+                    SelectedOwners.Add(((Author)owner).OverAuthor);
+                }
+            }
+        }
     }
 }
