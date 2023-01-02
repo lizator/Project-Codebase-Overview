@@ -90,6 +90,7 @@ namespace Project_Codebase_Overview
 
         private void BackClick(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().GetExplorerState().GetRoot().CalculateData();
             ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
         }
 
