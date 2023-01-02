@@ -72,6 +72,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
             this.viewRootFolder = root;
             this.CurrentRootPath = PCOState.GetInstance().GetExplorerState().GetCurrentRootPath();
+            CheckNavigationOptions();
         }
 
         public void NavigateNewRoot(PCOFolder newFolder)

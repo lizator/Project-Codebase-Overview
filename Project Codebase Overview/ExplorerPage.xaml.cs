@@ -68,6 +68,7 @@ namespace Project_Codebase_Overview
             this.UpdateUndoRedoButtons();
 
             ViewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
+            NavButtonPropertyChanged(null, null);
 
             if (!PCOState.GetInstance().GetSettingsState().IsDecayActive)
             {
@@ -139,44 +140,38 @@ namespace Project_Codebase_Overview
 
         private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals("NavigateUpAvailable"))
+            var navOptions = ViewModel.navButtonValues;
+            if (navOptions.NavigateUpAvailable)
             {
-                if (((NavigationButtonValues)sender).NavigateUpAvailable)
-                {
-                    UpButton.IsEnabled = true;
-                    UpImage.Opacity = 1;
-                }
-                else
-                {
-                    UpButton.IsEnabled = false;
-                    UpImage.Opacity = 0.3;
-                }
+                UpButton.IsEnabled = true;
+                UpImage.Opacity = 1;
             }
-            if (e.PropertyName.Equals("NavigateBackAvailable"))
+            else
             {
-                if (((NavigationButtonValues)sender).NavigateBackAvailable)
-                {
-                    BackButton.IsEnabled = true;
-                    BackImage.Opacity = 1;
-                }
-                else
-                {
-                    BackButton.IsEnabled = false;
-                    BackImage.Opacity = 0.3;
-                }
+                UpButton.IsEnabled = false;
+                UpImage.Opacity = 0.3;
             }
-            if (e.PropertyName.Equals("NavigateForwardAvailable"))
+            
+            if (navOptions.NavigateBackAvailable)
             {
-                if (((NavigationButtonValues)sender).NavigateForwardAvailable)
-                {
-                    ForwardButton.IsEnabled = true;
-                    ForwardImage.Opacity = 1;
-                }
-                else
-                {
-                    ForwardButton.IsEnabled = false;
-                    ForwardImage.Opacity = 0.3;
-                }
+                BackButton.IsEnabled = true;
+                BackImage.Opacity = 1;
+            }
+            else
+            {
+                BackButton.IsEnabled = false;
+                BackImage.Opacity = 0.3;
+            }
+
+            if (navOptions.NavigateForwardAvailable)
+            {
+                ForwardButton.IsEnabled = true;
+                ForwardImage.Opacity = 1;
+            }
+            else
+            {
+                ForwardButton.IsEnabled = false;
+                ForwardImage.Opacity = 0.3;
             }
         }
 
