@@ -62,6 +62,27 @@
                 </GroupStyle.HeaderTemplate>
             </GroupStyle>
 
+            <DataTemplate x:Key="NameTemplateFile">
+                <Grid ColumnDefinitions="auto, *" ColumnSpacing="4">
+                    <Image Source="Assets/File.png" Height="20" Width="20" Stretch="Uniform" Grid.Column="0" 
+                           VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" 
+                               ToolTipService.ToolTip="{Binding Name}" 
+                               Grid.Column="1" 
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </DataTemplate>
+            <DataTemplate x:Key="NameTemplateFolder">
+                <Grid ColumnDefinitions="auto, *" ColumnSpacing="4">
+                    <Image Source="Assets/Folder.png" Height="20" Width="20" Stretch="Uniform" Grid.Column="0" 
+                           VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis" 
+                               ToolTipService.ToolTip="{Binding Name}" 
+                               Grid.Column="1" 
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </DataTemplate>
+
         </ResourceDictionary>
 
     </Application.Resources>

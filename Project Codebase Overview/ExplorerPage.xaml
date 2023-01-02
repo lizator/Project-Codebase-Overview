@@ -104,6 +104,9 @@
 
 
         <local:CustomSortNameComparer x:Key="SortNameComparer"/>
+        
+        
+        <local:CustomCellTemplateSelector x:Key="NameTemplateSelector"/>
 
     </Page.Resources>
 
@@ -224,7 +227,8 @@
             </treeGrid:SfTreeGrid.SortColumnDescriptions>
             <treeGrid:SfTreeGrid.Columns>
                 <treeGrid:TreeGridColumns>
-                    <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False" />
+                    <treeGrid:TreeGridTemplateColumn HeaderText="Name" MappingName="Name" AllowEditing="False" x:Name="NameColoumn" CellTemplateSelector="{StaticResource NameTemplateSelector}"/>
+                    <!-- <treeGrid:TreeGridTextColumn x:Name="NameColoumn" TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" AllowEditing="False" /> -->
                     <treeGrid:TreeGridTemplateColumn HeaderText="Selected owner" MappingName="SelectedOwnerName" Width="325"
                                                      AllowSorting="False" AllowFiltering="False" FilterPopupStyle="{StaticResource popupstyleforOwner}" ShowHeaderToolTip="True">
                         <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>

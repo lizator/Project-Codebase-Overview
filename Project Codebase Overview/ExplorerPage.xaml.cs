@@ -547,4 +547,21 @@ namespace Project_Codebase_Overview
             set { _SortDirection = value; }
         }
     }
+    public class CustomCellTemplateSelector : DataTemplateSelector
+    {
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+
+            if (item == null)
+                return null;
+
+            var data = item as ExplorerItem;
+
+            if (data.GetType() == typeof(PCOFile))
+                return App.Current.Resources["NameTemplateFile"] as DataTemplate;
+
+            else
+                return App.Current.Resources["NameTemplateFolder"] as DataTemplate;
+        }
+    }
 }
