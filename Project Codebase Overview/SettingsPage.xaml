@@ -47,6 +47,7 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
                 
             </Grid.RowDefinitions>
             
@@ -198,18 +199,26 @@
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>
 
-            <TextBlock Grid.Row="10" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
-            <CheckBox Grid.Row="10" Grid.Column="1"  x:Name="ShowFilesCheckBox" IsChecked="True" Width="100"
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Creator multiplier"/>
+            <StackPanel Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
+                <TextBlock Text="+"  VerticalAlignment="Center"/>
+                <editors:SfNumberBox Maximum="999" Minimum="0" CustomFormat="0" HorizontalContentAlignment="Right" ValueChanged="CreatorNumberChanged"
+                                         Visibility="Visible" Width="35" x:Name="CreatorNumberBox"   VerticalAlignment="Center" ShowClearButton="False" IsEnabled="True"/>
+                <TextBlock Text="%" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock Grid.Row="11" Grid.Column="0" Text="Show files"  VerticalAlignment="Center"/>
+            <CheckBox Grid.Row="11" Grid.Column="1"  x:Name="ShowFilesCheckBox" IsChecked="True" Width="100"
                       Checked="ShowFilesChecked" Unchecked="ShowFilesUnchecked"  VerticalAlignment="Center" />
 
-            <Grid Grid.Row="11" Grid.Column="1">
+            <Grid Grid.Row="12" Grid.Column="1">
                 <Button HorizontalAlignment="Left" Background="ForestGreen" Foreground="White" Content="Update" Click="UpdateSettingsChangeClick" IsEnabled="{x:Bind LocalObservables.DecayChangesMade, Mode=OneWay}"/>
                 <Button HorizontalAlignment="Right" Background="IndianRed" Foreground="White" Content="Cancel" Click="CancelSettingsChangeClick" IsEnabled="{x:Bind LocalObservables.DecayChangesMade, Mode=OneWay}"/>
             </Grid>
 
             <!-- Import/Export -->
-            <TextBlock Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
-            <Grid Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="auto, *, auto" ColumnSpacing="5">
+            <TextBlock Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="2" Text="Import/Export" Style="{StaticResource TitleTextBlockStyle}" />
+            <Grid Grid.Row="14" Grid.Column="0" Grid.ColumnSpan="2" ColumnDefinitions="auto, *, auto" ColumnSpacing="5">
                 <Button Grid.Column="0" Click="SaveClick" 
                         ToolTipService.ToolTip="Save the current state">
                     <StackPanel Orientation="Vertical">
@@ -234,9 +243,9 @@
             </Grid>
             
             
-            <Button Grid.Row="14" Grid.Column="0" Click="ExportCodeownersClick"
+            <Button Grid.Row="15" Grid.Column="0" Click="ExportCodeownersClick"
                     ToolTipService.ToolTip="Export a CODEOWNERS file from the current state">Export CodeOwners file</Button>
-            <Button Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="2" Click="ReturnToStartClick"
+            <Button Grid.Row="16" Grid.Column="0" Grid.ColumnSpan="2" Click="ReturnToStartClick"
                     ToolTipService.ToolTip="Close this window and open the start window.">Return to start window</Button>
         </Grid>
         

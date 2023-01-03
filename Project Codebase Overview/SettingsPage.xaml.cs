@@ -174,6 +174,8 @@ namespace Project_Codebase_Overview
 
             ShowFilesCheckBox.IsChecked = settingsState.IsFilesVisibile;
 
+            CreatorNumberBox.Value = settingsState.CreatorBonusPercent;
+
             var tooltip = "When owners are declared, you can refresh the page to update the changes in the graphs";
             ToolTipService.SetToolTip(UpdateExplorerBtn, tooltip);
         }
@@ -201,6 +203,8 @@ namespace Project_Codebase_Overview
             settingsState.DecayPercentage = ((int?)PercentageNumberBox.Value) ?? 0;
 
             settingsState.IsFilesVisibile = ShowFilesCheckBox.IsChecked ?? true;
+
+            settingsState.CreatorBonusPercent = ((int?)CreatorNumberBox.Value) ?? 0;
 
             LoadSettingsFromState();
 
@@ -537,6 +541,14 @@ namespace Project_Codebase_Overview
             window.Activate();
 
             currentWindow.Close();
+        }
+
+        private void CreatorNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(CreatorNumberBox.Value != PCOState.GetInstance().GetSettingsState().CreatorBonusPercent)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
     }
 }

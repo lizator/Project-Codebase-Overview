@@ -70,7 +70,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public Visibility InactiveVisibility { get => _inactiveVisibility; set => SetProperty(ref _inactiveVisibility, value); }
         private Visibility _inactiveVisibility = Visibility.Collapsed;
         public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
-        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
+        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesModified; }
 
         #endregion
 

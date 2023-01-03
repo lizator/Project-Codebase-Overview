@@ -21,6 +21,8 @@ namespace Project_Codebase_Overview.State
 
         public CutOffSelectionUnit CutOffSelectionUnit;
 
+        public int CreatorBonusPercent;
+
         public SettingsState()
         {
             CurrentMode = PCOExplorerMode.AUTHOR;
@@ -30,6 +32,7 @@ namespace Project_Codebase_Overview.State
             DecayPercentage = 25;
             DecayTimeUnit = DecayTimeUnit.MONTH;
             CutOffSelectionUnit = CutOffSelectionUnit.ALL_TIME;
+            CreatorBonusPercent = 0;
         }
 
         public bool IsDateWithinCutOff(DateTime commitDate)

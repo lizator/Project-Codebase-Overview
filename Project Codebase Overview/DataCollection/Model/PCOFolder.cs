@@ -64,7 +64,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
                         this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
                     }
                     this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
-                    this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
+                    this.GraphModel.LinesModified += child.Value.GraphModel.LinesModified;
                 }
                 if (PCOState.GetInstance().GetSettingsState().IsFilesVisibile || child.Value.GetType() == typeof(PCOFolder))
                 {

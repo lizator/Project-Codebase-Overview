@@ -40,6 +40,7 @@ namespace Project_Codebase_Overview.SaveState
             serialSettings.IsDecayActive = settingsState.IsDecayActive;
             serialSettings.DecayDropOffInteval = settingsState.DecayDropOffInteval;
             serialSettings.DecayPercentage = settingsState.DecayPercentage;
+            serialSettings.CreatorMultiplier = settingsState.CreatorBonusPercent;
 
             return serialSettings;
         }
@@ -209,6 +210,7 @@ namespace Project_Codebase_Overview.SaveState
             settingsState.DecayTimeUnit = serialSettings.DecayTimeUnit;
             settingsState.DecayDropOffInteval = serialSettings.DecayDropOffInteval;
             settingsState.DecayPercentage = serialSettings.DecayPercentage;
+            settingsState.CreatorBonusPercent = serialSettings.CreatorMultiplier;
         }
 
         private static PCOFolder GetPCORoot(SerializerFolder serialFolder, PCOFolder parent)

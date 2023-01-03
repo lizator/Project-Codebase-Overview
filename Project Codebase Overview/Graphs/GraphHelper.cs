@@ -46,7 +46,7 @@ namespace Project_Codebase_Overview.Graphs
             uint lineCount = 0;
             var blockCount = 0;
 
-            if (graphModel.LinesAfterDecay == 0)
+            if (graphModel.LinesModified == 0)
             {
                 GraphBlock block = new GraphBlock();
                 block.StartValue = 0;
@@ -241,7 +241,7 @@ namespace Project_Codebase_Overview.Graphs
             Visibility vis = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Visibility.Collapsed : Visibility.Visible;
             Color col = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Colors.White : explorerItem.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black;
             dataLists[depth].Add(
-                        new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesTotal, 
+                        new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesModified, 
                         col, vis, explorerItem));
 
             if (explorerItem.GetType() == typeof(PCOFile))
@@ -250,7 +250,7 @@ namespace Project_Codebase_Overview.Graphs
                 //create whitespace outwards
                 for(int i = depth+1; i < maxDepth; i++)
                 {
-                    dataLists[i].Add( new DoughnutDataUnit("empty", explorerItem.GraphModel.LinesTotal, Colors.White, Visibility.Collapsed, null));
+                    dataLists[i].Add( new DoughnutDataUnit("empty", explorerItem.GraphModel.LinesModified, Colors.White, Visibility.Collapsed, null));
                 }
             }
             else

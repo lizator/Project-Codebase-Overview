@@ -27,14 +27,14 @@ namespace Project_Codebase_Overview.DataCollection.Model
         
         public IOwner SuggestedOwner;
         public Dictionary<IOwner, LineDistUnit> LineDistribution;
-        public uint LinesAfterDecay;
+        public uint LinesModified;
         public uint LinesTotal;
         public string FileName;
 
         public GraphModel()
         {
             this.LineDistribution = new Dictionary<IOwner, LineDistUnit>();
-            this.LinesAfterDecay = 0;
+            this.LinesModified = 0;
             this.LinesTotal = 0;
             SuggestedOwner = null;
         }

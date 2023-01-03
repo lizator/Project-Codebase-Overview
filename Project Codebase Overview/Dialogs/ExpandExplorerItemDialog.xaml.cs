@@ -88,7 +88,7 @@ namespace Project_Codebase_Overview.Dialogs
             CommentBox.Text = ExplorerItem.Comment ?? "";
 
             //set Top Contributors
-            uint totalLines = ExplorerItem.GraphModel.LinesTotal;
+            uint totalLines = (uint) ExplorerItem.GraphModel.LineDistribution.Sum(x => x.Value.LineSum());
             if(PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.AUTHOR)
             {
                 //author mode

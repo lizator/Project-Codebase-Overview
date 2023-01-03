@@ -50,12 +50,20 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     {
                         continue;
                     }
-                    var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
-                    this.GraphModel.LinesAfterDecay += linesAfterDecay;
+                    var linesModified = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
+                    
+                    if (this.Creator.Equals(author))
+                    {
+                        linesModified = (uint) Math.Ceiling((double) (((double)settingsState.CreatorBonusPercent / 100) + 1) * linesModified);
+                    }
+
+                    this.GraphModel.LinesModified += linesModified;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
 
                     this.GraphModel.LineDistribution.TryAdd(author, new LineDistUnit(0, 0));
-                    this.GraphModel.LineDistribution[author].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
+
+                    this.GraphModel.LineDistribution[author].SuggestedLines += linesModified;
+                    //this.GraphModel.LineDistribution[author].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesModified : (uint)commit.GetLines();
                 }
             }
 
