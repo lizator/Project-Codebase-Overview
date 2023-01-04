@@ -199,11 +199,24 @@
                     <TextBlock Grid.Column="1" Text="%" Margin="5,0,0,0"  VerticalAlignment="Center"></TextBlock>
                 </Grid>
 
-            <TextBlock Grid.Row="10" Grid.Column="0" Text="Creator multiplier"/>
-            <StackPanel Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5">
+            <TextBlock Grid.Row="10" Grid.Column="0" Text="Creator bonus" Margin="0,5,0,0"/>
+            <Button Grid.Row="10" Grid.Column="0" HorizontalAlignment="Right" Padding="2" Margin="2,5,2,2" >
+                <Button.Flyout>
+                    <Flyout>
+                        <TextBlock Text="Creator bonus is a way of giving the original creator of the file extra value in the evaluation. The bonus is added as a percentage of the lines that the creator has written in the file, which are still there." 
+                                   TextWrapping="WrapWholeWords" 
+                                   Width="400"/>
+                    </Flyout>
+                </Button.Flyout>
+                <SymbolIcon Symbol="Help"/>
+            </Button>
+            <StackPanel Grid.Row="10" Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
                 <TextBlock Text="+"  VerticalAlignment="Center"/>
-                <editors:SfNumberBox Maximum="999" Minimum="0" CustomFormat="0" HorizontalContentAlignment="Right" ValueChanged="CreatorNumberChanged"
-                                         Visibility="Visible" Width="35" x:Name="CreatorNumberBox"   VerticalAlignment="Center" ShowClearButton="False" IsEnabled="True"/>
+                <editors:SfNumberBox Maximum="999" Minimum="0" CustomFormat="0" 
+                                     HorizontalContentAlignment="Right" ValueChanged="CreatorNumberChanged"
+                                     Visibility="Visible" Width="35" 
+                                     x:Name="CreatorNumberBox"   VerticalAlignment="Center" 
+                                     ShowClearButton="False" IsEnabled="True"/>
                 <TextBlock Text="%" VerticalAlignment="Center"/>
             </StackPanel>
 

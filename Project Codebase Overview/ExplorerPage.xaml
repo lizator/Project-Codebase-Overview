@@ -326,13 +326,13 @@
                             </DataTemplate>
                         </treeGrid:TreeGridTemplateColumn.CellTemplate>
                     </treeGrid:TreeGridTemplateColumn>
-                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" AllowEditing="False" MappingName="LinesAfterDecayNumber" HeaderText="Decay" ColumnWidthMode="Auto" DisplayNumberFormat="#,##0" ShowHeaderToolTip="True">
+                    <treeGrid:TreeGridNumericColumn x:Name="DecayColumn" AllowEditing="False" MappingName="LinesAfterDecayNumber" HeaderText="Modified" ColumnWidthMode="Auto" DisplayNumberFormat="#,##0" ShowHeaderToolTip="True">
                         <treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
                             <DataTemplate>
                                 <Grid RowDefinitions="auto,auto,auto">
-                                    <TextBlock Grid.Row="0" Text="Decay" FontSize="14" HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="1" Text="The amount of lines left after commited lines decayed " HorizontalAlignment="Center"/>
-                                    <TextBlock Grid.Row="2" Text="over time. View the settings panel to change it." HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="0" Text="Modified lines" FontSize="14" HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="The amount of lines after decay, cutoff and creator bonus." HorizontalAlignment="Center"/>
+                                    <TextBlock Grid.Row="2" Text="View the settings panel to change those values." HorizontalAlignment="Center"/>
                                 </Grid>
                             </DataTemplate>
                         </treeGrid:TreeGridNumericColumn.HeaderToolTipTemplate>
