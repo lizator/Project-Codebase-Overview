@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Project_Codebase_Overview.ContributorManagement;
+using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.State;
 using Syncfusion.UI.Xaml.Data;
@@ -52,9 +53,19 @@ namespace Project_Codebase_Overview.DataCollection.Model
             foreach (var child in Children)
             {
                 child.Value.CalculateData();
-                this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
-                this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
-                this.GraphModel.LinesAfterDecay += child.Value.GraphModel.LinesAfterDecay;
+                if (child.Value.IsActive)
+                {
+                    if (child.Value.SelectedOwners.Count > 0)
+                    {
+                        this.GraphModel.AddLineDistributions_SelectedOwner(child.Value.GraphModel.LineDistribution, child.Value.SelectedOwners.ToList());
+                    }
+                    else
+                    {
+                        this.GraphModel.AddLineDistributions(child.Value.GraphModel.LineDistribution);
+                    }
+                    this.GraphModel.LinesTotal += child.Value.GraphModel.LinesTotal;
+                    this.GraphModel.LinesModified += child.Value.GraphModel.LinesModified;
+                }
                 if (PCOState.GetInstance().GetSettingsState().IsFilesVisibile || child.Value.GetType() == typeof(PCOFolder))
                 {
                     ViewChildren.Add(child.Key, child.Value);
@@ -62,6 +73,29 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             this.GraphModel.UpdateSuggestedOwner();
             //this.GenerateBarGraph();
+            this.UpdateSelectedOwners();
+        }
+
+        public override string ToCodeowners()
+        {
+            var builder = new StringBuilder();
+
+            var CodeownerLinesForThis = this.GetCodeownerLines();
+            if (CodeownerLinesForThis.Count() > 0)
+            {
+                builder.Append(CodeownerLinesForThis);
+            }
+
+            foreach (var child in Children)
+            {
+                var txt = child.Value.ToCodeowners();
+                if (txt.Length > 0)
+                {
+                    builder.Append(txt);
+                }
+            }
+
+            return builder.ToString();
         }
 
 
@@ -77,11 +111,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
         public bool ContainsChild(ExplorerItem child)
         {
             return Children.ContainsKey(child.Name);
-        }
-        public void AddChildren(ExplorerItem[] child)
-        {
-            throw new NotImplementedException();
-            //children.AddRange(child);
         }
 
         public List<ExplorerItem> SortedChildren { get => GetSortedChildren(); }
@@ -119,28 +148,6 @@ namespace Project_Codebase_Overview.DataCollection.Model
                 }
 
                 return ((PCOFolder)Children[list[index]]).AddChildRecursive(list, index + 1);
-            }
-        }
-
-        public void AddChildrenAlternativly(List<string[]> filePaths, int index = 0)
-        {
-            // Depricated.. Used for testing. TODO: remove when testing no longer nessesary
-            var explorerGroups = filePaths.GroupBy(path => path[index]);
-
-            foreach (var group in explorerGroups)
-            {
-                if (group.Count() == 1)
-                { // a file
-                    var file = new PCOFile(group.Key, this);
-                    GitDataCollector.AddFileCommitsAlt(file, String.Join("/", group.First()));
-                    this.AddChild(file);
-                } else
-                { // a folder
-                    var folder = new PCOFolder(group.Key, this);
-                    folder.AddChildrenAlternativly(group.ToList(), index + 1);
-                    this.AddChild(folder);
-                }
-
             }
         }
 

@@ -21,6 +21,7 @@ using System.Text;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI;
+using Syncfusion.UI.Xaml.TreeGrid;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -33,59 +34,29 @@ namespace Project_Codebase_Overview
     public sealed partial class ManagementPage : Page
     {
         private ObservableCollection<PCOTeam> Teams;
-        private ObservableCollection<Author> Users;
+        private ObservableCollection<Author> Authors;
         public ManagementPage()
         {
             this.InitializeComponent();
        
             Teams = new ObservableCollection<PCOTeam>();
-            Users = new ObservableCollection<Author>();
+            Authors = new ObservableCollection<Author>();
 
-
-            //DUMMY
-            if (false)
-            {
-                SetDummyUsers();
-            } else
-            {
-                //Not dummy
-                var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
-
-                foreach (var author in authorList)
-                {
-                    Users.Add(author);
-                }
-            }
-            UpdateTeams();
-        }
-        
-        private void SetDummyUsers()
-        {
-            Users = new ObservableCollection<Author>();
-            PCOTeam team = new PCOTeam("SuperTeam", PCOColorPicker.HardcodedColors[0]);
             var authorList = PCOState.GetInstance().GetContributorState().GetAllAuthors();
-            var parentAuth = authorList.First();
 
-            foreach(var author in authorList)
+            foreach (var author in authorList)
             {
-                author.ConnectToTeam(team);
-                if (!parentAuth.ContainsEmail(author.Email))
-                {
-                    parentAuth.ConnectAuthor(author);
-                }
-                if (author.OverAuthor == null) {
-                    Users.Add(author);
-                }
+                Authors.Add(author);
             }
-            PCOState.GetInstance().GetContributorState().AddTeam(team);
-            PCOColorPicker.GetInstance();
+            
+            UpdateTeams();
         }
 
         private void UpdateTeams()
         {
             Teams.Clear();
             var manager = PCOState.GetInstance().GetContributorState();
-            foreach (var team in manager.GetAllTeams())
+            foreach (var team in manager.GetAllTeams().OrderBy(x => x.Name))
             {
                 Teams.Add(team);
             }
@@ -99,16 +70,15 @@ namespace Project_Codebase_Overview
                 TeamsGridView.Visibility = Visibility.Visible;
                 NoTeamsMessage.Visibility = Visibility.Collapsed;
             }
-            PCOState.GetInstance().GetExplorerState().CalculateData();
         }
 
         private void UpdateAuthors()
         {
-            Users.Clear();
+            Authors.Clear();
             var manager = PCOState.GetInstance().GetContributorState();
             foreach (var author in manager.GetAllAuthors())
             {
-                Users.Add(author);
+                Authors.Add(author);
             }
             PCOState.GetInstance().GetExplorerState().CalculateData();
         }
@@ -120,6 +90,7 @@ namespace Project_Codebase_Overview
 
         private void BackClick(object sender, RoutedEventArgs e)
         {
+            PCOState.GetInstance().GetExplorerState().GetRoot().CalculateData();
             ((Application.Current as App)?.MainWindow as MainWindow).NavigateToExplorerPage();
         }
 
@@ -156,13 +127,74 @@ namespace Project_Codebase_Overview
             }
         }
 
-        private async void EditUserClick(object sender, RoutedEventArgs e)
+        private async void EditAuthorClick(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var author = button.DataContext as Author;
-            await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+            if(author.OverAuthor == null)
+            {
+                await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+                CheckAuthorChangeAndStartUpdate();
+            }
+        }
 
-            CheckAuthorChangeAndStartUpdate();
+        private async void ShuffleColorsClick(object sender, RoutedEventArgs e)
+        {
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = XamlRoot;
+            dialog.Title = "Shuffle Colors";
+            dialog.PrimaryButtonText = "Shuffle";
+            dialog.SecondaryButtonText = "Cancel";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+
+            StackPanel content = new StackPanel();
+            content.Spacing = 10;
+            content.Children.Add(new TextBlock() {
+                Text = "Shuffling colors will give all authors/teams a new color. Also ones with a manually set color.",
+                TextWrapping = TextWrapping.WrapWholeWords
+            });
+
+            RadioButtons radioButtons = new RadioButtons();
+            radioButtons.Header = "Select what you want colors shuffled for:";
+            radioButtons.Items.Add("All");
+            radioButtons.Items.Add("Authors");
+            radioButtons.Items.Add("Teams");
+            radioButtons.SelectedItem = "All";
+            
+            content.Children.Add(radioButtons);
+
+            dialog.Content = content;
+
+            var result = await dialog.ShowAsync();
+            if(result == ContentDialogResult.Primary)
+            {
+                var cState = PCOState.GetInstance().GetContributorState();
+                if (radioButtons.SelectedItem.Equals("All"))
+                {
+                    cState.ReColorAuthors();
+                    cState.ReColorTeams();
+                }
+                else if (radioButtons.SelectedItem.Equals("Authors"))
+                {
+                    cState.ReColorAuthors();
+                }
+                else if (radioButtons.SelectedItem.Equals("Teams"))
+                {
+                    cState.ReColorTeams();
+                }
+            }
+        }
+
+      
+
+        private async void TreeGridDoubleTap(object sender, TreeGridCellDoubleTappedEventArgs e)
+        {
+            var author = e.Record as Author;
+            if(author.OverAuthor == null)
+            {
+                await DialogHandler.ShowEditAuthorDialog(XamlRoot, author);
+                CheckAuthorChangeAndStartUpdate();
+            }
         }
     }
 }

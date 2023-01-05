@@ -5,6 +5,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Shapes;
+using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.DataCollection.Model;
 using Project_Codebase_Overview.FileExplorerView;
@@ -37,17 +38,31 @@ namespace Project_Codebase_Overview.Graphs
         {
             //Creator is only given for files
             var distributions = graphModel.LineDistribution;
-            var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
-
+            //var linesTotal = PCOState.GetInstance().GetSettingsState().IsDecayActive ? graphModel.LinesAfterDecay : graphModel.LinesTotal;
+            var linesTotal = graphModel.LineDistribution.Sum(x => x.Value.LineSum());
             var blockList = new List<GraphBlock>();
             double currentStartPos = 0;
             var distributionAmount = distributions.Count();
             uint lineCount = 0;
             var blockCount = 0;
 
-            foreach (var dist in distributions.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value))
+            if (graphModel.LinesModified == 0)
             {
-                var blockSize = ((double)dist.Value / (double)linesTotal) * 100;
+                GraphBlock block = new GraphBlock();
+                block.StartValue = 0;
+                block.EndValue = 100;
+                block.Color = PCOColorPicker.Black;
+                block.Name = "No lines";
+                block.ToolTip = "This is empty";
+                block.Percentage = 0;
+                block.IsActive = true;
+                blockList.Add(block);
+                return blockList;
+            }
+
+            foreach (var dist in distributions.OrderByDescending(x => x.Value.LineSum()).ToDictionary(x => x.Key, x => x.Value))
+            {
+                var blockSize = ((double)dist.Value.LineSum() / (double)linesTotal) * 100;
                 if (
                     blockCount < distributionAmount - 1 &&  //If there is only one block left, just show its color.
                     (currentStartPos > GRAPH_CUT_OFF_POINT || // if more blocks after the cut off point, make them one grey block
@@ -57,11 +72,11 @@ namespace Project_Codebase_Overview.Graphs
                     GraphBlock block = new GraphBlock();
                     block.StartValue = currentStartPos;
                     block.EndValue = 100;
-                    block.Color = Color.FromArgb(255, 150, 150, 150);
+                    block.Color = PCOColorPicker.Black;
                     block.Name = String.Format("{0} others", distributionAmount - blockCount);
                     block.Percentage = (1 - (double)lineCount / (double)linesTotal) * 100;
                     block.ToolTip = string.Format("{0} others: {1:N2}%", distributionAmount - blockCount, (1 - (double)lineCount / (double)linesTotal) * 100);
-
+                    block.IsActive = true;
                     currentStartPos = block.EndValue;
 
                     blockList.Add(block);
@@ -75,6 +90,12 @@ namespace Project_Codebase_Overview.Graphs
                     block.Color = dist.Key.Color;
                     block.Name = dist.Key.Name;
                     block.Percentage = blockSize;
+                    
+                    if(block.EndValue == double.NaN)
+                    {
+                        block.EndValue = 100;
+                        block.Percentage = 0;
+                    }
 
                     block.IsCreator = creator != null && dist.Key.ContainsEmail(creator.Email);
                     block.IsActive = dist.Key.IsActive;
@@ -104,7 +125,7 @@ namespace Project_Codebase_Overview.Graphs
 
                     currentStartPos = block.EndValue;
 
-                    lineCount += dist.Value;
+                    lineCount += dist.Value.LineSum();
 
                     blockList.Add(block);
                 }
@@ -217,9 +238,11 @@ namespace Project_Codebase_Overview.Graphs
             }
 
             //add data from current explorer 
+            Visibility vis = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Visibility.Collapsed : Visibility.Visible;
+            Color col = explorerItem.GetType() == typeof(PCOFile) && !PCOState.GetInstance().GetSettingsState().IsFilesVisibile ? Colors.White : explorerItem.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Black;
             dataLists[depth].Add(
-                        new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesTotal, 
-                        explorerItem.GraphModel.SuggestedOwner.Color, Visibility.Visible, explorerItem));
+                        new DoughnutDataUnit(explorerItem.Name, explorerItem.GraphModel.LinesModified, 
+                        col, vis, explorerItem));
 
             if (explorerItem.GetType() == typeof(PCOFile))
             {
@@ -227,7 +250,7 @@ namespace Project_Codebase_Overview.Graphs
                 //create whitespace outwards
                 for(int i = depth+1; i < maxDepth; i++)
                 {
-                    dataLists[i].Add( new DoughnutDataUnit("empty", explorerItem.GraphModel.LinesTotal, Colors.White, Visibility.Collapsed, null));
+                    dataLists[i].Add( new DoughnutDataUnit("empty", explorerItem.GraphModel.LinesModified, Colors.White, Visibility.Collapsed, null));
                 }
             }
             else

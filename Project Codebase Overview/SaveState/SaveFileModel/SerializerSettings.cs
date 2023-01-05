@@ -14,5 +14,6 @@ namespace Project_Codebase_Overview.SaveState.Model
         public int DecayDropOffInteval { get; set; }
         public int DecayPercentage { get; set; }
         public DecayTimeUnit DecayTimeUnit { get; set; }
+        public int CreatorMultiplier { get; set; }
     }
 }

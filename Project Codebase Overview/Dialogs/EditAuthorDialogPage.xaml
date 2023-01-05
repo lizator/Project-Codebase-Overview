@@ -10,9 +10,10 @@
     xmlns:editors="using:Syncfusion.UI.Xaml.Editors"
     mc:Ignorable="d">
 
-    <Grid RowDefinitions="auto, *, *, auto, auto">
-        <Grid Grid.Row="0" ColumnDefinitions="auto, *" >
-            <TextBlock Grid.Column="0" Text="Name:" Margin="4"/>
+    <Grid RowDefinitions="auto, auto, auto, *, *, auto">
+        <!--name-->
+        <Grid Grid.Row="0" ColumnDefinitions="auto, *" Margin="0,0,0,4">
+            <TextBlock Grid.Column="0" Text="Name:" Margin="0,4,4,4"/>
             <TextBox Grid.Column="1" x:Name="NameBox" HorizontalContentAlignment="Stretch">
                 <FlyoutBase.AttachedFlyout>
                     <Flyout>
@@ -21,29 +22,123 @@
                 </FlyoutBase.AttachedFlyout>
             </TextBox>
         </Grid>
-        <Grid Grid.Row="1" ColumnDefinitions="2*, 3*">
+        <!--vsc email-->
+        <Grid Grid.Row="1" ColumnDefinitions="auto, *, auto" >
+            <TextBlock Grid.Column="0" Text="VCS Email:" Margin="0,4,4,4"/>
+            <TextBox Grid.Column="1" x:Name="VCSEmailBox" HorizontalContentAlignment="Stretch">
+                <FlyoutBase.AttachedFlyout>
+                    <Flyout>
+                        <TextBlock Text="{x:Bind LocalObservables.EmailFlyoutMsg, Mode=OneWay}"  />
+                    </Flyout>
+                </FlyoutBase.AttachedFlyout>
+            </TextBox>
+            <Button Grid.Column="2" Padding="2" Margin="2">
+                <Button.Flyout>
+                    <Flyout>
+                        <Grid RowDefinitions="auto, auto, auto, auto">
+                            <TextBlock Grid.Row="0" Text="The VCS Email is used in CodeOwners to give users in"/>
+                            <TextBlock Grid.Row="1" Text="Github/Gitlab ownership" Margin="0,0,0,8"/>
+                            <TextBlock Grid.Row="2" Text="Make sure the author has the same Email as its "/>
+                            <TextBlock Grid.Row="3" Text="Github/Gitlab user"/>
+                        </Grid>
+                    </Flyout>
+                </Button.Flyout>
+                <SymbolIcon Symbol="Help"/>
+            </Button>
+        </Grid>
+        
+        <!--author color & Teams-->
+        <Grid Grid.Row="2" ColumnDefinitions="auto, auto, auto, *, auto">
+            <TextBlock Grid.Column="0" Text="Author color:" VerticalAlignment="Center"/>
+            <Button Grid.Column="1" Margin="4,4,0,0" HorizontalAlignment="Left" >
+                <Button.Flyout>
+                    <Flyout>
+                        <editors:SfColorPicker
+                            SelectedBrushChanged="SfColorPicker_SelectedBrushChanged"
+                            BrushTypeOptions = "SolidColorBrush"
+                            ColorSpectrumComponents = "SaturationValue"
+                            ColorSpectrumShape = "Box"
+                            AxisInputOption = "Simple"
+                            SelectedBrush = "{x:Bind LocalObservables.Brush, Mode=OneWay}"
+                            />
+                    </Flyout>
+                </Button.Flyout>
+                <Ellipse Height="30" Width="30" StrokeThickness="1"
+                    Stroke="Black"
+                    Fill="{x:Bind LocalObservables.Brush, Mode=OneWay}">
+                </Ellipse>
+            </Button>
+            <TextBlock Grid.Column="2" Text="Team(s):" Margin="12,0,4,0" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="3" Text="{x:Bind LocalObservables.SelectedTeamsString, Mode=OneWay}" 
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="4" ToolTipService.ToolTip="Edit teams">
+                <SymbolIcon Symbol="Edit"/>
+                <Button.Flyout>
+                    <Flyout>
+                        <StackPanel Width="400" Height="200" Orientation="Vertical" Spacing="10">
+                            <TextBlock FontSize="20" Text="Select teams" HorizontalAlignment="Center"/>
+                            <datagrid:SfDataGrid ItemsSource="{x:Bind Teams}" 
+                                             SelectionMode="Multiple" 
+                                             SelectionChanged="TeamSelectionChanged"
+                                             AutoGenerateColumns="False"
+                                             x:Name="TeamsDataGrid"
+                                                 ColumnWidthMode="AutoLastColumnFill">
+                                <datagrid:SfDataGrid.Columns>
+                                    <datagrid:GridCheckBoxSelectorColumn MappingName="x"/>
+                                    <datagrid:GridTextColumn MappingName="Name" HeaderText="Team"/>
+
+                                </datagrid:SfDataGrid.Columns>
+                            </datagrid:SfDataGrid>
+                        </StackPanel>
+                        
+                    </Flyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+        <!--Aliases & emails-->
+        <Grid Grid.Row="3" ColumnDefinitions="2*, 3*">
             <Grid Grid.Column="0" RowDefinitions="auto, *" Margin="0,6,6,6">
-                <TextBlock Grid.Row="0" Text="Aliases"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+                    <TextBlock  Text="Aliases"/>
+                    <TextBlock Text="( ? )"
+                            ToolTipService.ToolTip="All names used to make commits with any of this author's emails"/>
+                </StackPanel>
+                
                 <ListView Grid.Row="1"
                           Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                           ItemsSource="{x:Bind Aliases}"
                           Width="200"
                           Height="140"
+                          SelectionMode="None"
                           />
             </Grid>
             <Grid Grid.Column="1" RowDefinitions="auto, *" Margin="6,6,0,6">
-                <TextBlock Grid.Row="0" Text="Emails"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10">
+                    <TextBlock  Text="Emails"/>
+                    <TextBlock Text="( ? )"
+                            ToolTipService.ToolTip="The emails of this author and its subauthors. This author is considered the author of commits from these emails"
+                            />
+                </StackPanel>
+                
                 <ListView Grid.Row="1"
                           Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
                           ItemsSource="{x:Bind Emails}"
                           Width="300"
                           Height="140"
+                          SelectionMode="None"
                           />
             </Grid>
         </Grid>
-        <Grid Grid.Row="2" RowDefinitions="auto,*">
+        <!--SubAuthors-->
+        <Grid Grid.Row="4" RowDefinitions="auto,*">
             <Grid Grid.Row="0" ColumnDefinitions="*,*">
-                <TextBlock Grid.Column="0" Text="Sub-authors" VerticalAlignment="Bottom" Margin="0,0,0,2"/>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Bottom" Margin="0,0,0,2"> 
+                    <TextBlock  Text="Sub-authors" />
+                    <TextBlock Text="( ? )" 
+                               ToolTipService.ToolTip="Add sub-authors to let this author be considered the subauthors' commits' real author.
+                               Sub-authors are usually the the same person who committed from other emails."/>
+                </StackPanel>
                 <Button Grid.Column="1" HorizontalAlignment="Right" Margin="0,6,0,2" Padding="2">
                     <Button.Flyout>
                         <Flyout>
@@ -54,10 +149,11 @@
                                 AutoGenerateColumns="False"
                                 ColumnWidthMode="Star"
                                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                                ItemsSource="{x:Bind OtherAuthors}">
+                                ItemsSource="{x:Bind OtherAuthors}"
+                                SelectionMode="None">
                                 <datagrid:SfDataGrid.Columns>
-                                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name"/>
-                                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email"/>
+                                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                                     <datagrid:GridTemplateColumn HeaderText="Color" MappingName="Color" AllowSorting="False" Width="60">
                                         <datagrid:GridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -72,7 +168,8 @@
                                     <datagrid:GridTemplateColumn HeaderText="" MappingName="Color" AllowSorting="False" Width="30">
                                         <datagrid:GridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Button Padding="3" VerticalAlignment="Center" Click="AddClicked">
+                                                <Button Padding="3" VerticalAlignment="Center" Click="AddClicked"
+                                                        ToolTipService.ToolTip="Add sub-authors">
                                                     <SymbolIcon Symbol="Add"/>
                                                 </Button>
                                             </DataTemplate>
@@ -92,10 +189,11 @@
                 AutoGenerateColumns="False"
                 ColumnWidthMode="Star"
                 Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                ItemsSource="{x:Bind SubAuthors}">
+                ItemsSource="{x:Bind SubAuthors}"
+                SelectionMode="None">
                 <datagrid:SfDataGrid.Columns>
-                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name"/>
-                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" Width="250"/>
+                    <datagrid:GridTextColumn HeaderText="Name" MappingName="Name" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                    <datagrid:GridTextColumn HeaderText="Email" MappingName="Email" Width="250" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                     <datagrid:GridTemplateColumn HeaderText="Color" MappingName="Color" AllowSorting="False" Width="60">
                         <datagrid:GridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -119,53 +217,8 @@
                 </datagrid:SfDataGrid.Columns>
             </datagrid:SfDataGrid>
         </Grid>
-        <Grid Grid.Row="3" ColumnDefinitions="auto, auto, *">
-            <Button Grid.Column="0" Margin="0,4,0,0" HorizontalAlignment="Left">
-                <Button.Flyout>
-                    <Flyout>
-                        <editors:SfColorPicker
-                            SelectedBrushChanged="SfColorPicker_SelectedBrushChanged"
-                            BrushTypeOptions = "SolidColorBrush"
-                            ColorSpectrumComponents = "HueSaturation"
-                            ColorSpectrumShape = "Box"
-                            AxisInputOption = "Simple"
-                            SelectedBrush = "{x:Bind LocalObservables.Brush, Mode=OneWay}"
-                            />
-                    </Flyout>
-                </Button.Flyout>
-                <Ellipse Height="30" Width="30" StrokeThickness="1"
-                    Stroke="Black"
-                    Fill="{x:Bind LocalObservables.Brush, Mode=OneWay}">
-                </Ellipse>
-            </Button>
-            <TextBlock Grid.Column="1" Text="Team:" Margin="12,0,4,0" VerticalAlignment="Center"/>
-            <editors:SfComboBox x:Name="TeamComboBox" Grid.Column="2" ItemsSource="{x:Bind Teams}" 
-                                                        SelectionChanged="SfComboBox_SelectionChanged"
-                                                        SelectionMode="Single"
-                                                        HorizontalAlignment="Stretch"
-                                                        IsFilteringEnabled="True"
-                                                        VerticalAlignment="Center"
-                                                        TextMemberPath="Name"
-                                                        PlaceholderText="{x:Bind LocalObservables.TeamNameMsg}"
-                                                        SelectedItem="{x:Bind LocalObservables.SelectedTeam, Mode=TwoWay}"
-                                                        >
-                <editors:SfComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
-                            <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                                              Stroke="Black"
-                                                            Grid.Column="0" >
-                                <Ellipse.Fill>
-                                    <SolidColorBrush Color="{Binding Color}"></SolidColorBrush>
-                                </Ellipse.Fill>
-                            </Ellipse>
-                            <TextBlock Margin="5,0,0,0" TextTrimming="CharacterEllipsis" Text="{Binding Name}" Grid.Column="1"></TextBlock>
-                        </Grid>
-                    </DataTemplate>
-                </editors:SfComboBox.ItemTemplate>
-            </editors:SfComboBox>
-        </Grid>
-        <Grid Grid.Row="4" ColumnDefinitions="*, auto, auto">
+        <!--Active/inactive & save/close-->
+        <Grid Grid.Row="5" ColumnDefinitions="auto, *, auto, auto">
             <editors:SfSegmentedControl Grid.Column="0"
                                         SelectionAnimationType="Slide"
                                         SelectionChanged="ActivityChanged"
@@ -173,6 +226,7 @@
                                         HorizontalAlignment="Left"  
                                         x:Name="ActiveSlider"
                                         Margin="0,4,0,4"
+                                        ToolTipService.ToolTip="Active authors can be selected as owners for files and folders. Inactive users cannot."
                                         >
                 <editors:SfSegmentedControl.Resources>
                     <ResourceDictionary>
@@ -184,10 +238,10 @@
                     </ResourceDictionary>
                 </editors:SfSegmentedControl.Resources>
                 <x:String>Active</x:String>
-                <x:String>Deactive</x:String>
+                <x:String>Inactive</x:String>
             </editors:SfSegmentedControl>
-            <Button Grid.Column="1" Content="Cancel" Background="IndianRed" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
-            <Button Grid.Column="2" Content="Save" Background="ForestGreen" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="2" Content="Save" Background="ForestGreen" Foreground="White" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="3" Content="Cancel" Background="IndianRed" Foreground="White" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
         </Grid>
     </Grid>
 </Page>

@@ -21,3 +21,14 @@ Installation:
     Download and install it to run the desktop app. Download it from here:
     https://dotnet.microsoft.com/en-us/download/dotnet/6.0/runtime?cid=getdotnetcore 
 
+
+
+For developer:
+msix package is exported by 
+- right click on solution
+- select "Package and publish" -> "create app packages
+- select "sideloading" and next
+- "yes use certificate"
+- next -> next -> create
+
+

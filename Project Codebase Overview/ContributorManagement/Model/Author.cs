@@ -1,9 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,13 +21,15 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public Color Color { get => _color; set => SetProperty(ref _color, value); }
         private string _email;
         public string Email { get => _email; set => SetProperty(ref _email, value); }
+        private string _vCSEmail;
+        public string VCSEmail { get => _vCSEmail; set => SetProperty(ref _vCSEmail, value); }
         public ObservableCollection<string> Aliases { get; }
 
         private Author _overAuthor;
         public Author OverAuthor { get => _overAuthor; set => SetProperty(ref _overAuthor, value); }
         public ObservableCollection<Author> SubAuthors { get; set; }
-        private PCOTeam _team;
-        public PCOTeam Team { get => _team; set => SetProperty(ref _team, value); }
+        private ObservableCollection<PCOTeam> _teams;
+        public ObservableCollection<PCOTeam> Teams { get => _teams; set => SetProperty(ref _teams, value); }
         private int _subAuthorCount;
         public int SubAuthorCount { get => _subAuthorCount; set => SetProperty(ref _subAuthorCount, value); }
         private bool _isActive;
@@ -34,16 +38,26 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             SetProperty(ref _isActive, value);
             ActiveSymbol = _isActive ? Symbol.Accept : Symbol.Cancel;
-            Team?.UpdateIsActive();
+            foreach(var team in Teams)
+            {
+                team?.UpdateIsActive();
+            }
         }
 
         private Symbol _activeSymbol;
         public Symbol ActiveSymbol { get => _activeSymbol; set => SetProperty(ref _activeSymbol, value); }
 
+        private Visibility _editButtonVisibility;
+        public Visibility EditButtonVisibility { get => _editButtonVisibility; set => SetProperty(ref _editButtonVisibility, value); }
+        private string _teamsString;
+        public string TeamsString { get => _teamsString; set => SetProperty(ref _teamsString, value); }
+
         public Author(string email, string name)
         {
+            Teams = new ObservableCollection<PCOTeam>();
             this.Name = name;
             this.Email = email;
+            this.VCSEmail = email;
             this.Aliases = new ObservableCollection<string> { name };
             SubAuthors = new ObservableCollection<Author>();
             SubAuthorCount = 0;
@@ -57,6 +71,11 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             return Email.Equals(email) || SubAuthors.Where(sub => sub.Email.Equals(email)).Any();
         }
 
+        public bool FilterEmail(string emailSearch)
+        {
+            return Email.Contains(emailSearch)|| SubAuthors.Where(sub => sub.Email.Contains(emailSearch)).Any();
+        }
+
         public void AddAlias(string alias)
         {
             if (!Aliases.Contains(alias))
@@ -67,9 +86,13 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
 
         public void ConnectAuthor(Author otherAuthor)
         {
-            if(otherAuthor.Team != null)
+            if(otherAuthor.Teams.Count != 0)
             {
-                otherAuthor.DisconnectFromTeam();
+                var otherAuthorTeams = otherAuthor.Teams.ToList();
+                foreach(var team in otherAuthorTeams)
+                {
+                    otherAuthor.DisconnectFromTeam(team);
+                }
             }
             if (otherAuthor.OverAuthor != null)
             {
@@ -77,6 +100,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             }
 
             otherAuthor.OverAuthor = this;
+            otherAuthor.EditButtonVisibility = Visibility.Collapsed;
             this.SubAuthors.Add(otherAuthor);
             SubAuthorCount++;
 
@@ -96,6 +120,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             this.OverAuthor.SubAuthorCount--;
             this.OverAuthor.SubAuthors.Remove(this);
             this.OverAuthor = null;
+            this.EditButtonVisibility = Visibility.Visible;
         }
 
         public void EmptySubAuthors()
@@ -112,9 +137,20 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             team.ConnectMember(this);
         }
-        public void DisconnectFromTeam()
+        public void DisconnectFromTeam(PCOTeam team)
         {
-            Team.RemoveMember(this);
+            team.RemoveMember(this);
+            this.Teams.Remove(team);
+        }
+        public void UpdateTeamsString()
+        {
+            string ts = "";
+            foreach(var team in Teams)
+            {
+                ts += team.Name + ", ";
+            }
+            ts = ts.Substring(0, ts.Length - 2);
+            this.TeamsString = ts;
         }
     }
 }

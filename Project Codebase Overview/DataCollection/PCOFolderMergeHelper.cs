@@ -2,6 +2,7 @@
 using Project_Codebase_Overview.DataCollection.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -19,8 +20,6 @@ namespace Project_Codebase_Overview.DataCollection
                 return null;
             }
 
-            //Debug.WriteLine("Merge ran");
-
             return Merge(folderA, folderB);
         }
 
@@ -30,14 +29,14 @@ namespace Project_Codebase_Overview.DataCollection
             {
                 if (item is PCOFile)
                 {
-                    IOwner selectedOwner = null; 
+                    ObservableCollection<IOwner> selectedOwners = new ObservableCollection<IOwner>(); 
                     if (folderA.ContainsChild(item))
                     {
-                        selectedOwner = folderA.Children[item.Name].SelectedOwner;
+                        selectedOwners = folderA.Children[item.Name].SelectedOwners;
                         ((PCOFile)item).Creator = ((PCOFile)folderA.Children[item.Name]).Creator;
                         folderA.RemoveChild(item);
                     }
-                    item.SelectedOwner = selectedOwner;
+                    item.SelectedOwners = selectedOwners;
                     item.Parent = folderA;
                     folderA.AddChild(item);
                 } else

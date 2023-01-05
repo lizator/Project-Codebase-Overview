@@ -36,18 +36,18 @@ using Syncfusion.UI.Xaml.Editors;
 using Project_Codebase_Overview.ChangeHistoryFolder;
 using System.ComponentModel;
 using Syncfusion.UI.Xaml.Data;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using Windows.Devices.Printers.Extensions;
+using Project_Codebase_Overview.LocalSettings;
+using System.Threading;
 
 namespace Project_Codebase_Overview
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class ExplorerPage : Page
     {
         ExplorerViewModel ViewModel;
+
+        public delegate void NotifyInitialStart();
+        public event NotifyInitialStart NotifyInitialStartEvent;
 
 
         bool GraphViewActive = false;
@@ -57,7 +57,7 @@ namespace Project_Codebase_Overview
 
             ViewModel = (ExplorerViewModel)this.DataContext;
 
-            var root = PCOState.GetInstance().GetExplorerState().GetRoot();
+            var root = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder();
 
             ViewModel.SetExplorerItems(root);
             ViewModel.SelectedGraphItem = root;
@@ -68,6 +68,7 @@ namespace Project_Codebase_Overview
             this.UpdateUndoRedoButtons();
 
             ViewModel.navButtonValues.PropertyChanged += NavButtonPropertyChanged;
+            NavButtonPropertyChanged(null, null);
 
             if (!PCOState.GetInstance().GetSettingsState().IsDecayActive)
             {
@@ -77,6 +78,58 @@ namespace Project_Codebase_Overview
             ViewModel.UpdateBreadcrumbBar();
 
             rootTreeGrid.SortColumnsChanged += RootTreeGrid_SortColumnsChanged;
+
+            if (PCOState.GetInstance().GetExplorerState().GraphViewActive)
+            {
+                GraphExplorerSwitch(null, null);
+            }
+
+            ViewModel.NotifyGraphUpdateEvent += UpdateGraphViewIfActive;
+
+            PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += NotifyExplorerUpdate;
+
+            NotifyInitialStartEvent += NotifyInitialStartFunc;
+
+            if (!LocalSettingsHelper.GetIsInitialTutorialShown())
+            {
+                var queue = Microsoft.UI.Dispatching.DispatcherQueue.GetForCurrentThread();
+                Task.Factory.StartNew(() =>
+                {
+                    Thread.Sleep(1000);//wait for xaml root to avoid crash
+                    queue.TryEnqueue(() =>
+                    {
+                        NotifyInitialStartEvent?.Invoke();
+                    });
+                });
+            }
+        }
+
+        private async void NotifyInitialStartFunc()
+        {
+            var result = await DialogHandler.ShowYesNoDialog(XamlRoot, "Welcome to PCO!", "Would you like to view the tutorial?");
+            if (result)
+            {
+                await DialogHandler.ShowHelpDialog(XamlRoot);
+            }
+            LocalSettingsHelper.SetIsInitialTutorialShown();
+        }
+
+        private async void NotifyExplorerUpdate()
+        {
+            if (!LocalSettingsHelper.GetIsExplorerUpdateExplained())
+            {
+                LocalSettingsHelper.SetIsExplorerUpdateExplained();
+                await DialogHandler.ShowOkDialog("Explorer updater", "You just updated an explorer item!\n\nTo view the changes this has caused, click the \"Update explorer\"-button in the settings-panel", XamlRoot);
+            }
+        }
+
+        public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
+        private ObservableCollection<IOwner> GetOwnerListSorted()
+        {
+            //create "Unselected" entry
+            var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwnersInMode().OrderBy(x => x.Name).ToList();
+            ownerlist.Add(new Author("None", "None"));
+            return ownerlist.ToObservableCollection();
         }
 
         private void RootTreeGrid_SortColumnsChanged(object sender, Syncfusion.UI.Xaml.Grids.GridSortColumnsChangedEventArgs e)
@@ -87,44 +140,38 @@ namespace Project_Codebase_Overview
 
         private void NavButtonPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName.Equals("NavigateUpAvailable"))
+            var navOptions = ViewModel.navButtonValues;
+            if (navOptions.NavigateUpAvailable)
             {
-                if (((NavigationButtonValues)sender).NavigateUpAvailable)
-                {
-                    UpButton.IsEnabled = true;
-                    UpImage.Opacity = 1;
-                }
-                else
-                {
-                    UpButton.IsEnabled = false;
-                    UpImage.Opacity = 0.3;
-                }
+                UpButton.IsEnabled = true;
+                UpImage.Opacity = 1;
             }
-            if (e.PropertyName.Equals("NavigateBackAvailable"))
+            else
             {
-                if (((NavigationButtonValues)sender).NavigateBackAvailable)
-                {
-                    BackButton.IsEnabled = true;
-                    BackImage.Opacity = 1;
-                }
-                else
-                {
-                    BackButton.IsEnabled = false;
-                    BackImage.Opacity = 0.3;
-                }
+                UpButton.IsEnabled = false;
+                UpImage.Opacity = 0.3;
             }
-            if (e.PropertyName.Equals("NavigateForwardAvailable"))
+            
+            if (navOptions.NavigateBackAvailable)
             {
-                if (((NavigationButtonValues)sender).NavigateForwardAvailable)
-                {
-                    ForwardButton.IsEnabled = true;
-                    ForwardImage.Opacity = 1;
-                }
-                else
-                {
-                    ForwardButton.IsEnabled = false;
-                    ForwardImage.Opacity = 0.3;
-                }
+                BackButton.IsEnabled = true;
+                BackImage.Opacity = 1;
+            }
+            else
+            {
+                BackButton.IsEnabled = false;
+                BackImage.Opacity = 0.3;
+            }
+
+            if (navOptions.NavigateForwardAvailable)
+            {
+                ForwardButton.IsEnabled = true;
+                ForwardImage.Opacity = 1;
+            }
+            else
+            {
+                ForwardButton.IsEnabled = false;
+                ForwardImage.Opacity = 0.3;
             }
         }
 
@@ -174,10 +221,16 @@ namespace Project_Codebase_Overview
                 MenuFlyoutItem setRootItem = new MenuFlyoutItem() { Text = "Navigate to folder" };
                 setRootItem.Click += this.SetRoot;
                 menuFlyout.Items.Add(setRootItem);
+
+                MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open in File explorer" };
+                openFolderItem.Click += this.OpenFileExplorer;
+                menuFlyout.Items.Add(openFolderItem);
             }
             else
             {
-                //any right click functions for FILES
+                MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open location in File explorer" };
+                openFolderItem.Click += this.OpenFileExplorer;
+                menuFlyout.Items.Add(openFolderItem);
             }
             rootTreeGrid.ContextFlyout = menuFlyout;
         }
@@ -232,6 +285,52 @@ namespace Project_Codebase_Overview
 
         }
 
+        private async void OpenFileExplorer(object sender, RoutedEventArgs e)
+        {
+            ExplorerItem selectedItem;
+            if (GraphViewActive)
+            {
+                selectedItem = ((ExplorerViewModel)((MenuFlyoutItem)sender).DataContext).SelectedGraphItem as ExplorerItem;
+            } else
+            {
+                selectedItem = rootTreeGrid.SelectedItem as ExplorerItem;
+            }
+
+            PCOFolder foundFolder;
+            if (selectedItem.GetType() == typeof(PCOFolder))
+            {
+                foundFolder = (PCOFolder)selectedItem;
+            } else
+            {
+                foundFolder = selectedItem.Parent as PCOFolder;
+            }
+            var path = PCOState.GetInstance().GetExplorerState().GetRootPath() + "\\" + foundFolder.GetRelativePath();
+            try
+            {
+                if (Directory.Exists(path))
+                {
+                    var startInfo = new ProcessStartInfo
+                    {
+                        Arguments = path,
+                        FileName = "explorer.exe"
+                    };
+
+                    Process.Start(startInfo);
+
+                }
+                else
+                {
+                    await DialogHandler.ShowErrorDialog("Could not find the path \"" + path + "\"", XamlRoot);
+                }
+            }
+            catch
+            {
+                await DialogHandler.ShowErrorDialog("Could not access \"" + path + "\"", XamlRoot);
+            }
+            
+
+        }
+
         private void UpdateGraphViewIfActive()
         {
             if (this.GraphViewActive)
@@ -246,6 +345,7 @@ namespace Project_Codebase_Overview
             folderPicker.SuggestedStartLocation = PickerLocationId.ComputerFolder;
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle( (Application.Current as App)?.window as MainWindow);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix crashing of packaged app
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var selectedFolder = await folderPicker.PickSingleFolderAsync();
@@ -270,35 +370,6 @@ namespace Project_Codebase_Overview
             }
         }
 
-        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
-        {
-            var item = ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).DataContext as ExplorerItem;
-            var previousOwner = item.SelectedOwner;
-            if (e.AddedItems?.Count == 0 || e.AddedItems[0].GetType() == typeof(string) || ((IOwner)e.AddedItems[0]).Name.Equals("Unselected"))
-            {
-                ((Syncfusion.UI.Xaml.Editors.SfComboBox)sender).SelectedItem = null;
-                if(previousOwner != null && !previousOwner.Name.Equals("Unselected"))
-                {
-                    item.SelectedOwner = null;
-                    item.SelectedOwnerColor = null;
-                    item.SelectedOwnerName = null;
-                    PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, null, item, (SfComboBox) sender));
-                }
-                
-                return;
-            }
-            Debug.WriteLine("Changed selected owner");
-            var newOwner = (IOwner)e.AddedItems[0];
-            if (!newOwner.Equals(previousOwner))
-            {
-                item.SelectedOwner = newOwner;
-                item.SelectedOwnerColor = null;// TODO: maybe less hacky fix
-                item.SelectedOwnerName = null;
-                PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(previousOwner, newOwner, item, (SfComboBox)sender));
-            }
-            
-        }
-
         private void GraphExplorerSwitch(object sender, RoutedEventArgs e)
         {
             Debug.WriteLine("clicked graph button");
@@ -309,6 +380,12 @@ namespace Project_Codebase_Overview
                 GraphViewActive = false;
                 GraphView.Visibility = Visibility.Collapsed;
                 rootTreeGrid.Visibility = Visibility.Visible;
+                if (PCOState.GetInstance().GetExplorerState().GraphViewHasChanges)
+                {
+                    PCOState.GetInstance().GetExplorerState().GraphViewActive = GraphViewActive;
+                    PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
+                    PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+                }
 
             }
             else
@@ -321,6 +398,8 @@ namespace Project_Codebase_Overview
                 //GraphHolder.Content = GraphHelper.GetCurrentTreeGraph();
                 GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, (PointerEventHandler)SunburstOnClickAsync);
             }
+            PCOState.GetInstance().GetExplorerState().GraphViewActive = GraphViewActive;
+            PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = false;
 
         }
         private void SunburstOnClickAsync(object sender, PointerRoutedEventArgs e)
@@ -331,7 +410,7 @@ namespace Project_Codebase_Overview
                 var tag = source.Tag as ChartSegment;
                 var clickedItem = (dynamic)tag.Item;
 
-                if (clickedItem.ExplorerItem == null) return;
+                if (clickedItem.ExplorerItem == null || (!PCOState.GetInstance().GetSettingsState().IsFilesVisibile && clickedItem.ExplorerItem.GetType() == typeof(PCOFile))) return;
                 
                 ViewModel.SelectedGraphItem = clickedItem.ExplorerItem;
 
@@ -340,22 +419,36 @@ namespace Project_Codebase_Overview
                     var dc = ((FrameworkElement)e.OriginalSource).DataContext as ExplorerViewModel;
 
                     MenuFlyout flyout = new MenuFlyout();
-                    MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
-                    flyoutItem.Text = "Navigate to: " + clickedItem.Name;
-                    flyoutItem.Click += async delegate (object sender, RoutedEventArgs e)
+                    if (dc.SelectedGraphItem.GetType() == typeof(PCOFolder))
                     {
-                        if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
+                        MenuFlyoutItem flyoutItem = new MenuFlyoutItem();
+                        flyoutItem.Text = "Navigate to: " + clickedItem.Name;
+                        flyoutItem.Click += async delegate (object sender, RoutedEventArgs e)
                         {
-                            ViewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
-                            GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
-                        }
-                        else
-                        {
-                            await DialogHandler.ShowErrorDialog("Navigation not possible. Selected item is a file", this.XamlRoot);
-                        }
-                    };
+                            if (clickedItem.ExplorerItem.GetType() == typeof(PCOFolder))
+                            {
+                                ViewModel.NavigateNewRoot((PCOFolder)clickedItem.ExplorerItem);
+                                GraphHolder.Content = GraphHelper.GetCurrentSunburst(ExplorerPageName.Resources["SunburstTooltipTemplate"] as DataTemplate, SunburstOnClickAsync);
+                            }
+                            else
+                            {
+                                await DialogHandler.ShowErrorDialog("Navigation not possible. Selected item is a file", this.XamlRoot);
+                            }
+                        };
 
-                    flyout.Items.Add(flyoutItem);
+                        flyout.Items.Add(flyoutItem);
+
+                        MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open in File explorer" };
+                        openFolderItem.Click += this.OpenFileExplorer;
+                        flyout.Items.Add(openFolderItem);
+                    } 
+                    else
+                    {
+
+                        MenuFlyoutItem openFolderItem = new MenuFlyoutItem() { Text = "Open location in File explorer" };
+                        openFolderItem.Click += this.OpenFileExplorer;
+                        flyout.Items.Add(openFolderItem);
+                    }
 
                     Microsoft.UI.Input.PointerPoint pointerPoint = e.GetCurrentPoint((UIElement)sender);
                     Point ptElement = new Point(pointerPoint.Position.X, pointerPoint.Position.Y);
@@ -377,6 +470,20 @@ namespace Project_Codebase_Overview
 
         private void Image_ImageFailed(object sender, ExceptionRoutedEventArgs e)
         {
+
+        }
+
+        private void SfComboBox_Loaded(object sender, RoutedEventArgs e)
+        {
+            return;
+            var comboBox = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
+            var item = comboBox.DataContext as ExplorerItem;
+
+            comboBox.SelectedItems.Clear();
+            foreach (var owner in item.SelectedOwners.Select(x => x).ToArray())
+            {
+                comboBox.SelectedItems.Add(owner);
+            }
 
         }
     }
@@ -433,6 +540,23 @@ namespace Project_Codebase_Overview
         {
             get { return _SortDirection; }
             set { _SortDirection = value; }
+        }
+    }
+    public class CustomCellTemplateSelector : DataTemplateSelector
+    {
+        protected override DataTemplate SelectTemplateCore(object item, DependencyObject container)
+        {
+
+            if (item == null)
+                return null;
+
+            var data = item as ExplorerItem;
+
+            if (data.GetType() == typeof(PCOFile))
+                return App.Current.Resources["NameTemplateFile"] as DataTemplate;
+
+            else
+                return App.Current.Resources["NameTemplateFolder"] as DataTemplate;
         }
     }
 }

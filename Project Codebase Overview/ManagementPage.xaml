@@ -46,35 +46,38 @@
         </Grid>
         <Pivot Grid.Row="1">
             <Pivot.RightHeader>
-                <CommandBar ClosedDisplayMode="Compact">
-                    <AppBarButton Icon="Add" Label="Add team" Click="AddTeamClick"/>
-                    <AppBarButton Icon="Globe"  Label="Import"/>
-                </CommandBar>
+                <StackPanel Orientation="Horizontal" >
+                    <AppBarButton Icon="Add" Click="AddTeamClick" Label="Create team"/>
+                    <AppBarButton Icon="Shuffle" Label="Shuffle colors" Click="ShuffleColorsClick"/>
+                </StackPanel>
+                <!--<AppBarButton Icon="Globe"  Label="Import"/>-->
             </Pivot.RightHeader>
             
-            <!--User Management page-->
-            <PivotItem Header="User management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
-                <treeGrid:SfTreeGrid x:Name="UserTreeGrid"
+            <!--Author Management page-->
+            <PivotItem Header="Author management" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <treeGrid:SfTreeGrid x:Name="AuthorTreeGrid"
                                 ChildPropertyName="SubAuthors"
-                                ItemsSource="{x:Bind Users}"
-                                ShowRowHeader="True"
+                                ItemsSource="{x:Bind Authors}"
+                                ShowRowHeader="False"
                                 ColumnWidthMode="Star"
                                 AutoGenerateColumnsMode="None"
                                 AllowResizingColumns="False"
                                 GridLinesVisibility="Horizontal"
                                 SelectionMode="Single"
-                                RowHeaderWidth="0"
                                 NavigationMode="Row"
-                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White">
+                                Margin="0,0,0,15" HorizontalAlignment="Stretch" Background="White"
+                                     
+                                     CellDoubleTapped="TreeGridDoubleTap"
+                                >
 
                     <treeGrid:SfTreeGrid.Columns>
                         <treeGrid:TreeGridColumns>
                             <!-- Name -->
-                            <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name"/>
+                            <treeGrid:TreeGridTextColumn x:Name="NameColoumn"  TextTrimming="CharacterEllipsis" MappingName="Name" HeaderText="Name" ShowToolTip="True" />
                             <!-- Email -->
-                            <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350"/>
-                            <!-- User Color -->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" Width="100" AllowFiltering="False" AllowSorting="False">
+                            <treeGrid:TreeGridTextColumn MappingName="Email" HeaderText="Email" ColumnWidthMode="SizeToCells" Width="350" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
+                            <!-- Author Color -->
+                            <treeGrid:TreeGridTemplateColumn HeaderText="Color" ColumnWidthMode="SizeToHeader" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Ellipse Height="20" Width="20" StrokeThickness="1"  Stroke="Black">
@@ -86,26 +89,22 @@
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>
                             </treeGrid:TreeGridTemplateColumn>
                             <!--Sub author count-->
-                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" Width="120"/>
-                            <!-- Team -->
-                            <treeGrid:TreeGridTemplateColumn HeaderText="Team" MappingName="Team" Width="225" AllowFiltering="False" AllowSorting="False">
-                                <treeGrid:TreeGridTemplateColumn.CellTemplate>
+                            <treeGrid:TreeGridTextColumn MappingName="SubAuthorCount" HeaderText="Subauthors" ColumnWidthMode="SizeToHeader" ShowHeaderToolTip="True">
+                                <treeGrid:TreeGridTextColumn.HeaderToolTipTemplate>
                                     <DataTemplate>
-                                        <Grid ColumnDefinitions="auto, *" VerticalAlignment="Center">
-                                            <Ellipse Height="20" Width="20" StrokeThickness="1"
-                                              Stroke="Black"
-                                            Grid.Column="0">
-                                                <Ellipse.Fill>
-                                                    <SolidColorBrush Color="{Binding Team.Color}"/>
-                                                </Ellipse.Fill>
-                                            </Ellipse>
-                                            <TextBlock Margin="2 0 0 0" TextTrimming="CharacterEllipsis" Text="{Binding Team.Name}" Grid.Column="1"></TextBlock>
-                                        </Grid>
+                                        <TextBlock TextWrapping="WrapWholeWords" Text="Number of subauthors. Subauthors can be added to a user in the edit user dialog."/>
                                     </DataTemplate>
-                                </treeGrid:TreeGridTemplateColumn.CellTemplate>
-                            </treeGrid:TreeGridTemplateColumn>
+                                </treeGrid:TreeGridTextColumn.HeaderToolTipTemplate>
+                            </treeGrid:TreeGridTextColumn>
+                            <!-- Team -->
+                            <treeGrid:TreeGridTextColumn MappingName="TeamsString" HeaderText="Team(s)" Width="225" ShowToolTip="True" TextTrimming="CharacterEllipsis"/>
                             <!--Active Column-->
-                            <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader">
+                            <treeGrid:TreeGridTemplateColumn MappingName="SubAuthorCount" HeaderText="Active" ColumnWidthMode="SizeToHeader" ShowHeaderToolTip="True">
+                                <treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
+                                    <DataTemplate>
+                                        <TextBlock TextWrapping="WrapWholeWords" Text="Active authors can be selected as owners for files and folders. Inactive users cannot."/>
+                                    </DataTemplate>
+                                </treeGrid:TreeGridTemplateColumn.HeaderToolTipTemplate>
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <SymbolIcon Symbol="{Binding ActiveSymbol}"/>
@@ -116,8 +115,9 @@
                             <treeGrid:TreeGridTemplateColumn HeaderText="" Width="50" AllowFiltering="False" AllowSorting="False">
                                 <treeGrid:TreeGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button  Background="Transparent" BorderThickness="0" Click="EditUserClick">
-                                            <Image Source="Assets/Expand.png"></Image>
+                                        <Button  Background="Transparent" BorderThickness="0" Click="EditAuthorClick" Visibility="{Binding EditButtonVisibility}"
+                                                 ToolTipService.ToolTip="Edit author">
+                                            <SymbolIcon Symbol="Edit"/>
                                         </Button>
                                     </DataTemplate>
                                 </treeGrid:TreeGridTemplateColumn.CellTemplate>

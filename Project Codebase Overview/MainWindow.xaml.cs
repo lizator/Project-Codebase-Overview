@@ -64,6 +64,11 @@ namespace Project_Codebase_Overview
         {
             this.NavigationFrame.Navigate(typeof(ManagementPage));
         }
+        public async void NavigateToLoadingSavePage(LoadingSavePageParameters parameters)
+        {
+            this.NavigationFrame.Navigate(typeof(LoadingSavePage), parameters);
+
+        }
 
         private void NavigationFrame_KeyUp(object sender, KeyRoutedEventArgs e)
         {

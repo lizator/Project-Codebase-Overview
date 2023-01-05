@@ -24,7 +24,10 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         public string MoreString { get => _moreString; set => SetProperty(ref _moreString, value); }
         private Visibility _moreVisibility = Visibility.Collapsed;
         public Visibility MoreVisibility { get => _moreVisibility; set => SetProperty(ref _moreVisibility, value); }
-        
+
+        private string _vCSID = "";
+        public string VCSID { get => _vCSID; set => SetProperty(ref _vCSID, value); }
+
         public ObservableCollection<Author> Members { get; set; }
 
         private bool _isActive = true;
@@ -56,13 +59,17 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
                 throw new Exception("Cannot add subauthor to a Team");
             }
 
-            if (member.Team != null)
+            if (!member.Teams.Contains(this))
             {
-                member.Team.RemoveMember(member);
+                member.Teams.Add(this);
+                member.UpdateTeamsString();
             }
-            member.Team = this;
-            this.Members.Add(member);
 
+            if (!this.Members.Contains(member))
+            {
+                this.Members.Add(member);
+            }
+            
             UpdateMemberString();
             UpdateIsActive();
 
@@ -73,7 +80,7 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
             while (Members.Count > 0)
             {
                 var member = Members.First();
-                member.DisconnectFromTeam();
+                member.DisconnectFromTeam(this);
             }
             UpdateIsActive();
         }
@@ -82,7 +89,6 @@ namespace Project_Codebase_Overview.ContributorManagement.Model
         {
             if (this.Members.Contains(member))
             {
-                member.Team = null;
                 this.Members.Remove(member);
                 UpdateMemberString();
                 UpdateIsActive();

@@ -13,19 +13,6 @@ namespace Project_Codebase_Overview.ContributorManagement
 {
     public class PCOColorPicker
     {
-        public static List<Color> HardcodedColors = new List<Color>
-        {
-            Color.FromArgb(255,255,0,0), //red
-            Color.FromArgb(255,0,230,0), //green
-            Color.FromArgb(255,0,0,230), //blue
-            Color.FromArgb(255,255,255,0), //yellow
-            Color.FromArgb(255,0,255,255), //cyan
-            Color.FromArgb(255,255,0,255), //magenta
-            Color.FromArgb(255,255,128,0), //orange
-            Color.FromArgb(255,153,0,153), //purple
-            Color.FromArgb(255,102,178,255) //lightblue
-        };
-
         private int AuthorCounter = 0;
         private int TeamCounter = 0;
 
@@ -51,43 +38,43 @@ namespace Project_Codebase_Overview.ContributorManagement
 
         private PCOColorPicker()
         {
-            GenerateColorPalette(20);
+            GenerateColorPalette();
+            Random rand = new Random();
+            ColorPalette = ColorPalette.OrderBy(x => rand.Next()).ToList();
         }
 
         public Color AssignAuthorColor()
         {
-            if (AuthorCounter >= HardcodedColors.Count)
+            if (AuthorCounter >= ColorPalette.Count)
             {
-                return Color.FromArgb(255, 0, 0, 0); //Return black as default
+                AuthorCounter = 0; //Return black as default
             }
-            var col = HardcodedColors[AuthorCounter];
+            var col = ColorPalette[AuthorCounter];
             AuthorCounter++;
             return col;
         }
 
         public Color AssignTeamColor()
         {
-            if (TeamCounter >= HardcodedColors.Count)
+            if (TeamCounter >= ColorPalette.Count)
             {
-                return Color.FromArgb(255, 0, 0, 0); //Return black as default
+                TeamCounter = 0;
             }
-            var col = HardcodedColors[TeamCounter];
+            var col = ColorPalette[TeamCounter];
             TeamCounter++;
             return col;
         }
 
-        private void GenerateColorPalette(int n)
+
+
+        private void GenerateColorPalette()
         {
+            //get colors from https://mokole.com/palette.html
+
             List<Color> colors = new List<Color>();
             List<string> palette;
-            if(n <= 20)
-            {
-                palette = Pallette20;
-            }
-            else
-            {
-                palette = Pallette50;
-            }
+            palette = Pallette50;
+            
             foreach(var paletteColor in palette)
             {
                 var temp = ColorTranslator.FromHtml(paletteColor);
@@ -96,29 +83,6 @@ namespace Project_Codebase_Overview.ContributorManagement
             ColorPalette = colors;
         }
 
-        private List<string> Pallette20 = new List<string>
-        {
-            "#2f4f4f",
-            "#2e8b57",
-            "#800000",
-            "#808000",
-            "#000080",
-            "#ff0000",
-            "#ff8c00",
-            "#ffff00",
-            "#00ff00",
-            "#ba55d3",
-            "#00ffff",
-            "#0000ff",
-            "#ff00ff",
-            "#1e90ff",
-            "#fa8072",
-            "#dda0dd",
-            "#ff1493",
-            "#98fb98",
-            "#87cefa",
-            "#ffdead"
-        };
         private List<string> Pallette50 = new List<string>
         {
             "#808080",

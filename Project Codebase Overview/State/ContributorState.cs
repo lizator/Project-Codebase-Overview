@@ -98,9 +98,9 @@ namespace Project_Codebase_Overview.ContributorManagement
         {
             return Teams.Values.ToList();
         }
-        public List<IOwner> GetAllOwners()
+        public List<IOwner> GetAllOwnersInMode()
         {
-            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.AUTHOR)
             {
                 return GetAllAuthors().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }
@@ -109,6 +109,16 @@ namespace Project_Codebase_Overview.ContributorManagement
                 //Mode.TEAMS
                 return GetAllTeams().Where(x => x.IsActive).Select(x => (IOwner)x).ToList();
             }
+        }
+
+        public List<IOwner> GetAllOwners()
+        {
+            List<IOwner> owners = new List<IOwner>();
+            owners.AddRange(GetAllAuthors());
+            owners.AddRange(GetAllTeams());
+            //owners.AddRange(GetAllTeams().Where(x => x.IsActive));
+
+            return owners;
         }
 
         public void SetSelectedTeam(PCOTeam team)
@@ -144,6 +154,24 @@ namespace Project_Codebase_Overview.ContributorManagement
         public bool CheckTeamNameAvailable(string name)
         {
             if (Teams.Keys.Where(key => key.ToLower().Equals(name.ToLower())).Any())
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        public bool CheckTeamVCSIDAvailable(string ID)
+        {
+            if (Teams.Values.Where(val => val.VCSID?.ToLower()?.Equals(ID.ToLower()) ?? false).Any())
+            {
+                return false;
+            }
+            return true;
+        }
+        
+        public bool CheckTeamVCSEmailAvailable(string email)
+        {
+            if (Authors.Values.Where(val => val.VCSEmail.ToLower().Equals(email.ToLower())).Any())
             {
                 return false;
             }
@@ -202,6 +230,28 @@ namespace Project_Codebase_Overview.ContributorManagement
             var tmpTeam = Teams[origName];
             Teams.Remove(origName);
             Teams.Add(newName, tmpTeam);
+        }
+
+        public void ReColorAuthors()
+        {
+            Random rand = new Random();
+            List<Author> scrambled = GetAllAuthors().OrderBy(x => rand.Next()).ToList();
+            
+            foreach(Author author in scrambled)
+            {
+                author.Color = PCOColorPicker.GetInstance().AssignAuthorColor();
+            }
+        }
+
+        public void ReColorTeams()
+        {
+            Random rand = new Random();
+            List<PCOTeam> scrambled = GetAllTeams().OrderBy(x => rand.Next()).ToList();
+            
+            foreach (PCOTeam team in scrambled)
+            {
+                team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
+            }
         }
     }
 }

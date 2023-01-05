@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI;
+using static Project_Codebase_Overview.DataCollection.Model.GraphModel;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
@@ -40,17 +41,8 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
             foreach (var groupedComm in groupedCommits)
             {
-                IOwner  owner;
-                if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.USER)
-                {
-                    owner = groupedComm.First().GetAuthor(); 
-                }
-                else
-                {
-                    //Mode.TEAMS
-                    owner = groupedComm.First().GetAuthor().Team ?? PCOState.GetInstance().GetContributorState().GetNoTeam();
-                }
-                this.GraphModel.LineDistribution.TryAdd(owner, 0);
+                
+                var author = groupedComm.First().GetAuthor();
 
                 foreach (var commit in groupedComm)
                 {
@@ -58,17 +50,65 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     {
                         continue;
                     }
-                    var linesAfterDecay = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
-                    this.GraphModel.LinesAfterDecay += linesAfterDecay;
+                    var linesModified = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
+                    
+                    if (this.Creator.Equals(author))
+                    {
+                        linesModified = (uint) Math.Ceiling((double) (((double)settingsState.CreatorBonusPercent / 100) + 1) * linesModified);
+                    }
+
+                    this.GraphModel.LinesModified += linesModified;
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
-                    this.GraphModel.LineDistribution[owner] += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesAfterDecay : (uint)commit.GetLines();
+
+                    this.GraphModel.LineDistribution.TryAdd(author, new LineDistUnit(0, 0));
+
+                    this.GraphModel.LineDistribution[author].SuggestedLines += linesModified;
+                    //this.GraphModel.LineDistribution[author].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesModified : (uint)commit.GetLines();
                 }
             }
+
+            if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.TEAMS)
+            {
+                //Mode.TEAMS so convert to teams
+                var teamDist = new Dictionary<IOwner, LineDistUnit>();
+
+                foreach(var dist in this.GraphModel.LineDistribution)
+                {
+                    var teams = new List<IOwner>();
+                    if (((Author)dist.Key).Teams.Count != 0)
+                    {
+                        foreach (var team in ((Author)dist.Key).Teams)
+                        {
+                            teams.Add(team);
+                        }
+                    }
+                    else
+                    {
+                        //not in team
+                        teams.Add(PCOState.GetInstance().GetContributorState().GetNoTeam());
+                    }
+
+                    uint lines = (uint) Math.Ceiling((double) dist.Value.SuggestedLines / teams.Count());
+                    //add lines
+                    foreach (var team in teams)
+                    {
+                        
+                        if(!teamDist.TryAdd(team, new GraphModel.LineDistUnit(lines, 0))){
+                            teamDist[team].SuggestedLines += lines;
+                        }
+                    }
+                }
+                this.GraphModel.LineDistribution = teamDist; 
+            }
+
+
             if (this.GraphModel.LinesTotal > 0)
             {
                 this.GraphModel.UpdateSuggestedOwner();
-                this.GenerateBarGraph();
+                //this.GenerateBarGraph();
             }
+
+            this.UpdateSelectedOwners();
         }
 
         public override int CompareTo(object obj)
@@ -80,5 +120,9 @@ namespace Project_Codebase_Overview.DataCollection.Model
             return string.Compare(this.Name, ((PCOFile)obj).Name, StringComparison.InvariantCulture);
         }
 
+        public override string ToCodeowners()
+        {
+            return this.GetCodeownerLines();
+        }
     }
 }

@@ -16,6 +16,8 @@ namespace Project_Codebase_Overview.SaveState.Model
 
         public string RepositoryRootPath { get; set; }
         public string LatestCommitSHA { get; set; }
+        
+        public string BranchName { get; set; }
         public SerializerState()
         {
 

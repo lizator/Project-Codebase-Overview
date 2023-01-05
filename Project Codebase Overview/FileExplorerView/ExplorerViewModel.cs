@@ -23,6 +23,9 @@ namespace Project_Codebase_Overview.FileExplorerView
 {
     public class ExplorerViewModel : ObservableObject
     {
+
+        public delegate void NotifyGraphUpdate();
+        public event NotifyGraphUpdate NotifyGraphUpdateEvent;
         private PCOFolder viewRootFolder;
         public ExplorerItem SelectedGraphItem{
             get => _selectedGraphItem;
@@ -69,6 +72,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             }
             this.viewRootFolder = root;
             this.CurrentRootPath = PCOState.GetInstance().GetExplorerState().GetCurrentRootPath();
+            CheckNavigationOptions();
         }
 
         public void NavigateNewRoot(PCOFolder newFolder)
@@ -77,6 +81,8 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(newFolder);
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            NotifyGraphUpdateEvent?.Invoke();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateBack()
@@ -84,6 +90,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetBackHistoryFolder());
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateForward()
@@ -91,6 +98,7 @@ namespace Project_Codebase_Overview.FileExplorerView
             SetExplorerItems(PCOState.GetInstance().GetExplorerState().GetForwardHistoryFolder());
             CheckNavigationOptions();
             UpdateBreadcrumbBar();
+            PCOState.GetInstance().GetExplorerState().InvokeNavigateEvent();
         }
 
         public void NavigateUp()

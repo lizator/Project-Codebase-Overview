@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Environment;
 
 namespace Project_Codebase_Overview.SaveState
 {
@@ -18,6 +19,7 @@ namespace Project_Codebase_Overview.SaveState
     {
         public static SerializerState GetSerializableStateFromPCOState(PCOState pCOState)
         {
+            // MAIN METHOD FOR CONVERTING PCOSTATE TO SERIALIZERSTATE
             SerializerState serialState = new SerializerState();
 
             serialState.RootFolder = GetSerializerRoot(pCOState.GetExplorerState().GetRoot());
@@ -26,6 +28,7 @@ namespace Project_Codebase_Overview.SaveState
             serialState.Settings = GetSerializerSettings(pCOState.GetSettingsState());
             serialState.RepositoryRootPath = pCOState.GetExplorerState().GetRootPath();
             serialState.LatestCommitSHA = pCOState.GetLatestCommitSha();
+            serialState.BranchName = pCOState.GetBranchName();
 
             return serialState;
         }
@@ -33,7 +36,11 @@ namespace Project_Codebase_Overview.SaveState
         private static SerializerSettings GetSerializerSettings(SettingsState settingsState)
         {
             SerializerSettings serialSettings = new SerializerSettings();
-
+            serialSettings.DecayTimeUnit = settingsState.DecayTimeUnit;
+            serialSettings.IsDecayActive = settingsState.IsDecayActive;
+            serialSettings.DecayDropOffInteval = settingsState.DecayDropOffInteval;
+            serialSettings.DecayPercentage = settingsState.DecayPercentage;
+            serialSettings.CreatorMultiplier = settingsState.CreatorBonusPercent;
 
             return serialSettings;
         }
@@ -47,8 +54,10 @@ namespace Project_Codebase_Overview.SaveState
                 SerializerAuthor serialAuthor = new SerializerAuthor();
                 serialAuthor.Name = pCOAuthor.Name;
                 serialAuthor.Email = pCOAuthor.Email;
+                serialAuthor.VCSEmail = pCOAuthor.VCSEmail;
                 serialAuthor.Color= pCOAuthor.Color;
-                serialAuthor.Aliases = pCOAuthor.Aliases.ToList(); 
+                serialAuthor.Aliases = pCOAuthor.Aliases.ToList();
+                serialAuthor.IsActive = pCOAuthor.IsActive;
 
                 serialAuthor.SubAuthors = new List<SerializerAuthor>();
                 foreach(var pCOSubAuthor in pCOAuthor.SubAuthors)
@@ -56,8 +65,10 @@ namespace Project_Codebase_Overview.SaveState
                     SerializerAuthor serialSubAuthor = new SerializerAuthor();
                     serialSubAuthor.Name = pCOSubAuthor.Name;
                     serialSubAuthor.Email = pCOSubAuthor.Email;
+                    serialSubAuthor.VCSEmail = pCOSubAuthor.VCSEmail;
                     serialSubAuthor.Color = pCOSubAuthor.Color;
                     serialSubAuthor.Aliases = pCOSubAuthor.Aliases.ToList();
+                    serialSubAuthor.IsActive = serialSubAuthor.IsActive;
 
                     serialAuthor.SubAuthors.Add(serialSubAuthor);
                 }
@@ -77,6 +88,7 @@ namespace Project_Codebase_Overview.SaveState
                 serialTeam.Name = pCOTeam.Name;
                 serialTeam.Color = pCOTeam.Color;
                 serialTeam.MemberEmails = pCOTeam.Members.Select(x => x.Email).ToList();
+                serialTeam.VCSID = pCOTeam.VCSID;
 
                 serialTeams.Add(serialTeam);
             }
@@ -87,22 +99,11 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFolder serialFolder = new SerializerFolder();
             serialFolder.Name = pCOFolder.Name;
+            serialFolder.IsActive = pCOFolder.IsActive;
+            serialFolder.Comment = pCOFolder.Comment ?? "";
 
-            var selectedOwner = pCOFolder.SelectedOwner;
-            if(selectedOwner != null)
-            {
-
-                if (selectedOwner.GetType() == typeof(Author))
-                {
-                    serialFolder.SelectedAuthorEmail = ((Author)selectedOwner).Email;
-                    serialFolder.SelectedTeamName = "";
-                }
-                else
-                {
-                    serialFolder.SelectedAuthorEmail = "";
-                    serialFolder.SelectedTeamName = ((PCOTeam)selectedOwner).Name;
-                }
-            }
+            serialFolder.SelectedTeamNames = pCOFolder.SelectedOwners.Where(owner => owner.GetType() == typeof(PCOTeam)).Select(owner => owner.Name).ToList();
+            serialFolder.SelectedAuthorEmails = pCOFolder.SelectedOwners.Where(owner => owner.GetType() == typeof(Author)).Select(owner => ((Author)owner).Email).ToList();
 
             foreach (var child in pCOFolder.Children.Values)
             {
@@ -122,9 +123,14 @@ namespace Project_Codebase_Overview.SaveState
         {
             SerializerFile serialFile = new SerializerFile();
             serialFile.Name = pCOFile.Name;
-            serialFile.CreatorEmail = pCOFile.Creator.Email;
-            
-            foreach(var commit in pCOFile.commits)
+            serialFile.IsActive = pCOFile.IsActive;
+            serialFile.CreatorEmail = pCOFile.Creator?.Email ?? "";
+            serialFile.Comment = pCOFile.Comment ?? "";
+
+            serialFile.SelectedTeamNames = pCOFile.SelectedOwners.Where(owner => owner.GetType() == typeof(PCOTeam)).Select(owner => owner.Name).ToList();
+            serialFile.SelectedAuthorEmails = pCOFile.SelectedOwners.Where(owner => owner.GetType() == typeof(Author)).Select(owner => ((Author)owner).Email).ToList();
+
+            foreach (var commit in pCOFile.commits)
             {
                 SerializerCommit serialCommit = new SerializerCommit();
                 serialCommit.AuthorEmail = commit.GetAuthor().Email;
@@ -138,8 +144,10 @@ namespace Project_Codebase_Overview.SaveState
 
         public static async void SetPCOStateFromInitializerState(SerializerState serializerState)
         {
+            // MAIN METHOD FOR CONVERTING (AND LOADING) FROM SERIALIZERSTATE TO PCOSTATE
             PCOState.GetInstance().ClearState();
 
+            PCOState.GetInstance().SetBranchName(serializerState.BranchName);
             SetPCOAuthors(serializerState);
             SetPCOTeams(serializerState);
             SetPCOSettings(serializerState.Settings);
@@ -159,6 +167,8 @@ namespace Project_Codebase_Overview.SaveState
                 //create and get author
                 contributorState.InitializeAuthor(serialAuthor.Email, serialAuthor.Name, serialAuthor.Color);
                 var pcoAuthor = contributorState.GetAuthor(serialAuthor.Email);
+                pcoAuthor.VCSEmail = serialAuthor.VCSEmail;
+                pcoAuthor.IsActive = serialAuthor.IsActive;
                 //Add aliases
                 foreach(var alias in serialAuthor.Aliases)
                 {
@@ -169,6 +179,8 @@ namespace Project_Codebase_Overview.SaveState
                 {
                     contributorState.InitializeAuthor(serialSubAuthor.Email, serialSubAuthor.Name, serialSubAuthor.Color);
                     var subAuthor = contributorState.GetAuthor(serialSubAuthor.Email);
+                    subAuthor.VCSEmail = serialSubAuthor.VCSEmail;
+                    subAuthor.IsActive = serialSubAuthor.IsActive;
                     pcoAuthor.ConnectAuthor(subAuthor);
                 }
             }
@@ -181,6 +193,7 @@ namespace Project_Codebase_Overview.SaveState
             foreach(var serialTeam in serializerState.Teams)
             {
                 PCOTeam pcoTeam = new PCOTeam(serialTeam.Name, serialTeam.Color);
+                pcoTeam.VCSID = serialTeam.VCSID;
                 
                 foreach(var memberEmail in serialTeam.MemberEmails)
                 {
@@ -197,6 +210,7 @@ namespace Project_Codebase_Overview.SaveState
             settingsState.DecayTimeUnit = serialSettings.DecayTimeUnit;
             settingsState.DecayDropOffInteval = serialSettings.DecayDropOffInteval;
             settingsState.DecayPercentage = serialSettings.DecayPercentage;
+            settingsState.CreatorBonusPercent = serialSettings.CreatorMultiplier;
         }
 
         private static PCOFolder GetPCORoot(SerializerFolder serialFolder, PCOFolder parent)
@@ -204,14 +218,28 @@ namespace Project_Codebase_Overview.SaveState
             
             //create the folder
             PCOFolder pCOFolder = new PCOFolder(serialFolder.Name, parent);
+            pCOFolder.IsActive = serialFolder.IsActive;
+            pCOFolder.Comment = serialFolder.Comment ?? "";
             //set owner
-            if (serialFolder.SelectedAuthorEmail != null)
+            if (serialFolder.SelectedAuthorEmails?.Count > 0)
             {
-                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(serialFolder.SelectedAuthorEmail);
+                foreach (var authorEmail in serialFolder.SelectedAuthorEmails)
+                {
+                    if (!pCOFolder.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                    }
+                }
             }
-            else if(serialFolder.SelectedTeamName != null)
+            if (serialFolder.SelectedTeamNames?.Count > 0)
             {
-                pCOFolder.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == serialFolder.SelectedTeamName);
+                foreach (var teamName in serialFolder.SelectedTeamNames)
+                {
+                    if (!pCOFolder.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                    {
+                        pCOFolder.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                    }
+                }
             }
             //add subfolders to the folder
             foreach (var subFolder in serialFolder.SubFolders)
@@ -223,20 +251,34 @@ namespace Project_Codebase_Overview.SaveState
             foreach(var subFile in serialFolder.SubFiles)
             {
                 PCOFile pCOFile = new PCOFile(subFile.Name, pCOFolder);
+                pCOFile.IsActive = subFile.IsActive;
+                pCOFile.Comment = subFile.Comment ?? "";
 
-                pCOFile.Creator = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail);
-                if (subFile.SelectedAuthorEmail != null)
+                pCOFile.Creator = !subFile.CreatorEmail.Equals("") ? PCOState.GetInstance().GetContributorState().GetAuthor(subFile.CreatorEmail) : null;
+                if (subFile.SelectedAuthorEmails?.Count > 0)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAuthor(subFile.SelectedAuthorEmail);
+                    foreach (var authorEmail in subFile.SelectedAuthorEmails)
+                    {
+                        if (!pCOFile.SelectedOwners.Where(a => a.GetType() == typeof(Author) && ((Author)a).Email.Equals(authorEmail)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAuthor(authorEmail));
+                        }
+                    }
                 }
-                else if (subFile.SelectedTeamName != null)
+                if (subFile.SelectedTeamNames?.Count > 0)
                 {
-                    pCOFile.SelectedOwner = PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name == subFile.SelectedTeamName);
+                    foreach (var teamName in subFile.SelectedTeamNames)
+                    {
+                        if (!pCOFile.SelectedOwners.Where(t => t.GetType() == typeof(PCOTeam) && ((PCOTeam)t).Name.Equals(teamName)).Any())
+                        {
+                            pCOFile.SelectedOwners.Add(PCOState.GetInstance().GetContributorState().GetAllTeams().Find(x => x.Name.Equals(teamName)));
+                        }
+                    }
                 }
                 foreach (var serialCommit in subFile.Commits)
                 {
                     PCOCommit pCOCommit = new PCOCommit(serialCommit.AuthorEmail, serialCommit.Date);
-                    pCOCommit.AddLine(PCOCommit.LineType.NORMAL, serialCommit.LineCount);
+                    pCOCommit.AddLine(serialCommit.LineCount);
                     pCOFile.commits.Add(pCOCommit);
                 }
                 pCOFolder.AddChild(pCOFile);

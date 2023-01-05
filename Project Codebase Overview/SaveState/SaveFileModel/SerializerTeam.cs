@@ -12,5 +12,6 @@ namespace Project_Codebase_Overview.SaveState.Model
         public string Name { get; set; }
         public List<string> MemberEmails { get; set; }
         public Color Color { get; set; }
+        public string VCSID { get; set; }
     }
 }

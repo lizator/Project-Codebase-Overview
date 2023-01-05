@@ -7,6 +7,7 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.LocalSettings;
 using Project_Codebase_Overview.State;
@@ -49,6 +50,7 @@ namespace Project_Codebase_Overview
             var folderPicker = new FolderPicker();
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix the crash
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var folder = await folderPicker.PickSingleFolderAsync();
@@ -59,12 +61,13 @@ namespace Project_Codebase_Overview
 
             try
             {
-                //test if repo available
-                var testingRepo = new Repository(folder.Path);
+                //test if repo available and nondirty
+                GitDataCollector collector = new GitDataCollector();
+                collector.GetRepoStatus(folder.Path);
             }
             catch (Exception ex)
             {
-                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
                 return;
             }
 
@@ -87,6 +90,13 @@ namespace Project_Codebase_Overview
             mainWindow.NavigateToLoadingPage();
             Close();
         }
+        private void NavigateToLoadingSavePage(StorageFile file)
+        {
+            var mainWindow = new MainWindow();
+            mainWindow.Activate();
+            mainWindow.NavigateToLoadingSavePage(new LoadingSavePageParameters(file));
+            Close();
+        }
 
         private async void LoadFileClick(object sender, RoutedEventArgs e)
         {
@@ -103,65 +113,24 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
-
-            if (repoChangesAvailable)
-            {
-                bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
-                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                if (loadNewData)
-                {
-                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                    //goto loading page
-                    NavigateToLoadingPage();
-                }
-                else
-                {
-                    NavigateToExplorerPage();
-                }
-            }
-            else
-            {
-                NavigateToExplorerPage();
-            }
+            NavigateToLoadingSavePage(file);
 
         }
 
         private async void RecentFileClick(object sender, ItemClickEventArgs e)
         {
+            PCOState.GetInstance().ClearState();
             var fileInfo = e.ClickedItem as RecentFileInfo;
+            StorageFile file = null;
             try
             {
-                var file = await StorageFile.GetFileFromPathAsync(fileInfo.FilePath);
-                
-                bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
-
-                if (repoChangesAvailable)
-                {
-                    bool loadNewData = await DialogHandler.ShowYesNoDialog(Content.XamlRoot, "Load",
-                        "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                    if (loadNewData)
-                    {
-                        PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                        //goto loading page
-                        NavigateToLoadingPage();
-                    }
-                    else
-                    {
-                        NavigateToExplorerPage();
-                    }
-                }
-                else
-                {
-                    NavigateToExplorerPage();
-                }
+                file = await StorageFile.GetFileFromPathAsync(fileInfo.FilePath);
             }
             catch (Exception ex)
             {
                 await DialogHandler.ShowErrorDialog(ex.Message, Content.XamlRoot);
             }
-           
-            
+            NavigateToLoadingSavePage(file);
         }
     }
 }

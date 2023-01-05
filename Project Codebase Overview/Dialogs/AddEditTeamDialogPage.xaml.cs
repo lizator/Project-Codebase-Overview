@@ -40,6 +40,7 @@ namespace Project_Codebase_Overview.Dialogs
         private PCOTeam Team;
         private Dictionary<string, bool> IsAuthorInTeam;
         private Dictionary<string, Author> AuthorList;
+        private bool IsVCSIDSet;
 
         private static string NO_TEAM_HEADER_TEXT = "No team";
         private class Observables: ObservableObject
@@ -59,8 +60,8 @@ namespace Project_Codebase_Overview.Dialogs
 
         private bool IsTeamNew = false;
 
-        private ObservableCollection<Author> _unselectedAuthorList;
-        public ObservableCollection<Author> UnselectedAuthorList
+        private ObservableCollection<ViewAuthor> _unselectedAuthorList;
+        public ObservableCollection<ViewAuthor> UnselectedAuthorList
         {
             get => _unselectedAuthorList;
             set => _unselectedAuthorList = value;
@@ -85,8 +86,10 @@ namespace Project_Codebase_Overview.Dialogs
                 IsTeamNew = true;
                 Team = new PCOTeam();
                 Team.Color = PCOColorPicker.GetInstance().AssignTeamColor();
+                IsVCSIDSet = false;
             } else
             {
+                IsVCSIDSet = Team.VCSID.Length > 0;
                 LocalObservables.DeleteVisibility = Visibility.Visible;
                 LocalObservables.ConfirmDeleteMsg = "Confirm deleting team \"" + Team.Name + "\"";
             }
@@ -100,8 +103,9 @@ namespace Project_Codebase_Overview.Dialogs
             }
 
             NameBox.Text = Team.Name;
+            VCSIDBox.Text = Team.VCSID;
 
-            UnselectedAuthorList = new ObservableCollection<Author>();
+            UnselectedAuthorList = new ObservableCollection<ViewAuthor>();
             SelectedAuthorList = new ObservableCollection<Author>();
             UnselectedAuthors.Source = new ObservableCollection<GroupInfoList>();
 
@@ -123,30 +127,58 @@ namespace Project_Codebase_Overview.Dialogs
 
         private void AddClicked(object sender, RoutedEventArgs e)
         {
-            if (UnselectedListView.SelectedItems.Count() > 0)
-            {
-                foreach(var item in UnselectedListView.SelectedItems)
-                {
-                    var author = item as Author;
-                    IsAuthorInTeam[author.Email] = true;
-                }
-            }
+            var item = ((Button)sender).DataContext as ViewAuthor;
+            IsAuthorInTeam[item.Email] = true;
+
             UpdateAuthorLists(SearchBox.Text);
         }
 
         private void RemoveClicked(object sender, RoutedEventArgs e)
         {
-            if (SelectedListView.SelectedItems.Count() > 0)
-            {
-                foreach(var item in SelectedListView.SelectedItems)
-                {
-                    var author = item as Author;
-                    IsAuthorInTeam[author.Email] = false;
-                }
-                UpdateAuthorLists(SearchBox.Text);
-            }
+            var item = ((Button)sender).DataContext as Author;
+            IsAuthorInTeam[item.Email] = false;
+            UpdateAuthorLists(SearchBox.Text);
+            
         }
 
+        private void DeleteTeam(object sender, RoutedEventArgs e)
+        {
+            var manager = PCOState.GetInstance().GetContributorState();
+
+            manager.DeleteTeam(Team);
+
+            manager.SetTeamUpdated(true);
+            manager.SetSelectedTeam(null);
+            manager.GetCurrentTeamDialog().Hide();
+            manager.SetCurrentTeamDialog(null);
+        }
+
+        
+
+        private bool NotSelectedFilter(KeyValuePair<string, Author> pair, string searchString)
+        {
+            if (!IsAuthorInTeam.GetValueOrDefault(pair.Key))
+            {
+                var isSearching = searchString.Length > 0;
+                if (!isSearching)
+                {
+                    return true;
+                }
+
+                var nameFound = pair.Value.Name.ToLower().Contains(searchString.ToLower());
+                var emailFound = pair.Value.Email.ToLower().Contains(searchString.ToLower());
+                bool teamFound;
+                if (pair.Value.Teams.Count == 0)
+                {
+                    teamFound = NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower());
+                } else
+                {
+                    teamFound = pair.Value.Teams.Where(x => x.Name.ToLower().Contains(searchString.ToLower())).Any();
+                }
+                return nameFound || emailFound || teamFound;
+            }
+            return false;
+        }
         private void UpdateAuthorLists(string searchString = "")
         {
             var isSearching = searchString.Length > 0;
@@ -154,21 +186,38 @@ namespace Project_Codebase_Overview.Dialogs
             ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Clear();
 
             UnselectedAuthorList.Clear();
-            AuthorList.Where(pair =>
-                !IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
-                (!isSearching || (
-                    pair.Value.Name.ToLower().Contains(searchString.ToLower()) ||
-                    pair.Value.Email.ToLower().Contains(searchString.ToLower()) ||
-                    (
-                        pair.Value.Team == null ?
-                            NO_TEAM_HEADER_TEXT.ToLower().Contains(searchString.ToLower()) :
-                            pair.Value.Team.Name.ToLower().Contains(searchString.ToLower())
-                    )
-                ))
-            )
-            .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => UnselectedAuthorList.Add(author));
 
-            var query = UnselectedAuthorList.GroupBy(item => (item.Team == null ? NO_TEAM_HEADER_TEXT : item.Team.Name))
+
+
+            AuthorList.Where(pair => NotSelectedFilter(pair, searchString))
+            .Select(pair => pair.Value).ForEach(author => { 
+                if (author.Teams.Count == 0)
+                {
+                    UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = NO_TEAM_HEADER_TEXT });
+                } else
+                {
+                    author.Teams.ForEach(team => {
+                        if (team.Name.Equals(Team.Name))
+                        {
+                            if (author.Teams.Count == 1)
+                            {
+                                UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = NO_TEAM_HEADER_TEXT });
+                            }
+                        }
+                        else
+                        {
+                            UnselectedAuthorList.Add(new ViewAuthor() { Name = author.Name, Email = author.Email, TeamName = team.Name });
+                        }
+                    });
+                }
+            });
+
+            //simple grouping
+            var groups = UnselectedAuthorList.GroupBy(item => item.TeamName);
+            //add extras 
+            
+
+            var query = groups
                 .OrderBy(item => (item.Key.Equals(NO_TEAM_HEADER_TEXT)) ? 0 : 1)
                 .ThenBy(item => item.Key)
                 .Select(item => new GroupInfoList(item) { Key = item.Key });
@@ -176,18 +225,12 @@ namespace Project_Codebase_Overview.Dialogs
             query.ForEach(item => ((ObservableCollection<GroupInfoList>)UnselectedAuthors.Source).Add(item));
 
             SelectedAuthorList.Clear();
-            AuthorList.Where(pair =>
-                IsAuthorInTeam.GetValueOrDefault(pair.Key) &&
-                (!isSearching || (pair.Value.Name.ToLower().Contains(searchString.ToLower()) || pair.Value.Email.ToLower().Contains(searchString.ToLower())))
-            )
-            .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
+            AuthorList.Where(pair => IsAuthorInTeam.GetValueOrDefault(pair.Key))
+                .Select(pair => pair.Value).OrderBy(author => author.Name).ToList().ForEach(author => SelectedAuthorList.Add(author));
 
         }
 
-        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            UpdateAuthorLists(SearchBox.Text);
-        }
+       
 
         private void CancelClick(object sender, RoutedEventArgs e)
         {
@@ -215,19 +258,23 @@ namespace Project_Codebase_Overview.Dialogs
                 ShowNameFlyout();
                 return;
             }
+
+            var newVCSID = VCSIDBox.Text.StartsWith('@') || VCSIDBox.Text.Length == 0 ? VCSIDBox.Text : "@" + VCSIDBox.Text;
+            if (newVCSID.Length > 0 && !newVCSID.Equals(Team.VCSID) && !manager.CheckTeamVCSIDAvailable(newVCSID))
+            {
+                ShowVCSIDFlyout();
+                return;
+            }
             if (Team.Name != null && Team.Name != "" && !Team.Name.Equals(NameBox.Text))
             {
                 manager.RenameTeam(Team.Name, NameBox.Text);
             }
             Team.Name = NameBox.Text;
+            Team.VCSID = newVCSID;
             Team.EmptyMembers();
-            foreach (var pair in IsAuthorInTeam)
-            {
-                if (pair.Value)
-                {
-                    Team.ConnectMember(AuthorList[pair.Key]);
-                }
-            }
+
+            IsAuthorInTeam.Where(x => x.Value).ForEach(x => Team.ConnectMember(AuthorList[x.Key]));
+
             Team.Color = LocalObservables.Brush.Color;
 
 
@@ -249,6 +296,14 @@ namespace Project_Codebase_Overview.Dialogs
             FlyoutBase.ShowAttachedFlyout((FrameworkElement)NameBox);
         }
 
+        private void ShowVCSIDFlyout()
+        {
+            FlyoutBase.ShowAttachedFlyout((FrameworkElement)VCSIDBox);
+        }
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateAuthorLists(SearchBox.Text);
+        }
         private void SfColorPicker_SelectedBrushChanged(object sender, Syncfusion.UI.Xaml.Editors.SelectedBrushChangedEventArgs e)
         {
             LocalObservables.Brush = (SolidColorBrush)e.NewBrush;
@@ -264,23 +319,35 @@ namespace Project_Codebase_Overview.Dialogs
             ConfirmDeleteBtn.IsEnabled = false;
         }
 
-        private void DeleteTeam(object sender, RoutedEventArgs e)
+        private void VCSIDBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            var manager = PCOState.GetInstance().GetContributorState();
+            var vcsidbox = ((TextBox)sender);
+            var state = vcsidbox.FocusState;
+            if (state != FocusState.Unfocused)
+            {
+                IsVCSIDSet = true;
+            }
+        }
 
-            manager.DeleteTeam(Team);
-
-            manager.SetTeamUpdated(true);
-            manager.SetSelectedTeam(null);
-            manager.GetCurrentTeamDialog().Hide();
-            manager.SetCurrentTeamDialog(null);
+        private void NameBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (!IsVCSIDSet)
+            {
+                VCSIDBox.Text = NameBox.Text.Length > 0 ? "@" + NameBox.Text.ToLower().Replace(' ', '_') : "";
+            }
         }
     }
-    public class GroupInfoList : List<object>
+    public class GroupInfoList : ObservableCollection<object>
     {
         public GroupInfoList(IEnumerable<object> items) : base(items)
         {
         }
         public object Key { get; set; }
+    }
+    public class ViewAuthor
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string TeamName { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace Project_Codebase_Overview.Dialogs
         {
             TextBlock contentText = new TextBlock();
             contentText.Text = errorText;
+            contentText.TextWrapping = TextWrapping.WrapWholeWords;
 
             ContentDialog dialog = new ContentDialog();
 
@@ -43,6 +44,7 @@ namespace Project_Codebase_Overview.Dialogs
         {
             TextBlock contentText = new TextBlock();
             contentText.Text = text;
+            contentText.TextWrapping = TextWrapping.WrapWholeWords;
 
             ContentDialog dialog = new ContentDialog();
 
@@ -63,11 +65,15 @@ namespace Project_Codebase_Overview.Dialogs
         {
             ContentDialog dialog = new ContentDialog();
             dialog.XamlRoot = xamlRoot;
-            dialog.Title = item.Name;
-
             
+            ExpandDialogParameters parameters = new ExpandDialogParameters();
+            parameters.Item = item;
+            parameters.Dialog = dialog;
 
-            dialog.Content = GraphHelper.GetPieChartFromExplorerItem(item);
+            var frame = new Frame();
+            frame.Navigate(typeof(ExpandExplorerItemDialog), parameters);
+            dialog.Content = frame;
+
 
             var result = await dialog.ShowAsync();
             return result;
@@ -109,7 +115,7 @@ namespace Project_Codebase_Overview.Dialogs
             dialog.XamlRoot = xamlRoot;
 
             var manager = PCOState.GetInstance().GetContributorState();
-            dialog.Title = "Edit User";
+            dialog.Title = "Edit Author";
 
             manager.SetSelectedAuthor(author);
             manager.SetCurrentAuthorDialog(dialog);
@@ -122,10 +128,23 @@ namespace Project_Codebase_Overview.Dialogs
             var result = await dialog.ShowAsync();
             return result;
         }
-
-        private static void LineDistSeries_PointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+        public static async Task<ContentDialogResult> ShowHelpDialog(XamlRoot xamlRoot)
         {
-            throw new NotImplementedException();
+            ContentDialog dialog = new ContentDialog();
+            dialog.XamlRoot = xamlRoot;
+
+            dialog.Title = "Help";
+            dialog.IsPrimaryButtonEnabled = false;
+            dialog.IsSecondaryButtonEnabled = true;
+            dialog.SecondaryButtonText = "Close";
+
+            var frame = new Frame();
+            frame.Navigate(typeof(HelpDialogPage));
+            dialog.Content = frame;
+
+
+            var result = await dialog.ShowAsync();
+            return result;
         }
 
         public static async Task<bool> ShowYesNoDialog(XamlRoot xamlRoot, string title, string description)

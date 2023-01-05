@@ -29,55 +29,138 @@ using Project_Codebase_Overview.Dialogs;
 using Project_Codebase_Overview.DataCollection;
 using Project_Codebase_Overview.FileExplorerView;
 using Project_Codebase_Overview.SaveState.Model;
+using LibGit2Sharp;
+using Syncfusion.UI.Xaml.Gauges;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.UI.Windowing;
+using Microsoft.UI;
+using Windows.UI;
+using Project_Codebase_Overview.DataCollection.Model;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Project_Codebase_Overview
 {
+    
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class SettingsPage : Page
     {
-        ObservableCollection<IOwner> OwnersList = new ObservableCollection<IOwner>();
+        ObservableCollection<OwnerListElement> OwnersList = new ObservableCollection<OwnerListElement>();
         private bool IsExpanded = true;
         private bool InitialOpenDone = false;
+        
 
+        private class Observables : ObservableObject
+        {
+            public bool ExplorerHasChanges { get => _explorerHasChanges; set => SetProperty(ref _explorerHasChanges, value); }
+            private bool _explorerHasChanges = false;
+           
+            public bool DecayChangesMade { get => _decayChangesMade; set => SetProperty(ref _decayChangesMade, value); }
+            private bool _decayChangesMade = false;
+        }
+        private Observables LocalObservables = new Observables();
+        private class OwnerListElement : ObservableObject
+        {
+            public string Name { get; set; }
+            public Color Color { get; set; }
+            public uint Lines { get; set; }
+        }
 
+        private void SetExplorerHasChanges(bool value)
+        {
+            try
+            { 
+                LocalObservables.ExplorerHasChanges = value;
+            }
+            catch(Exception e)
+            {
+                
+            }
+        }
         public SettingsPage()
         {
             this.InitializeComponent();
-
-
-            DecayCheckBox.IsChecked = true;
 
             UpdateOwnerList();
 
             ExpanderClick(null,null);
 
             LoadSettingsFromState();
+
+            PCOState.GetInstance().GetExplorerState().NotifyChangeEvent += SettingsPage_NotifyChangeEvent;
+            PCOState.GetInstance().GetExplorerState().NavigateEvent += UpdateOwnerList;
+        }
+
+        private void SettingsPage_NotifyChangeEvent()
+        {
+            SetExplorerHasChanges(true);
         }
 
         private void UpdateOwnerList()
         {
             OwnersList.Clear();
-            var list = PCOState.GetInstance().GetContributorState().GetAllOwners();
+            OwnerListView.Visibility = Visibility.Visible;
+            NoTeamsMsg.Visibility = Visibility.Collapsed;
+            var list = PCOState.GetInstance().GetContributorState().GetAllOwnersInMode();
+            var rootDist = PCOState.GetInstance().GetExplorerState().GetCurrentRootFolder().GraphModel.LineDistribution;
             foreach (var owner in list)
             {
-                OwnersList.Add(owner);
+                GraphModel.LineDistUnit distUnit = null;
+                if(rootDist.TryGetValue(owner, out distUnit))
+                {
+                    OwnersList.Add(new OwnerListElement()
+                    {
+                        Name = owner.Name,
+                        Color = owner.Color,
+                        Lines = distUnit.LineSum()
+                    }); 
+                }
+                else
+                {
+                    OwnersList.Add(new OwnerListElement()
+                    {
+                        Name = owner.Name,
+                        Color = owner.Color,
+                        Lines = 0
+                    });
+                }
             }
+
+            if (OwnersList.Count == 0)
+            {
+                OwnerListView.Visibility = Visibility.Collapsed;
+                NoTeamsMsg.Visibility = Visibility.Visible;
+            }
+            
         }
 
         private void LoadSettingsFromState()
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
 
+            if (settingsState.CurrentMode == PCOExplorerMode.TEAMS)
+            {
+                ModeSwitch.SelectedIndex = 1;
+            }
+
             CutOffSelectionComboBox.SelectedIndex = ((int)settingsState.CutOffSelectionUnit)-1;
 
             BranchNameBlock.Text = PCOState.GetInstance().GetBranchName();
 
-            DecayCheckBox.IsChecked = settingsState.IsDecayActive;
+            
+            if (settingsState.IsDecayActive)
+            {
+                DecayCheckBox.IsChecked = true;
+                DecayChecked(null, null);
+            }
+            else
+            {
+                DecayCheckBox.IsChecked = false;
+                DecayUnchecked(null, null);
+            }
 
             DecayTimerNumberBox.Value = settingsState.DecayDropOffInteval;
             if (settingsState.DecayTimeUnit != DecayTimeUnit.UNDEFINED)
@@ -91,14 +174,19 @@ namespace Project_Codebase_Overview
 
             ShowFilesCheckBox.IsChecked = settingsState.IsFilesVisibile;
 
+            CreatorNumberBox.Value = settingsState.CreatorBonusPercent;
+
+            var tooltip = "When owners are declared, you can refresh the page to update the changes in the graphs";
+            ToolTipService.SetToolTip(UpdateExplorerBtn, tooltip);
         }
 
         private void CancelSettingsChangeClick(object sender, RoutedEventArgs e)
         {
             LoadSettingsFromState();
+            LocalObservables.DecayChangesMade = false;
         }
 
-        private void SaveSettingsChangeClick(object sender, RoutedEventArgs e)
+        private void UpdateSettingsChangeClick(object sender, RoutedEventArgs e)
         {
             var settingsState = PCOState.GetInstance().GetSettingsState();
 
@@ -116,9 +204,12 @@ namespace Project_Codebase_Overview
 
             settingsState.IsFilesVisibile = ShowFilesCheckBox.IsChecked ?? true;
 
+            settingsState.CreatorBonusPercent = ((int?)CreatorNumberBox.Value) ?? 0;
+
             LoadSettingsFromState();
 
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            LocalObservables.DecayChangesMade = false;
         }
 
         private void ManageClicked(object sender, RoutedEventArgs e)
@@ -128,28 +219,44 @@ namespace Project_Codebase_Overview
 
         private void DecayChecked(object sender, RoutedEventArgs e)
         {
-            DecayCheckBox.Content = "Enabled";
+            //DecayCheckBox.Content = "Enabled";
             DecayTimerNumberBox.IsEnabled = true;
             DecayTimerComboBox.IsEnabled = true;
             PercentageNumberBox.IsEnabled = true;
+            if (DecayCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsDecayActive)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void DecayUnchecked(object sender, RoutedEventArgs e)
         {
-            DecayCheckBox.Content = "Disabled";
+            //DecayCheckBox.Content = "Disabled";
             DecayTimerNumberBox.IsEnabled = false;
             DecayTimerComboBox.IsEnabled = false;
             PercentageNumberBox.IsEnabled = false;
+            if(DecayCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsDecayActive)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ShowFilesChecked(object sender, RoutedEventArgs e)
         {
-            ShowFilesCheckBox.Content = "Enabled";
+            //ShowFilesCheckBox.Content = "Enabled";
+            if (ShowFilesCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsFilesVisibile)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ShowFilesUnchecked(object sender, RoutedEventArgs e)
         {
-            ShowFilesCheckBox.Content = "Disabled";
+            //ShowFilesCheckBox.Content = "Disabled";
+            if(ShowFilesCheckBox.IsChecked != PCOState.GetInstance().GetSettingsState().IsFilesVisibile)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
 
         private void ExpanderClick(object sender, PointerRoutedEventArgs e)
@@ -174,23 +281,82 @@ namespace Project_Codebase_Overview
 
         private void OwnerModeChanged(object sender, Syncfusion.UI.Xaml.Editors.SegmentSelectionChangedEventArgs e)
         {
-            if (!this.InitialOpenDone)
+            if (e.NewValue.Equals("Authors"))
             {
-                this.InitialOpenDone = true;
-                return;
-            }
-            if (e.NewValue.Equals("Users"))
-            {
-                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.USER;
+                PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.AUTHOR;
             }
             else if (e.NewValue.Equals("Teams"))
             {
                 PCOState.GetInstance().GetSettingsState().CurrentMode = PCOExplorerMode.TEAMS;
             }
-            //Update settingspanel owner list
-            UpdateOwnerList();
+            
+
+            if (!this.InitialOpenDone)
+            {
+                this.InitialOpenDone = true;
+                return;
+            }
+            
             //Reload explorerview
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            //Update settingspanel owner list
+            UpdateOwnerList();
+        }
+
+        private async void ExportCodeownersClick(object sender, RoutedEventArgs e)
+        {
+
+            FileSavePicker savePicker = new FileSavePicker();
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle((Application.Current as App)?.MainWindow as MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(savePicker, windowHandler);
+
+            savePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Clear();
+            savePicker.FileTypeChoices.Add("any", new List<string>() { "." });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = "CODEOWNERS";
+
+            StorageFile file = await savePicker.PickSaveFileAsync();
+            string outputText = "";
+            if(file != null)
+            {
+                // Prevent updates to the remote version of the file until we finish making changes and call CompleteUpdatesAsync.
+                CachedFileManager.DeferUpdates(file);
+                // write to file
+                await PCOState.GetInstance().ExportStateToCodeowners(file);
+
+                if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID() && PCOState.GetInstance().GetCodeOwnersExportAuthorMissingEmail())
+                {
+                    await DialogHandler.ShowOkDialog("Missing Info", "One or more teams and authors were missing their VCS info and their ownership was skipped.", XamlRoot);
+                }
+                else if (PCOState.GetInstance().GetCodeOwnersExportTeamMissingID())
+                {
+                    await DialogHandler.ShowOkDialog("Missing ID", "One or more teams were missing their VCSID and their ownership was skipped.", XamlRoot);
+                }
+                else if (PCOState.GetInstance().GetCodeOwnersExportAuthorMissingEmail())
+                {
+                    await DialogHandler.ShowOkDialog("Missing Email", "One or more Author were missing their VCS Email and their ownership was skipped.", XamlRoot);
+                }
+
+                // Let Windows know that we're finished changing the file so the other app can update the remote version of the file.
+                // Completing updates may require Windows to ask for user input.
+                FileUpdateStatus status = await CachedFileManager.CompleteUpdatesAsync(file);
+                if (status == FileUpdateStatus.Complete)
+                {
+                    outputText = "Codeowners exported to: " + file.Path;
+                }
+                else
+                {
+                    outputText = "An error occurred While exporting file: " + file.Path;
+                }
+            }
+            else
+            {
+                outputText = "Export cancelled.";
+            }
+            Debug.WriteLine(outputText);
+            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast(outputText);
         }
 
         private async void SaveClick(object sender, RoutedEventArgs e)
@@ -252,27 +418,137 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            ((Application.Current as App)?.MainWindow as MainWindow).NavigateToLoadingSavePage(new LoadingSavePageParameters(file));
 
-            ((Application.Current as App)?.MainWindow as MainWindow).ShowToast("Loaded file: " + file.Name);
-
-            if (repoChangesAvailable)
-            {
-                bool loadNewData = await DialogHandler.ShowYesNoDialog(XamlRoot, "Load", 
-                    "The saved state is deprecated. Changes have been made since last opened. Do you want to load the changes?");
-                if (loadNewData)
-                {
-                    PCOState.GetInstance().GetLoadingState().IsLoadingNewState = false;
-                    //goto loading page
-                    ((Application.Current as App)?.MainWindow as MainWindow).NavigateToLoadingPage();
-
-                }
-            }
         }
 
         private async void NewRepoClick(object sender, RoutedEventArgs e)
         {
+            var folderPicker = new FolderPicker();
 
+            MainWindow window = (Application.Current as App)?.MainWindow as MainWindow;
+
+            IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix crashing of packaged app
+            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
+
+            var folder = await folderPicker.PickSingleFolderAsync();
+            if (folder == null)
+            {
+                return;
+            }
+
+            try
+            {
+                //test if repo available
+                var testingRepo = new Repository(folder.Path);
+            }
+            catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog("The selected directory does not contain a git repository.", this.Content.XamlRoot);
+                return;
+            }
+
+            PCOState.GetInstance().ClearState();
+
+            PCOState.GetInstance().GetExplorerState().SetRootPath(folder.Path);
+            window.NavigateToLoadingPage();
+        }
+
+        private void UpdateExplorerBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SetExplorerHasChanges(false);
+            PCOState.GetInstance().GetExplorerState().ReloadExplorer();
+            this.UpdateOwnerList();
+        }
+
+        private async void HelpClicked(object sender, RoutedEventArgs e)
+        {
+            await DialogHandler.ShowHelpDialog(XamlRoot);
+        }
+
+        private void PercentageNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(PCOState.GetInstance().GetSettingsState().DecayPercentage != ((int?)PercentageNumberBox.Value))
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+            
+        }
+
+        private void DecayTimerNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(DecayTimerNumberBox.Value != PCOState.GetInstance().GetSettingsState().DecayDropOffInteval)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+        }
+
+        private void DecayTimerComboChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var settingsState = PCOState.GetInstance().GetSettingsState();
+            if (settingsState.DecayTimeUnit != DecayTimeUnit.UNDEFINED)
+            {
+                if(DecayTimerComboBox.SelectedIndex != ((int)settingsState.DecayTimeUnit) - 1)
+                {
+                    LocalObservables.DecayChangesMade = true;
+                }
+            }
+            else
+            {
+                if(DecayTimerComboBox.SelectedItem != null)
+                {
+                    LocalObservables.DecayChangesMade = true;
+                }
+                
+            }
+        }
+
+        private void CutoffChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(CutOffSelectionComboBox.SelectedIndex != ((int)PCOState.GetInstance().GetSettingsState().CutOffSelectionUnit) - 1)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
+            
+        }
+
+        private void ReturnToStartClick(object sender, RoutedEventArgs e)
+        {
+            var currentWindow = (Application.Current as App)?.MainWindow as MainWindow;
+
+            //return to home :) 
+
+            PCOState.GetInstance().ClearState();
+            StartWindow window = new();
+            IntPtr hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+            OverlappedPresenter presenter = appWindow.Presenter as OverlappedPresenter;
+
+            appWindow.Resize(new Windows.Graphics.SizeInt32(900, 600));
+            presenter.IsResizable = false;
+
+            DisplayArea displayArea = DisplayArea.GetFromWindowId(windowId, DisplayAreaFallback.Nearest);
+            if (displayArea is not null)
+            {
+                var CenteredPosition = appWindow.Position;
+                CenteredPosition.X = ((displayArea.WorkArea.Width - appWindow.Size.Width) / 2);
+                CenteredPosition.Y = ((displayArea.WorkArea.Height - appWindow.Size.Height) / 2);
+                appWindow.Move(CenteredPosition);
+            }
+
+            window.Activate();
+
+            currentWindow.Close();
+        }
+
+        private void CreatorNumberChanged(object sender, Syncfusion.UI.Xaml.Editors.ValueChangedEventArgs e)
+        {
+            if(CreatorNumberBox.Value != PCOState.GetInstance().GetSettingsState().CreatorBonusPercent)
+            {
+                LocalObservables.DecayChangesMade = true;
+            }
         }
     }
 }

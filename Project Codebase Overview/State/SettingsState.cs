@@ -21,15 +21,18 @@ namespace Project_Codebase_Overview.State
 
         public CutOffSelectionUnit CutOffSelectionUnit;
 
+        public int CreatorBonusPercent;
+
         public SettingsState()
         {
-            CurrentMode = PCOExplorerMode.USER;
+            CurrentMode = PCOExplorerMode.AUTHOR;
             IsDecayActive = false;
             IsFilesVisibile = true;
-            DecayDropOffInteval = 0;
-            DecayPercentage = 0;
-            DecayTimeUnit = DecayTimeUnit.DAY;
+            DecayDropOffInteval = 1;
+            DecayPercentage = 25;
+            DecayTimeUnit = DecayTimeUnit.MONTH;
             CutOffSelectionUnit = CutOffSelectionUnit.ALL_TIME;
+            CreatorBonusPercent = 0;
         }
 
         public bool IsDateWithinCutOff(DateTime commitDate)

@@ -17,54 +17,304 @@ using System.Threading.Tasks;
 using Windows.UI;
 using Project_Codebase_Overview.State;
 using System.Globalization;
+using Syncfusion.UI.Xaml.Editors;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using System.Diagnostics;
+using Microsoft.UI.Xaml.Data;
+using Project_Codebase_Overview.ChangeHistoryFolder;
+using System.Runtime;
+using Microsoft.UI;
+using System.Drawing.Printing;
 
 namespace Project_Codebase_Overview.DataCollection.Model
 {
     public abstract class ExplorerItem : ObservableObject, IComparable
     {
-        public string Name { get; set; }
-        public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
-        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesAfterDecay; }
-        public abstract void CalculateData();
-        public abstract int CompareTo(object obj);
+        private string _name;
+        public string Name { get => _name; set => SetProperty(ref _name, value); } 
+
+        private string _comment;
+        public string Comment { get => _comment; set => SetProperty(ref _comment, value); }
 
         public GraphModel GraphModel { get; set; }
         public PCOFolder Parent { get; set; }
-        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
-        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
 
-        public string SelectedOwnerName { get => this.SelectedOwner?.Name ?? "Unselected"; set => SetProperty(ref selectedOwnerName, this.SelectedOwner?.Name ?? "Unselected"); }
-        private string selectedOwnerName;
-        public SolidColorBrush SelectedOwnerColor { get => new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Tranparent); set => SetProperty(ref selectedOwnerColor, new SolidColorBrush(this.SelectedOwner?.Color ?? PCOColorPicker.Black)); }
-        private SolidColorBrush selectedOwnerColor;
+        private bool _isActive = true;
+        public bool IsActive { get => _isActive; set => SetIsActive(value); }
 
-        public ObservableCollection<IOwner> Owners { get => this.GetOwnerListSorted(); }
-
-        public IOwner SelectedOwner { get => _selectedOwner; set => SetProperty(ref _selectedOwner, value); }
-        private IOwner _selectedOwner;
-        public SfLinearGauge BarGraph
+        private void SetIsActive(bool value)
         {
-            get => GetBarGraph();
+            SetProperty(ref _isActive, value);
+            SelectOwnerVisibility = value ? Visibility.Visible : Visibility.Collapsed;
+            InactiveVisibility = !value ? Visibility.Visible : Visibility.Collapsed;
+            PCOState.GetInstance().GetExplorerState().ExplorerNotifyChange();
         }
 
-        private ObservableCollection<IOwner> GetOwnerListSorted()
+       
+        public abstract void CalculateData();
+        public abstract int CompareTo(object obj);
+        public abstract string ToCodeowners();
+       
+
+        
+
+        #region UI_Parameters
+        public string SuggestedOwnerName { get => this.GraphModel.SuggestedOwner?.Name ?? "Undefined"; }
+        public SolidColorBrush SuggestedOwnerColor { get => new SolidColorBrush(this.GraphModel.SuggestedOwner?.Color ?? PCOColorPicker.Tranparent); }
+        public ObservableCollection<IOwner> SelectedOwners = new ObservableCollection<IOwner>();
+        public Grid BarGraph {get => GetBarGraphAlt();}
+        public SfComboBox SelectOwnerComboBox {get => GetSelectOwnerComboBox();}
+        public Visibility SelectOwnerVisibility { get => _selectOwnerVisibility; set => SetProperty(ref _selectOwnerVisibility, value); }
+        private Visibility _selectOwnerVisibility = Visibility.Visible;
+        public Visibility InactiveVisibility { get => _inactiveVisibility; set => SetProperty(ref _inactiveVisibility, value); }
+        private Visibility _inactiveVisibility = Visibility.Collapsed;
+        public uint LinesTotalNumber { get => this.GraphModel.LinesTotal; }
+        public uint LinesAfterDecayNumber { get => this.GraphModel.LinesModified; }
+
+        #endregion
+
+        protected string GetCodeownerLines()
         {
-            //create "Unselected" entry
-            var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwners().OrderBy(x => x.Name).ToList();
-            if (this.GraphModel.SuggestedOwner != null)
+            var builder = new StringBuilder();
+            if (this.SelectedOwners.Count > 0 || !this.IsActive)
             {
-                var ownerIndex = ownerlist.IndexOf(this.GraphModel.SuggestedOwner);
-                if(ownerIndex > -1)
+                builder.AppendLine("");
+                if (this.Comment != null && this.Comment.Length > 0)
                 {
-                    ownerlist.MoveTo(ownerlist.IndexOf(this.GraphModel.SuggestedOwner), 0);
+                    builder.AppendLine("# Comment:");
+                    string[] lines = this.Comment.Split(
+                        new string[] { Environment.NewLine },
+                        StringSplitOptions.None
+                    );
+                    foreach (var line in lines)
+                    {
+                        builder.AppendLine("# " + line);
+                    }
+                }
+
+                var path = "/" + this.GetRelativePath(true);
+                path = path.Replace(" ", "\\ ");
+
+                var msg = path;
+                if (this.IsActive)
+                {
+                    var hasError = false;
+                    foreach (var owner in this.SelectedOwners)
+                    {
+                        if (owner.GetType() == typeof(Author))
+                        {
+                            var vCSEmail = ((Author)owner).VCSEmail;
+                            if (vCSEmail != null && vCSEmail.Length > 0)
+                            {
+                                msg += " " + vCSEmail;
+                            }
+                            else
+                            {
+                                builder.AppendLine("# Path \"" + path + "\" should be owned by Author \"" + owner.Name + "\" but it did not have an Email set.");
+                                PCOState.GetInstance().SetCodeOwnersExportAuthorMissingEmail(true);
+                                hasError = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var vCSID = ((PCOTeam)owner).VCSID;
+                            if (vCSID != null && vCSID.Length > 0)
+                            {
+                                msg += " " + vCSID;
+                            }
+                            else
+                            {
+                                builder.AppendLine("# Path \"" + path + "\" should be owned by team \"" + owner.Name + "\" but it did not have an ID set.");
+                                PCOState.GetInstance().SetCodeOwnersExportTeamMissingID(true);
+                                hasError = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!hasError)
+                    {
+                        builder.AppendLine(msg);
+                    }
+                } 
+                else
+                {
+                    // Inactive item gets the path in CODEOWNERS without any author or team
+                    builder.AppendLine(msg);
+                }
+                
+            }
+            return builder.ToString();
+        }
+
+        private SfComboBox GetSelectOwnerComboBox()
+        {
+            var viewSource = new CollectionViewSource();
+            viewSource.IsSourceGrouped = true;
+            viewSource.Source = Owners;
+
+            var box = new SfComboBox();
+
+            foreach (var owner in SelectedOwners)
+            {
+                box.SelectedItems.Add(owner);
+            }
+
+            box.TokenItemTemplate = Application.Current.Resources["OwnerTokenTemplate"] as DataTemplate;
+            box.ItemsSource = viewSource.View;
+            box.SelectionChanged += SfComboBox_SelectionChanged;
+            box.HorizontalAlignment = HorizontalAlignment.Stretch;
+            box.TextMemberPath = "Name";
+            box.IsEditable = true;
+            box.IsFilteringEnabled = false;
+            box.SelectionMode = ComboBoxSelectionMode.Multiple;
+            box.MultiSelectionDisplayMode = ComboBoxMultiSelectionDisplayMode.Token;
+            box.PlaceholderText = this.SelectedOwners.Count > 0 ? "" : "Unselected";
+            box.ItemTemplate = Application.Current.Resources["OwnerItemTemplate"] as DataTemplate;
+            box.GroupStyle.Add(Application.Current.Resources["OwnerGroupHeader"] as GroupStyle);
+            box.TextSearchMode = ComboBoxTextSearchMode.Contains;
+
+            return box;
+        }
+
+        private void SfComboBox_SelectionChanged(object sender, Syncfusion.UI.Xaml.Editors.ComboBoxSelectionChangedEventArgs e)
+        {
+            var box = (Syncfusion.UI.Xaml.Editors.SfComboBox)sender;
+            var item = box.DataContext as ExplorerItem;
+            var change = false;
+
+
+            foreach (var newOwner in e.AddedItems)
+            {
+                if (newOwner != null && (newOwner.GetType() == typeof(Author) || newOwner.GetType() == typeof(PCOTeam)))
+                {
+                    if (!item.SelectedOwners.Contains(newOwner))
+                    {
+                        item.SelectedOwners.Add((IOwner)newOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange(null, (IOwner)newOwner, item, (SfComboBox)sender));
+                        PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
+                        change = true;
+                    }
                 }
             }
-            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.USER)
+            foreach (var removedOwner in e.RemovedItems)
             {
-                ownerlist = ownerlist.Where(author => ((Author)author).IsActive).ToList();
+
+                if (removedOwner != null && (removedOwner.GetType() == typeof(Author) || removedOwner.GetType() == typeof(PCOTeam)))
+                {
+                    if (item.SelectedOwners.Contains(removedOwner))
+                    {
+                        item.SelectedOwners.Remove((IOwner)removedOwner);
+                        PCOState.GetInstance().ChangeHistory.AddChange(new OwnerChange((IOwner)removedOwner, null, item, (SfComboBox)sender));
+                        PCOState.GetInstance().GetExplorerState().GraphViewHasChanges = true;
+                        change = true;
+                    }
+                }
             }
-            ownerlist.Add(new Author("Unselected", "Unselected"));
-            return ownerlist.ToObservableCollection();
+
+            box.PlaceholderText = this.SelectedOwners.Count > 0 ? "" : "Unselected";
+            
+            if (change)
+            {
+                Debug.WriteLine("Changed selected owners");
+                PCOState.GetInstance().GetExplorerState().ExplorerNotifyChange();
+            }
+        }
+
+        public IOrderedEnumerable<IGrouping<string, IOwner>> Owners { get => this.GetOwnerListSorted(); }
+        private IOrderedEnumerable<IGrouping<string,IOwner>> GetOwnerListSorted()
+        {
+            var ownerlist = PCOState.GetInstance().GetContributorState().GetAllOwners().OrderBy(x => x.Name).GroupBy(x => x.GetType() == typeof(Author) ? "Authors" : "Teams").OrderBy(g => g.Key);
+
+            if (PCOState.GetInstance().GetSettingsState().CurrentMode == Settings.PCOExplorerMode.TEAMS)
+            {
+                ownerlist = ownerlist.OrderByDescending(g => g.Key);
+            }
+            return ownerlist;
+        }
+
+        protected Grid GetBarGraphAlt()
+        {
+            Grid grid = new Grid();
+            grid.HorizontalAlignment = HorizontalAlignment.Stretch;
+            grid.Background = new SolidColorBrush(PCOColorPicker.Black);
+            grid.Padding = new Thickness(2);
+            grid.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+
+            var blocks = new List<GraphBlock>();
+            if (this.GraphModel.LinesTotal > 0)
+            {
+                if (this.GetType() == typeof(PCOFile))
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel, ((PCOFile)this).Creator);
+                }
+                else
+                {
+                    blocks = GraphHelper.GetGraphBlocksFromDistribution(this.GraphModel);
+                }
+            }
+            else
+            {
+                this.GraphModel.SuggestedOwner = null;
+            }
+
+            var index = 0;
+            foreach (var block in blocks)
+            {
+                
+                ColumnDefinition colDef = new ColumnDefinition() { Width = new GridLength(block.EndValue - block.StartValue, GridUnitType.Star) };
+                grid.ColumnDefinitions.Add(colDef);
+
+                Grid subgrid = new Grid();
+                subgrid.Background = new SolidColorBrush(block.Color);
+                subgrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                subgrid.Height = 25;
+
+                if (block.EndValue - block.StartValue > 10)
+                {
+                    var panel = new StackPanel();
+                    panel.Orientation = Orientation.Horizontal;
+                    panel.VerticalAlignment = Microsoft.UI.Xaml.VerticalAlignment.Center;
+
+                    if (block.IsCreator)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/star.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    if (!block.IsActive)
+                    {
+                        Image img = new Image();
+                        img.Source = new BitmapImage(new Uri("ms-appx:///Assets/noBW.png"));
+                        img.Height = 20;
+                        img.Width = 20;
+                        img.HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left;
+                        panel.Children.Add(img);
+                    }
+
+                    subgrid.Children.Add(panel);
+                }
+
+                var tooltip = new ToolTip();
+                var tooltipMsg = new TextBlock();
+                tooltipMsg.Text = block.ToolTip;
+                tooltipMsg.HorizontalTextAlignment = Microsoft.UI.Xaml.TextAlignment.Center;
+                tooltip.Content = tooltipMsg;
+
+                ToolTipService.SetToolTip(subgrid, tooltip);
+
+
+                grid.Children.Add(subgrid);
+                Grid.SetColumn(subgrid, index++);
+            }
+
+            return grid;
+
         }
         protected SfLinearGauge GetBarGraph()
         {
@@ -147,21 +397,14 @@ namespace Project_Codebase_Overview.DataCollection.Model
 
                 sfLinearGauge.Axis.Ranges.Add(gaugeRange);
             }
-            _bargraph = sfLinearGauge;
             return sfLinearGauge;
         }
 
-        protected SfLinearGauge _bargraph { get; set; }
-
-        public void GenerateBarGraph()
-        {
-            this.GetBarGraph();
-        }
-
-        public string GetRelativePath()
+        public string GetRelativePath(bool useForwardSlashes = false)
         {
             PCOFolder tempFolder = this.Parent;
             string relativePath = "";
+            string seperator = useForwardSlashes ? "/" : "\\";
             if (this is PCOFolder folder)
             {
                 tempFolder = folder;
@@ -171,11 +414,22 @@ namespace Project_Codebase_Overview.DataCollection.Model
             }
             while (tempFolder?.Parent != null)
             {
-                relativePath = tempFolder.Name + "\\" + relativePath;
+                relativePath = tempFolder.Name + seperator + relativePath;
                 tempFolder = tempFolder.Parent;
             }
             return relativePath;
         }
-        
+
+        protected void UpdateSelectedOwners()
+        {
+            foreach (var owner in SelectedOwners.ToList())
+            {
+                if (owner.GetType() == typeof(Author) && ((Author)owner).OverAuthor != null)
+                {
+                    SelectedOwners.Remove(owner);
+                    SelectedOwners.Add(((Author)owner).OverAuthor);
+                }
+            }
+        }
     }
 }

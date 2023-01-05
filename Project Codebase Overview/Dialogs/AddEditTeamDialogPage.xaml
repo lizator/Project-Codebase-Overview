@@ -9,19 +9,32 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
     <Page.Resources>
-        <DataTemplate x:Key="AuthorViewTemplate" x:DataType="contributor:Author">
-            <TextBlock Text="{Binding Name}" Margin="0,5,0,5"/>
+        <DataTemplate x:Key="AuthorOtherViewTemplate" x:DataType="contributor:Author">
+            <Grid ColumnDefinitions="auto,*" Margin="0,5,0,5">
+                <Button Grid.Column="0" Padding="2" VerticalAlignment="Center" Margin="2,0,4,0" Click="AddClicked">
+                    <SymbolIcon Symbol="Add"/>
+                </Button>
+                <TextBlock Grid.Column="1" Text="{Binding Name}" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate x:Key="AuthorTeamViewTemplate" x:DataType="contributor:Author">
+            <Grid ColumnDefinitions="auto,*" Margin="0,5,0,5">
+                <Button Grid.Column="0" Padding="2" VerticalAlignment="Center" Margin="2,0,4,0" Click="RemoveClicked">
+                    <SymbolIcon Symbol="Delete"/>
+                </Button>
+                <TextBlock Grid.Column="1" Text="{Binding Name}" />
+            </Grid>
         </DataTemplate>
         <CollectionViewSource x:Name="UnselectedAuthors" IsSourceGrouped="True"/>
     </Page.Resources>
-    
-    
 
-    <Grid RowDefinitions="auto, *, auto" >
-        <Grid Grid.Row="0" ColumnDefinitions="3*, 2*" Padding="2,2,2,10">
-            <Grid Grid.Column="0" ColumnDefinitions="auto, *" Padding="0,0,6,0">
+
+
+    <Grid RowDefinitions="auto, auto, *, auto" >
+        <Grid Grid.Row="0" ColumnDefinitions="*" Padding="2,2,2,6">
+            <Grid Grid.Column="0" ColumnDefinitions="auto, *" >
                 <TextBlock Text="Name:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="NameBox" Grid.Column="1">
+                <TextBox x:Name="NameBox" Grid.Column="1" TextChanged="NameBox_TextChanged">
                     <FlyoutBase.AttachedFlyout>
                         <Flyout>
                             <TextBlock Text="{x:Bind LocalObservables.NameFlyoutMsg, Mode=OneWay}"  />
@@ -29,18 +42,46 @@
                     </FlyoutBase.AttachedFlyout>
                 </TextBox>
             </Grid>
+        </Grid>
+        <Grid Grid.Row="1" ColumnDefinitions="3*, 2*" Padding=" 0,0,0,10">
+            <Grid Grid.Column="0" ColumnDefinitions="auto, *, auto"  Padding="0,0,10,0">
+                <TextBlock Grid.Column="0" Text="VCS ID:" Padding="0,0,4,0" VerticalAlignment="Center"/>
+                <TextBox x:Name="VCSIDBox" Grid.Column="1" VerticalContentAlignment="Center" TextChanged="VCSIDBox_TextChanged">
+                    <FlyoutBase.AttachedFlyout>
+                        <Flyout>
+                            <TextBlock Text="The team cannot have the same ID as another team!"  />
+                        </Flyout>
+                    </FlyoutBase.AttachedFlyout>
+                </TextBox>
+                <Button Grid.Column="2" Padding="2" Margin="2">
+                    <Button.Flyout>
+                        <Flyout>
+                            <Grid RowDefinitions="auto, auto, auto, auto, auto">
+                                <TextBlock Grid.Row="0" Text="The VCSID is used in CODEOWNERS to give teams in"/>
+                                <TextBlock Grid.Row="1" Text="Github/Gitlab ownership" Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="2" Text="In Github, the ID is denoted by the orginisation name and the"/>
+                                <TextBlock Grid.Row="3" Text="team name. EX: '@orginisation/team-a'" Margin="0,0,0,8"/>
+                                <TextBlock Grid.Row="4" Text="In Gitlab, the ID is denoted by the group nam. EX: '@group-a'" />
+                            </Grid>
+                        </Flyout>
+                    </Button.Flyout>
+                    <SymbolIcon Symbol="Help"/>
+                </Button>
+            </Grid>
             <Grid Grid.Column="1" ColumnDefinitions="auto, *">
-                <TextBlock Text="Search:" Padding="0,0,2,0" Grid.Column="0" VerticalAlignment="Center"/>
-                <TextBox x:Name="SearchBox" Grid.Column="1" Padding="2,0,0,0" TextChanged="SearchBox_TextChanged"/>
+                <TextBlock Text="Search:" Padding="0,0,4,0" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBox x:Name="SearchBox" Grid.Column="1" TextChanged="SearchBox_TextChanged" VerticalContentAlignment="Center"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="1">
-            <Grid ColumnDefinitions="*, auto, *">
-                <ListView Grid.Column="0" x:Name="UnselectedListView" 
-                          SelectionMode="Multiple" ItemTemplate="{ThemeResource AuthorViewTemplate}"
+        <Grid Grid.Row="2">
+            <Grid ColumnDefinitions="*, 8, *" RowDefinitions="auto, *">
+                <TextBlock Text="Other Authors" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" FontSize="18"/>
+                <TextBlock Text="Team Authors" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" FontSize="18"/>
+                <ListView Grid.Column="0" Grid.Row="1" x:Name="UnselectedListView" 
+                          SelectionMode="None" ItemTemplate="{ThemeResource AuthorOtherViewTemplate}"
                           ItemsSource="{x:Bind UnselectedAuthors.View, Mode=OneWay}"
-                          Width="400" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                          Height="600" 
+                          Width="240" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                          Height="500" 
                           >
                     <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -60,38 +101,37 @@
                     </ListView.GroupStyle>
 
                 </ListView>
-                <Grid Grid.Column="1" RowDefinitions="*, *">
-                    <Button Grid.Row="0" VerticalAlignment="Bottom" Content=">" Margin="2" Click="AddClicked"/>
-                    <Button Grid.Row="1" VerticalAlignment="Top" Content="&lt;" Margin="2" Click="RemoveClicked"/>
-                </Grid>
-                <ListView Grid.Column="2" x:Name="SelectedListView" 
-                          ItemTemplate="{StaticResource AuthorViewTemplate}"
-                          SelectionMode="Multiple" ItemsSource="{x:Bind SelectedAuthorList}"
-                          Width="400" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
-                          Height="600"
+                <ListView Grid.Row="1" Grid.Column="2" x:Name="SelectedListView" 
+                          ItemTemplate="{StaticResource AuthorTeamViewTemplate}"
+                          SelectionMode="None" ItemsSource="{x:Bind SelectedAuthorList}"
+                          Width="240" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+                          Height="500"
                           />
             </Grid>
         </Grid>
-        <Grid Grid.Row="2" ColumnDefinitions="auto, *, auto, auto">
-
-            <Button Grid.Column="0" Margin="0,4,0,0">
-                <Button.Flyout>
-                    <Flyout>
-                        <editors:SfColorPicker
-                            SelectedBrushChanged="SfColorPicker_SelectedBrushChanged"
-                            BrushTypeOptions = "SolidColorBrush"
-                            ColorSpectrumComponents = "HueSaturation"
-                            ColorSpectrumShape = "Box"
-                            AxisInputOption = "Simple"
-                            SelectedBrush = "{x:Bind LocalObservables.Brush, Mode=OneWay}"
-                            />
-                    </Flyout>
-                </Button.Flyout>
-                <Ellipse Height="30" Width="30" StrokeThickness="1"
-                    Stroke="Black"
-                    Fill="{x:Bind LocalObservables.Brush, Mode=OneWay}">
-                </Ellipse>
-            </Button>
+        <Grid Grid.Row="3" ColumnDefinitions="auto, *, auto, auto">
+            <StackPanel Grid.Column="0" Margin="0,4,0,0" Spacing="5" Orientation="Horizontal">
+                <TextBlock Text="Team color" VerticalAlignment="Center"/>
+                <Button Grid.Column="0" Margin="0,4,0,0">
+                    <Button.Flyout>
+                        <Flyout>
+                            <editors:SfColorPicker
+                                SelectedBrushChanged="SfColorPicker_SelectedBrushChanged"
+                                BrushTypeOptions = "SolidColorBrush"
+                                ColorSpectrumComponents = "SaturationValue"
+                                ColorSpectrumShape = "Box"
+                                AxisInputOption = "Simple"
+                                SelectedBrush = "{x:Bind LocalObservables.Brush, Mode=OneWay}"
+                                />
+                        </Flyout>
+                    </Button.Flyout>
+                    <Ellipse Height="30" Width="30" StrokeThickness="1"
+                        Stroke="Black"
+                        Fill="{x:Bind LocalObservables.Brush, Mode=OneWay}">
+                    </Ellipse>
+                </Button>
+            </StackPanel>
+            
             <Button Grid.Column="1" Margin="10,4,0,0" Content="Delete team" Background="IndianRed" Visibility="{x:Bind LocalObservables.DeleteVisibility}">
                 <Button.Flyout>
                     <Flyout>
@@ -102,8 +142,8 @@
                     </Flyout>
                 </Button.Flyout>
             </Button>
-            <Button Grid.Column="2" Content="Cancel" Background="IndianRed" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
-            <Button Grid.Column="3" Content="Save" Background="ForestGreen" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="2" Content="Save" Background="ForestGreen" Foreground="White" Margin="4" Click="SaveClick" VerticalAlignment="Bottom"/>
+            <Button Grid.Column="3" Content="Cancel" Background="IndianRed" Foreground="White" Margin="4" Click="CancelClick" VerticalAlignment="Bottom"/>
         </Grid>
     </Grid>
 </Page>

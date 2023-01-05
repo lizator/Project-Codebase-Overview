@@ -63,9 +63,50 @@ namespace Project_Codebase_Overview
 
             public TestObservableClass()
             {
-                test(); 
+                test();
+                test2();
             }
+            public void test2()
+            {
+                Grid grid = new Grid();
+                grid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                grid.Background = new SolidColorBrush(PCOColorPicker.Black);
+                grid.Padding = new Thickness(2);
+                grid.Margin = new Microsoft.UI.Xaml.Thickness(1, 2, 1, 2);
+                //grid.Width = 100;
 
+                var blocks = new List<GraphBlock>(); 
+                var sizes = new List<int> { 30, 30, 30 };
+                if (true) sizes = new List<int> { 50, 20, 20 };
+                var curr = 0;
+
+                for (int i = 0; i < 3; i++)
+                {
+                    var block = new GraphBlock();
+                    block.StartValue = curr;
+                    curr += sizes[i];
+                    block.EndValue = curr;
+                    block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
+                    blocks.Add(block);
+                }
+
+                var index = 0;
+                foreach (var block in blocks)
+                {
+                    ColumnDefinition colDef = new ColumnDefinition() { Width = new GridLength(block.EndValue - block.StartValue, GridUnitType.Star) };
+                    grid.ColumnDefinitions.Add(colDef);
+
+                    Grid subgrid = new Grid();
+                    subgrid.Background = new SolidColorBrush(block.Color);
+                    subgrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    subgrid.Height = 25;
+
+                    grid.Children.Add(subgrid);
+                    Grid.SetColumn(subgrid, index++);
+                }
+
+                BarGraph2 = grid;
+            }
             public void test()
             {
                 SfLinearGauge sfLinearGauge = new SfLinearGauge();
@@ -83,13 +124,14 @@ namespace Project_Codebase_Overview
                 var sizes = new List<int> { 30, 30, 30 };
                 if (plusTest) sizes = new List<int> { 50, 20, 20 };
                 var curr = 0;
+                
                 for (int i = 0; i < 3; i++)
                 {
                     var block = new GraphBlock();
                     block.StartValue = curr;
                     curr += sizes[i];
                     block.EndValue = curr;
-                    block.Color = PCOColorPicker.HardcodedColors[i];
+                    block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
                     blocks.Add(block);
                 }
 
@@ -112,6 +154,9 @@ namespace Project_Codebase_Overview
             public SfLinearGauge BarGraph { get => _barGraph; set => SetProperty(ref _barGraph, value); }
 
             public SfLinearGauge _barGraph;
+            public Grid BarGraph2 { get => _barGraph2; set => SetProperty(ref _barGraph2, value); }
+
+            public Grid _barGraph2;
         }
 
 
@@ -151,7 +196,7 @@ namespace Project_Codebase_Overview
                 block.StartValue = curr;
                 curr += sizes[i];
                 block.EndValue = curr;
-                block.Color = PCOColorPicker.HardcodedColors[i];
+                block.Color = PCOColorPicker.GetInstance().ColorPalette[i];
             }
 
 
@@ -293,143 +338,143 @@ namespace Project_Codebase_Overview
 
         private async void DoDataOptimization2(object sender, RoutedEventArgs e)
         {
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            GitDataCollector collector = new GitDataCollector();
+            //GitDataCollector collector = new GitDataCollector();
 
-            var state = PCOState.GetInstance();
-            var path = "C:\\TestRepos\\monero";
+            //var state = PCOState.GetInstance();
+            //var path = "C:\\TestRepos\\monero";
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            var stopwatch = new Stopwatch();
+            //var stopwatch = new Stopwatch();
 
-            Debug.WriteLine("starting test!");
+            //Debug.WriteLine("starting test!");
 
-            stopwatch.Start();
-            collector.Parallel2GetAllData(path, null, -1);
-            stopwatch.Stop();
-            var parallelNone = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Start();
+            //collector.Parallel2GetAllData(path, null, -1);
+            //stopwatch.Stop();
+            //var parallelNone = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel none done");
+            //Debug.WriteLine("parallel none done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Parallel2GetAllData(path, null, 16);
-            stopwatch.Stop();
-            var parallel16 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Parallel2GetAllData(path, null, 16);
+            //stopwatch.Stop();
+            //var parallel16 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel16 done");
+            //Debug.WriteLine("parallel16 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Parallel2GetAllData(path, null, 32);
-            stopwatch.Stop();
-            var parallel32 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Parallel2GetAllData(path, null, 32);
+            //stopwatch.Stop();
+            //var parallel32 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel32 done");
+            //Debug.WriteLine("parallel32 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Parallel2GetAllData(path, null, 64);
-            stopwatch.Stop();
-            var parallel64 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Parallel2GetAllData(path, null, 64);
+            //stopwatch.Stop();
+            //var parallel64 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel64 done");
+            //Debug.WriteLine("parallel64 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Parallel2GetAllData(path, null, 128);
-            stopwatch.Stop();
-            var parallel128 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Parallel2GetAllData(path, null, 128);
+            //stopwatch.Stop();
+            //var parallel128 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel128 done");
+            //Debug.WriteLine("parallel128 done");
 
-            Debug.WriteLine("_________________________");
-            Debug.WriteLine("TESTING DATA OPTIMISATION");
-            Debug.WriteLine("Parallel none: " + parallelNone / 1000 + " seconds");
-            Debug.WriteLine("Parallel   16: " + parallel16 / 1000 + " seconds");
-            Debug.WriteLine("Parallel   32: " + parallel32 / 1000 + " seconds");
-            Debug.WriteLine("Parallel   64: " + parallel64 / 1000 + " seconds");
-            Debug.WriteLine("Parallel  128: " + parallel128 / 1000 + " seconds");
-            Debug.WriteLine("_________________________");
+            //Debug.WriteLine("_________________________");
+            //Debug.WriteLine("TESTING DATA OPTIMISATION");
+            //Debug.WriteLine("Parallel none: " + parallelNone / 1000 + " seconds");
+            //Debug.WriteLine("Parallel   16: " + parallel16 / 1000 + " seconds");
+            //Debug.WriteLine("Parallel   32: " + parallel32 / 1000 + " seconds");
+            //Debug.WriteLine("Parallel   64: " + parallel64 / 1000 + " seconds");
+            //Debug.WriteLine("Parallel  128: " + parallel128 / 1000 + " seconds");
+            //Debug.WriteLine("_________________________");
         }
 
         private async void DoDataOptimization(object sender, RoutedEventArgs e)
         {
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            GitDataCollector collector = new GitDataCollector();
+            //GitDataCollector collector = new GitDataCollector();
 
-            var state = PCOState.GetInstance();
-            //var path = "C:\\TestRepos\\monero";
-            var path = "C:\\TestRepos\\vscode";
-            //var path = "C:\\TestRepos\\Project-Codebase-Overview";
+            //var state = PCOState.GetInstance();
+            ////var path = "C:\\TestRepos\\monero";
+            //var path = "C:\\TestRepos\\vscode";
+            ////var path = "C:\\TestRepos\\Project-Codebase-Overview";
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            var stopwatch = new Stopwatch();
+            //var stopwatch = new Stopwatch();
 
-            Debug.WriteLine("starting test!");
-            stopwatch.Start();
-            //collector.SimpleCollectAllData(path);
-            stopwatch.Stop();
-            var simple1 = stopwatch.ElapsedMilliseconds;
+            //Debug.WriteLine("starting test!");
+            //stopwatch.Start();
+            ////collector.SimpleCollectAllData(path);
+            //stopwatch.Stop();
+            //var simple1 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("simple1 done");
+            //Debug.WriteLine("simple1 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Simple2CollectAllData(path, null);
-            stopwatch.Stop();
-            var simple2 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Simple2CollectAllData(path, null);
+            //stopwatch.Stop();
+            //var simple2 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("simple2 done");
+            //Debug.WriteLine("simple2 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.ParallelGetAllData(path, null);
-            stopwatch.Stop();
-            var parallel1 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.ParallelGetAllData(path, null);
+            //stopwatch.Stop();
+            //var parallel1 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel1 done");
+            //Debug.WriteLine("parallel1 done");
 
-            PCOState.GetInstance().ClearState();
+            //PCOState.GetInstance().ClearState();
 
-            state.GetExplorerState().SetRootPath(path);
+            //state.GetExplorerState().SetRootPath(path);
 
-            stopwatch.Restart();
-            collector.Parallel2GetAllData(path, null);
-            stopwatch.Stop();
-            var parallel2 = stopwatch.ElapsedMilliseconds;
+            //stopwatch.Restart();
+            //collector.Parallel2GetAllData(path, null);
+            //stopwatch.Stop();
+            //var parallel2 = stopwatch.ElapsedMilliseconds;
 
-            Debug.WriteLine("parallel2 done");
+            //Debug.WriteLine("parallel2 done");
 
-            Debug.WriteLine("_________________________");
-            Debug.WriteLine("TESTING DATA OPTIMISATION");
-            Debug.WriteLine("Simple 1:   " + simple1 / 1000 + " seconds");
-            Debug.WriteLine("Simple 2:   " + simple2 / 1000 + " seconds");
-            Debug.WriteLine("Parallel 1: " + parallel1 / 1000 + " seconds");
-            Debug.WriteLine("Parallel 2: " + parallel2 / 1000 + " seconds");
-            Debug.WriteLine("_________________________");
+            //Debug.WriteLine("_________________________");
+            //Debug.WriteLine("TESTING DATA OPTIMISATION");
+            //Debug.WriteLine("Simple 1:   " + simple1 / 1000 + " seconds");
+            //Debug.WriteLine("Simple 2:   " + simple2 / 1000 + " seconds");
+            //Debug.WriteLine("Parallel 1: " + parallel1 / 1000 + " seconds");
+            //Debug.WriteLine("Parallel 2: " + parallel2 / 1000 + " seconds");
+            //Debug.WriteLine("_________________________");
 
 
 
@@ -499,6 +544,7 @@ namespace Project_Codebase_Overview
             var folderPicker = new FolderPicker();
 
             IntPtr windowHandler = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            folderPicker.FileTypeFilter.Add("*"); // work around to fix crashing of packaged app
             WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, windowHandler);
 
             var folder = await folderPicker.PickSingleFolderAsync();
@@ -540,7 +586,15 @@ namespace Project_Codebase_Overview
                 return;
             }
 
-            bool repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            bool repoChangesAvailable = false;
+            try
+            {
+                repoChangesAvailable = await PCOState.GetInstance().LoadFile(file);
+            } catch (Exception ex)
+            {
+                await DialogHandler.ShowErrorDialog(ex.Message, this.Content.XamlRoot);
+                return;
+            }
 
             if (repoChangesAvailable)
             {
