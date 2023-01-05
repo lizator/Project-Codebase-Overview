@@ -248,6 +248,11 @@ namespace Project_Codebase_Overview.DataCollection
                 oldDataRootFolder.RemoveFileByPath(deletedFilePath);
             }
 
+            if (changedFilePaths.Count == 0) //Only stuff removed
+            {
+                return oldDataRootFolder;
+            }
+
             //find files that are new since last load
             InitializeNewAuthorsAndCreators(changedFilePaths, lastLoadedCommitSHA, deletedFilePaths);
 
