@@ -210,6 +210,7 @@ namespace Project_Codebase_Overview
 
             PCOState.GetInstance().GetExplorerState().ReloadExplorer();
             LocalObservables.DecayChangesMade = false;
+            UpdateOwnerList();
         }
 
         private void ManageClicked(object sender, RoutedEventArgs e)
