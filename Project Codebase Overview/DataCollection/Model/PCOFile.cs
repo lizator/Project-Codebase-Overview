@@ -4,6 +4,7 @@ using Project_Codebase_Overview.ContributorManagement;
 using Project_Codebase_Overview.ContributorManagement.Model;
 using Project_Codebase_Overview.Settings;
 using Project_Codebase_Overview.State;
+using Syncfusion.UI.Xaml.Data;
 using Syncfusion.UI.Xaml.Gauges;
 using System;
 using System.Collections.Generic;
@@ -50,22 +51,33 @@ namespace Project_Codebase_Overview.DataCollection.Model
                     {
                         continue;
                     }
-                    var linesModified = (uint)settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
-                    
-                    if (this.Creator.Equals(author))
-                    {
-                        linesModified = (uint) Math.Ceiling((double) (((double)settingsState.CreatorBonusPercent / 100) + 1) * linesModified);
-                    }
+                    var linesModified = settingsState.CalculateLinesAfterDecay(commit.GetLines(), commit.GetDate());
 
-                    this.GraphModel.LinesModified += linesModified;
+                    if (this.Creator != null && this.Creator.Equals(author))
+                    {
+                        linesModified = (double)(((double)settingsState.CreatorBonusPercent / 100) + 1) * linesModified;
+                    }
                     this.GraphModel.LinesTotal += (uint)commit.GetLines();
 
                     this.GraphModel.LineDistribution.TryAdd(author, new LineDistUnit(0, 0));
 
-                    this.GraphModel.LineDistribution[author].SuggestedLines += linesModified;
+                    if (this.GraphModel.LineDistribution[author].TempModifiedLines == null) this.GraphModel.LineDistribution[author].TempModifiedLines = 0;
+
+                    this.GraphModel.LineDistribution[author].TempModifiedLines += linesModified;
                     //this.GraphModel.LineDistribution[author].SuggestedLines += PCOState.GetInstance().GetSettingsState().IsDecayActive ? linesModified : (uint)commit.GetLines();
                 }
             }
+
+            this.GraphModel.LineDistribution.ForEach(keyPair =>
+            {
+                var distribution = keyPair.Value;
+                var ceilingedLines = (uint)Math.Ceiling(distribution.TempModifiedLines ?? 0);
+                distribution.SuggestedLines = ceilingedLines;
+                distribution.TempModifiedLines = null;
+
+                this.GraphModel.LinesModified += ceilingedLines;
+
+            });
 
             if(PCOState.GetInstance().GetSettingsState().CurrentMode == PCOExplorerMode.TEAMS)
             {

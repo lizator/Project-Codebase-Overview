@@ -12,6 +12,7 @@ namespace Project_Codebase_Overview.DataCollection.Model
     {
         public class LineDistUnit
         {
+            public double? TempModifiedLines; //This is used to collect an authors entire commit lines after decay and creator bonus before rounding it to a int in suggested lines (only used in PCOFile)
             public uint SuggestedLines;
             public uint SelectedLines;
             public LineDistUnit(uint suggestedLines, uint selectedLines)

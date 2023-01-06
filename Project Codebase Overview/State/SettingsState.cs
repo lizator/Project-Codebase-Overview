@@ -81,7 +81,7 @@ namespace Project_Codebase_Overview.State
 
             var ticks = CalculateTicks(commitDate);
 
-            return lineCount * Math.Pow(1- ((float)DecayPercentage / 100), ticks);
+            return Math.Round(lineCount * Math.Pow(1- ((float)DecayPercentage / 100), ticks), 10);
         }
 
         private int CalculateTicks(DateTime commitDate)
